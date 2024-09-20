@@ -479,7 +479,7 @@ int DBRoutines::DBSortTeamNames()
     return 0;
 }
 
-// Routine will return the PitcherStatsID in a given team
+// Routine will return the BatterStatsID in a given team
 int DBRoutines::DBGetBatterStatsID(int passedTeamID)
 {
 	int rc;
@@ -535,6 +535,52 @@ int DBRoutines::DBGetBatterStatsID(int passedTeamID)
 	sqlite3_finalize(m_stmtBatter);
 
 	DBSortBatterNames();
+
+    return m_intBatterStatsID;
+}
+
+// Routine will return the BatterStatsID in a given player on a team
+int DBRoutines::DBGetBatterStatsID(int passedTeamID, int passedBatterID)
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString sqlBatterData;
+
+    // Create SQL statement for BatterStats retrival
+    sqlBatterData = "SELECT "  \
+		" BatterStatsID " \
+		" FROM BATTERSTATS " \
+		" WHERE TeamID = ?1 " \
+		" and " \
+		" BatterID = ?2 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlBatterData, strlen(sqlBatterData), &m_stmtBatter, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	// Bind the data to field '1' which is the first '?' in the SELECT statement
+	rc = sqlite3_bind_int(m_stmtBatter, 1, passedTeamID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatter, 2, passedBatterID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedBatterID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	while (sqlite3_step(m_stmtBatter) == SQLITE_ROW)
+	{
+		m_intBatterStatsID = sqlite3_column_int(m_stmtBatter, 0);
+	}
+
+	sqlite3_finalize(m_stmtBatter);
 
     return m_intBatterStatsID;
 }
@@ -768,6 +814,60 @@ int DBRoutines::DBGetBatterData(int passedBatterStatsID)
 	m_intBatterStatsID = structBatterStats.BatterStatsID;
 
     return m_intBatterStatsID;
+}
+
+// Routine will return the PitcherID based on TeamID and FIrst and Last names
+int DBRoutines::DBGetBatterID(int passedTeamID, wxString passedFirstName, wxString passedLastName)
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString sqlBatterData;
+
+    // Create SQL statement for BatterStats retrival
+    sqlBatterData = "SELECT "  \
+		" BatterID " \
+		" FROM BATTER " \
+		" WHERE TeamID = ?1 " \
+		" and " \
+		" FirstName = ?2 " \
+		" and " \
+		" LastName = ?3 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlBatterData, strlen(sqlBatterData), &m_stmtBatter, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	// Bind the data to field '1' which is the first '?' in the SELECT statement
+	rc = sqlite3_bind_int(m_stmtBatter, 1, passedTeamID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtBatter, 2, structBatterData.FirstName, strlen(passedFirstName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind FirstName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtBatter, 3, structBatterData.LastName, strlen(passedLastName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LastName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	while (sqlite3_step(m_stmtBatter) == SQLITE_ROW)
+	{
+		m_intBatterID = sqlite3_column_int(m_stmtBatter, 0);
+	}
+
+	sqlite3_finalize(m_stmtBatter);
+
+    return m_intBatterID;
 }
 
 // Routine will Update the data in the batter data record
@@ -1665,13 +1765,13 @@ int DBRoutines::DBGetPitcherID(int passedTeamID, wxString passedFirstName, wxStr
 		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_text(m_stmtPitcherInsertData, 2, structPitcherData.FirstName, strlen(passedFirstName), SQLITE_STATIC);
+	rc = sqlite3_bind_text(m_stmtPitcher, 2, structPitcherData.FirstName, strlen(passedFirstName), SQLITE_STATIC);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind FirstName: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_text(m_stmtPitcherInsertData, 3, structPitcherData.LastName, strlen(passedLastName), SQLITE_STATIC);
+	rc = sqlite3_bind_text(m_stmtPitcher, 3, structPitcherData.LastName, strlen(passedLastName), SQLITE_STATIC);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind LastName: %s\n"), sqlite3_errmsg(m_db));
@@ -1734,6 +1834,669 @@ int DBRoutines::DBGetPitcherStatsID(int passedTeamID, int passedPitcherID)
     return m_intPitcherStatsID;
 }
 
+// Routine will Insert the data in the batter data record
+int DBRoutines::DBInsertBatterData(int passedTeamID)
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlBatterData;
+
+	/* Create SQL statement */
+	sqlBatterData = "INSERT INTO BATTER("  \
+		"FirstName," \
+		"LastName," \
+		"Pitcher," \
+		"Catcher," \
+		"FirstBase," \
+		"SecondBase," \
+		"ShortStop," \
+		"ThirdBase," \
+		"LeftField," \
+		"CenterField," \
+		"RightField," \
+		"Bunting," \
+		"HitRun," \
+		"Running," \
+		"Stealing," \
+		"CatchArm," \
+		"OutArm," \
+		"PowerRight," \
+		"PowerLeft," \
+		"Pass," \
+		"TRate," \
+		"ER1," \
+		"ER2," \
+		"ER3," \
+		"ER4," \
+		"ER5," \
+		"ER6," \
+		"ER7," \
+		"ER8," \
+		"ER9," \
+		"BatterHits," \
+		"TeamID," \
+		"OBChanceHomeRun," \
+		"OBChanceTriple," \
+		"OBChanceDouble," \
+		"OBChanceSingle," \
+		"OBChanceWalk," \
+		"ChanceDoublePlay," \
+		"OBChanceHomeRunRight," \
+		"OBChanceTripleRight," \
+		"OBChanceDoubleRight," \
+		"OBChanceSingleRight," \
+		"OBChanceWalkRight," \
+		"ChanceDoublePlayRight," \
+		"OBChanceHomeRunLeft," \
+		"OBChanceTripleLeft," \
+		"OBChanceDoubleLeft," \
+		"OBChanceSingleLeft," \
+		"OBChanceWalkLeft," \
+		"ChanceDoublePlayLeft," \
+		"OBChanceBasic," \
+		"OBChanceLeft," \
+		"OBChanceRight" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3," \
+		"?4," \
+		"?5," \
+		"?6," \
+		"?7," \
+		"?8," \
+		"?9," \
+		"?10," \
+		"?11," \
+		"?12," \
+		"?13," \
+		"?14," \
+		"?15," \
+		"?16," \
+		"?17," \
+		"?18," \
+		"?19," \
+		"?20," \
+		"?21," \
+		"?22," \
+		"?23," \
+		"?24," \
+		"?25," \
+		"?26," \
+		"?27," \
+		"?28," \
+		"?29," \
+		"?30," \
+		"?31," \
+		"?32," \
+		"?33," \
+		"?34," \
+		"?35," \
+		"?36," \
+		"?37," \
+		"?38," \
+		"?39," \
+		"?40," \
+		"?41," \
+		"?42," \
+		"?43," \
+		"?44," \
+		"?45," \
+		"?46," \
+		"?47," \
+		"?48," \
+		"?49," \
+		"?50," \
+		"?51," \
+		"?52," \
+		"?53" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlBatterData, strlen(sqlBatterData), &m_stmtBatterInsertData, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Batter insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	// Bind the data to field '1' which is the first '?' in the INSERT statement
+	rc = sqlite3_bind_text(m_stmtBatterInsertData, 1, structBatterData.FirstName, strlen(structBatterData.FirstName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind FirstName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtBatterInsertData, 2, structBatterData.LastName, strlen(structBatterData.LastName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LastName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 3, structBatterData.Pitcher);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Pitcher: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 4, structBatterData.Catcher);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Catcher: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 5, structBatterData.FirstBase);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind FirstBase: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 6, structBatterData.SecondBase);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind SecondBase: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 7, structBatterData.Shortstop);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Shortstop: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 8, structBatterData.ThirdBase);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ThirdBase: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 9, structBatterData.LeftField);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeftField: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 10, structBatterData.CenterField);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind CenterField: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 11, structBatterData.RightField);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind RightField: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 12, structBatterData.Bunting);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Bunting: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 13, structBatterData.HitRun);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HitRun: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 14, structBatterData.Running);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Running: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 15, structBatterData.Stealing);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Stealing: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 16, structBatterData.CatchArm);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind CatchArm: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 17, structBatterData.OutArm);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OutArm: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 18, structBatterData.PowerRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind PowerRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 19, structBatterData.PowerLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind PowerLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 20, structBatterData.Pass);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Pass: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 21, structBatterData.TRate);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TRate: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 22, structBatterData.ER1);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER1: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 23, structBatterData.ER2);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER1: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 24, structBatterData.ER3);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER3: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 25, structBatterData.ER4);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER4: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 26, structBatterData.ER5);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER5: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 27, structBatterData.ER6);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER6: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 28, structBatterData.ER7);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER7: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 29, structBatterData.ER8);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER8: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 30, structBatterData.ER9);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ER9: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 31, structBatterData.BatterHIts);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BatterHIts: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertData, 32, passedTeamID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 33, structBatterData.OBChanceHomeRun);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceHomeRun: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 34, structBatterData.OBChanceTriple);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceTriple: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 35, structBatterData.OBChanceDouble);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceDouble: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 36, structBatterData.OBChanceSingle);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceSingle: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 37, structBatterData.OBChanceWalk);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceWalk: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 38, structBatterData.ChanceDoublePlay);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ChanceDoublePlay: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 39, structBatterData.OBChanceHomeRunRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceHomeRunRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 40, structBatterData.OBChanceTripleRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceTripleRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 41, structBatterData.OBChanceDoubleRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceDoubleRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 42, structBatterData.OBChanceSingleRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceSingleRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 43, structBatterData.OBChanceWalkRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceWalkRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 44, structBatterData.ChanceDoublePlayRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ChanceDoublePlayRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 45, structBatterData.OBChanceHomeRunLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceHomeRunLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 46, structBatterData.OBChanceTripleLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceTripleLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 47, structBatterData.OBChanceDoubleLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceDoubleLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 48, structBatterData.OBChanceSingleLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceSingleLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 49, structBatterData.OBChanceWalkLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceWalkLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 50, structBatterData.ChanceDoublePlayLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ChanceDoublePlayLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 51, structBatterData.OBChanceBasic);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceBasic: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 52, structBatterData.OBChanceLeft);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceLeft: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertData, 53, structBatterData.OBChanceRight);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBChanceRight: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtBatterInsertData);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert BatterData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtBatterInsertData);
+
+	// Now retrieve inserted record to get new batterID value
+
+    m_intBatterID = DBGetBatterID( passedTeamID, structBatterData.FirstName, structBatterData.LastName );
+    DBInsertBatterStats( m_intBatterID, passedTeamID );
+
+    // Return the new m_intBatterID
+    return m_intBatterID;
+}
+
+// Routine will Insert the data in the batter stats record
+int DBRoutines::DBInsertBatterStats(int passedBatterID, int passedTeamID)
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString sqlBatterStats;
+
+	/* Create SQL statement */
+	sqlBatterStats = "INSERT INTO BATTERSTATS("  \
+		"AB," \
+		"Runs," \
+		"Hits," \
+		"RBI," \
+		"Doubles," \
+		"Triples," \
+		"HomeRuns," \
+		"Walk," \
+		"Stirkeout," \
+		"ReachedOnError," \
+		"Sacrifice," \
+		"StolenBase," \
+		"CS," \
+		"Games," \
+		"HBP," \
+		"AVG," \
+		"SLG," \
+		"OBP," \
+		"BatterID," \
+		"TeamID" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3," \
+		"?4," \
+		"?5," \
+		"?6," \
+		"?7," \
+		"?8," \
+		"?9," \
+		"?10," \
+		"?11," \
+		"?12," \
+		"?13," \
+		"?14," \
+		"?15," \
+		"?16," \
+		"?17," \
+		"?18," \
+		"?19," \
+		"?20" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlBatterStats, strlen(sqlBatterStats), &m_stmtBatterInsertStats, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for batter insert stats: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 1, structBatterStats.AB);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AB: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 2, structBatterStats.Runs);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Runs: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 3, structBatterStats.Hits);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Hits: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 4, structBatterStats.RBI);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind RBI: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 5, structBatterStats.Doubles);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Doubles: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 6, structBatterStats.Triples);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Triples: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 7, structBatterStats.HomeRuns);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HomeRuns: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 8, structBatterStats.Walk);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Walk: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 9, structBatterStats.Strikeout);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Strikeout: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 10, structBatterStats.ReachedOnError);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ReachedOnError: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 11, structBatterStats.Sacrifice);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Sacrifice: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 12, structBatterStats.StollenBase);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind StollenBase: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 13, structBatterStats.CS);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind CS: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 14, structBatterStats.Games);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind Games: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 15, structBatterStats.HBP);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HBP: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertStats, 16, structBatterStats.AVG);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AVG: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertStats, 17, structBatterStats.SLG);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind SLG: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtBatterInsertStats, 18, structBatterStats.OBP);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind OBP: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 19, passedBatterID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedBatterID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtBatterInsertStats, 20, passedTeamID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtBatterInsertStats);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert BatterStats: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtBatterInsertStats);
+
+    m_intBatterStatsID = DBGetBatterStatsID( passedTeamID, passedBatterID);
+
+    // Return the new batter stats ID
+    return m_intBatterStatsID;
+}
 // Routine will Insert the data in the pitcher data record
 int DBRoutines::DBInsertPitcherData(int passedTeamID)
 {

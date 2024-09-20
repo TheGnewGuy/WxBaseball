@@ -12,6 +12,8 @@
 // 09/28/05     Wrote code to populate the batters dialog fields           //
 //              and to set field change flags.                             //
 // 07/28/05     Added comments for Todo list                               //
+// 09/15/24     Corrected code for OutArm, CatchArm and Running            //
+// 09/19/24     Added batter insert code                                   //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -1363,42 +1365,42 @@ wxBoxSizer* BatterNotebook::BuildTopCombos( wxWindow* panel, int combobox )
 {
     wxBoxSizer* sizer;
     wxBoxSizer* csizerB;
-    wxBoxSizer* csizerT;
+//    wxBoxSizer* csizerT;
     wxStaticText* statTextT;
     wxStaticText* statTextB;
 
     sizer = new wxBoxSizer( wxVERTICAL );
 
-    csizerT = new wxBoxSizer ( wxHORIZONTAL );
+    m_sizerBatter = new wxBoxSizer ( wxHORIZONTAL );
 
     statTextT = new wxStaticText(panel, wxID_ANY, _T("Team Name"),
         wxDefaultPosition, wxSize(80,-1), 0);
 
     CreateTeamComboBox(panel, combobox);
 
-    csizerT->Add ( 10, 1, wxSTRETCH_NOT );
-    csizerT->Add ( statTextT, wxALIGN_LEFT );
-    csizerT->Add ( 10, 1, wxSTRETCH_NOT );
+    m_sizerBatter->Add ( 10, 1, wxSTRETCH_NOT );
+    m_sizerBatter->Add ( statTextT, wxALIGN_LEFT );
+    m_sizerBatter->Add ( 10, 1, wxSTRETCH_NOT );
 
     switch ( combobox)
     {
            case 1:
-                csizerT->Add ( m_text_team_01, wxALIGN_CENTER );
+                m_sizerBatter->Add ( m_text_team_01, wxALIGN_CENTER );
                 break;
            case 2:
-                csizerT->Add ( m_text_team_02, wxALIGN_CENTER );
+                m_sizerBatter->Add ( m_text_team_02, wxALIGN_CENTER );
                 break;
            case 3:
-                csizerT->Add ( m_text_team_03, wxALIGN_CENTER );
+                m_sizerBatter->Add ( m_text_team_03, wxALIGN_CENTER );
                 break;
            case 4:
-                csizerT->Add ( m_text_team_04, wxALIGN_CENTER );
+                m_sizerBatter->Add ( m_text_team_04, wxALIGN_CENTER );
                 break;
    }
-    csizerT->Add ( 1, 1, wxEXPAND );
+    m_sizerBatter->Add ( 1, 1, wxEXPAND );
 
     sizer->Add ( 10, 10, wxSTRETCH_NOT );
-    sizer->Add ( csizerT );
+    sizer->Add ( m_sizerBatter );
 
     csizerB = new wxBoxSizer ( wxHORIZONTAL );
 
@@ -1431,6 +1433,8 @@ wxBoxSizer* BatterNotebook::BuildTopCombos( wxWindow* panel, int combobox )
     sizer->Add ( csizerB );
     sizer->Add (new wxStaticLine(panel, -1), 0, wxEXPAND | wxALL, 10);
 
+    m_sizerBatterSave = m_sizerBatter;
+
     return (sizer);
 }
 
@@ -1455,6 +1459,23 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
                  _T("Add"), wxOK|wxICON_INFORMATION );
 //     wxWindow::Validate();
 //     wxWindow::TransferDataFromWindow();
+
+    // Need to check for base team. Only allow inserts in base teams
+    if ( wxGetApp().pDBRoutines->structTeamData.BaseTeam == TRUE )
+    {
+        // Need to update data, do insert and then rebbuild player names
+        GetNotebookData();
+        wxGetApp().pDBRoutines->DBInsertBatterData(wxGetApp().pDBRoutines->m_intTeamID);
+        // The following updates the array but not the combobox
+        wxGetApp().pDBRoutines->DBGetBatterStatsID(wxGetApp().pDBRoutines->m_intTeamID);
+        //m_combo_pitcher_01. //  ( wxGetApp().pDBRoutines->m_arrayPitcherFullNames );
+        UpdateBatterNames();
+    }
+    else
+    {
+        wxMessageBox(_T("Attempt to insert non-Base team!"),
+                 _T("Insert Failed"), wxOK|wxICON_INFORMATION );
+    }
 }
 
 void BatterNotebook::OnNew(wxCommandEvent& event)
@@ -1579,7 +1600,8 @@ void BatterNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structBatterData.Pass = m_combo_Passball->GetSelection();
     // Running is 5-19 so selection is off by 5
 //    wxGetApp().pDBRoutines->structBatterData.Running = atoi(m_combo_Running->GetValue());
-    wxGetApp().pDBRoutines->structBatterData.Running = m_combo_Running->GetSelection();	// 5 to 19
+//    wxGetApp().pDBRoutines->structBatterData.Running = m_combo_Running->GetSelection();	// 5 to 19
+    wxGetApp().pDBRoutines->structBatterData.Running = atoi(m_combo_Running->GetValue());	// 5 to 19
     wxGetApp().pDBRoutines->structBatterData.TRate = m_combo_TRating->GetSelection();
 
     wxGetApp().pDBRoutines->structBatterData.Stealing = m_combo_Stealing->GetSelection();
@@ -1589,9 +1611,11 @@ void BatterNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structBatterData.PowerLeft = m_combo_PowerLeft->GetSelection();
     wxGetApp().pDBRoutines->structBatterData.PowerRight = m_combo_PowerRight->GetSelection();
     // OutArm is -6 to 5 so selection is off by 6. Value of 6 is actually 0
-    wxGetApp().pDBRoutines->structBatterData.OutArm = m_combo_OutfieldArm->GetSelection();
+//    wxGetApp().pDBRoutines->structBatterData.OutArm = m_combo_OutfieldArm->GetSelection();
+    wxGetApp().pDBRoutines->structBatterData.OutArm = atoi(m_combo_OutfieldArm->GetValue());
     //CatchArm is -4 ot 4 so selection is off by 4. Value of 4 is actually 0
-    wxGetApp().pDBRoutines->structBatterData.CatchArm = m_combo_CatcherArm->GetSelection();
+//    wxGetApp().pDBRoutines->structBatterData.CatchArm = m_combo_CatcherArm->GetSelection();
+    wxGetApp().pDBRoutines->structBatterData.CatchArm = atoi(m_combo_CatcherArm->GetValue());
 
     // End Info Notebook Page
 
@@ -1766,13 +1790,17 @@ void BatterNotebook::OnComboBatterSelect(wxCommandEvent& event)
     m_combo_BatterHits->SetSelection(wxGetApp().pDBRoutines->structBatterData.BatterHIts);
     m_combo_PowerLeft->SetSelection(wxGetApp().pDBRoutines->structBatterData.PowerLeft);
     m_combo_PowerRight->SetSelection(wxGetApp().pDBRoutines->structBatterData.PowerRight);
-    m_combo_OutfieldArm->SetSelection(wxGetApp().pDBRoutines->structBatterData.OutArm);
-    m_combo_CatcherArm->SetSelection(wxGetApp().pDBRoutines->structBatterData.CatchArm);
+//    m_combo_OutfieldArm->SetSelection(wxGetApp().pDBRoutines->structBatterData.OutArm);
+//wxString stringnumber = wxString::Format(wxT("%d"), (int)number_to_convert);
+    m_combo_OutfieldArm->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structBatterData.OutArm));
+//    m_combo_CatcherArm->SetSelection(wxGetApp().pDBRoutines->structBatterData.CatchArm);
+    m_combo_CatcherArm->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structBatterData.CatchArm));
     m_combo_Passball->SetSelection(wxGetApp().pDBRoutines->structBatterData.Pass);
     m_combo_Stealing->SetSelection(wxGetApp().pDBRoutines->structBatterData.Stealing);
     m_combo_Bunting->SetSelection(wxGetApp().pDBRoutines->structBatterData.Bunting);
     m_combo_HitRun->SetSelection(wxGetApp().pDBRoutines->structBatterData.HitRun);
-    m_combo_Running->SetSelection(wxGetApp().pDBRoutines->structBatterData.Running);
+//    m_combo_Running->SetSelection(wxGetApp().pDBRoutines->structBatterData.Running);
+    m_combo_Running->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structBatterData.Running));
     m_combo_TRating->SetSelection(wxGetApp().pDBRoutines->structBatterData.TRate);
     // End Info Notebook Page
 
@@ -1997,6 +2025,66 @@ bool BatterNotebook::GetTeamNamesArray()
     wxGetApp().pDBRoutines->DBGetTeamNamesArray();
 
     return(TRUE);
+}
+
+bool BatterNotebook::UpdateBatterNames()
+{
+    // This is kind of working
+    // I am forcing the positioning and when
+    // the replace is replaced it ends at the end of the tab order
+
+    int selItem  = m_combo_batter_01->GetSelection();
+//    wxComboBox* newCb = new wxComboBox(this, wxID_ANY, wxEmptyString,
+//                                wxDefaultPosition, wxDefaultSize,
+//                                items,
+//                                flags);
+//    wxComboBox* newCb = new wxComboBox( this, ID_COMBO_PITCHER, _T(""),
+//                              wxPoint(100,55), wxSize(200,-1),
+    wxComboBox* newCb01 = new wxComboBox( m_panel_01, wxID_ANY, wxEmptyString,
+                              wxPoint(100,55), wxSize(200,-1),
+                              wxGetApp().pDBRoutines->m_arrayBatterFullNames,
+                              wxCB_READONLY | wxTE_PROCESS_ENTER );
+    wxComboBox* newCb02 = new wxComboBox( m_panel_02, wxID_ANY, wxEmptyString,
+                              wxPoint(100,55), wxSize(200,-1),
+                              wxGetApp().pDBRoutines->m_arrayBatterFullNames,
+                              wxCB_READONLY | wxTE_PROCESS_ENTER );
+    wxComboBox* newCb03 = new wxComboBox( m_panel_03, wxID_ANY, wxEmptyString,
+                              wxPoint(100,55), wxSize(200,-1),
+                              wxGetApp().pDBRoutines->m_arrayBatterFullNames,
+                              wxCB_READONLY | wxTE_PROCESS_ENTER );
+    wxComboBox* newCb04 = new wxComboBox( m_panel_04, wxID_ANY, wxEmptyString,
+                              wxPoint(100,55), wxSize(200,-1),
+                              wxGetApp().pDBRoutines->m_arrayBatterFullNames,
+                              wxCB_READONLY | wxTE_PROCESS_ENTER );
+    if ( selItem != wxNOT_FOUND )
+    {
+        newCb01->SetSelection(selItem);
+        newCb02->SetSelection(selItem);
+        newCb03->SetSelection(selItem);
+        newCb04->SetSelection(selItem);
+    }
+
+    m_sizerBatterSave->Replace(m_combo_batter_01, newCb01);
+    m_sizerBatterSave->Layout();
+    m_sizerBatterSave->Replace(m_combo_batter_02, newCb02);
+    m_sizerBatterSave->Layout();
+    m_sizerBatterSave->Replace(m_combo_batter_03, newCb03);
+    m_sizerBatterSave->Layout();
+    m_sizerBatterSave->Replace(m_combo_batter_04, newCb04);
+    m_sizerBatterSave->Layout();
+
+    delete m_combo_batter_01;
+    delete m_combo_batter_02;
+    delete m_combo_batter_03;
+    delete m_combo_batter_04;
+    m_combo_batter_01 = newCb01;
+    m_combo_batter_01->SetId(ID_COMBO_BATTER);
+    m_combo_batter_02 = newCb02;
+    m_combo_batter_02->SetId(ID_COMBO_BATTER);
+    m_combo_batter_03 = newCb03;
+    m_combo_batter_03->SetId(ID_COMBO_BATTER);
+    m_combo_batter_04 = newCb04;
+    m_combo_batter_04->SetId(ID_COMBO_BATTER);
 }
 
 void BatterNotebook::MakeBatterUpdate()

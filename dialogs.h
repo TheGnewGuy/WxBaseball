@@ -56,7 +56,11 @@ private:
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
     bool GetTeamNamesArray();
+    bool UpdateBatterNames();
     void GetNotebookData();
+
+    wxBoxSizer* m_sizerBatter;
+    wxSizer* m_sizerBatterSave;
 
     wxBoxSizer* sizer_01;
     wxBoxSizer* sizer_02;
