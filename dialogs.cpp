@@ -3423,7 +3423,8 @@ void PitcherNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structPitcherData.WP = atoi(m_combo_InfoWP->GetValue());
     // The next three entries save the selection, not the value
     wxGetApp().pDBRoutines->structPitcherData.Bunting = m_combo_InfoBunting->GetSelection();
-    wxGetApp().pDBRoutines->structPitcherData.Hold = m_combo_InfoHold->GetSelection();
+//    wxGetApp().pDBRoutines->structPitcherData.Hold = m_combo_InfoHold->GetSelection();
+    wxGetApp().pDBRoutines->structPitcherData.Hold = atoi(m_combo_InfoHold->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.Throws = m_combo_InfoThrows->GetSelection();
     // End Info Notebook Page
 
@@ -3545,7 +3546,7 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
     m_combo_InfoBalk->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Balk );
     m_combo_InfoBunting->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Bunting );
     m_combo_InfoERP->SetSelection( wxGetApp().pDBRoutines->structPitcherData.ER1 );
-    m_combo_InfoHold->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Hold );
+    m_combo_InfoHold->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Hold + 6 );
     m_combo_InfoP->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Pitcher );
     m_combo_InfoRelief->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Relief );
     m_combo_InfoStarter->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Starter );
