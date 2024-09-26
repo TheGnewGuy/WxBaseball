@@ -1,18 +1,19 @@
 # depslib dependency file v1.0
-1721868261 source:/home/john/Documents/Source/WxBaseball/WxBaseballApp.cpp
+1727121314 source:/home/john/Documents/Source/WxBaseball/WxBaseballApp.cpp
 	"wx_pch.h"
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1721868261 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1727202071 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
 	<wx/cmndata.h>
 	"WxBaseballMain.h"
 	"DBRoutines.h"
+	"FileRoutines.h"
 
-1721924343 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
+1727033921 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
 	<wx/wx.h>
 	<wx/wx.h>
 	<wx/frame.h>
@@ -20,7 +21,7 @@
 	"MyCanvas.h"
 	"sqlite3.h"
 
-1722303932 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
+1727295775 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
 	"wx_pch.h"
 	<wx/print.h>
 	<wx/printdlg.h>
@@ -28,6 +29,7 @@
 	"WxBaseballApp.h"
 	"Print.h"
 	"dialogs.h"
+	"FileRoutines.h"
 	"bitmaps/Baseball.xpm"
 	"bitmaps/new.xpm"
 	"bitmaps/open.xpm"
@@ -98,7 +100,7 @@
 1710242594 /home/john/Documents/Source/WxBaseball/sqlite3.h
 	<stdarg.h>
 
-1726422822 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
+1727294095 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/dialog.h>
@@ -1933,15 +1935,46 @@
 	<wx/wx.h>
 	"sqlite3.h"
 
-1726779825 /home/john/Documents/Source/WxBaseball/DBRoutines.h
+1727295173 /home/john/Documents/Source/WxBaseball/DBRoutines.h
 	<wx/wx.h>
 	<wx/wx.h>
 	"sqlite3.h"
 	"dialogs.h"
 
-1726779892 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
+1727295172 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
 	<wx/choicdlg.h>
 	<wx/msgdlg.h>
+	"WxBaseballApp.h"
+	"DBRoutines.h"
+
+1727033978 /home/john/Documents/Source/WxBaseball/Exports.h
+	<wx/file.h>
+	"sqlite3.h"
+	"WxBaseballApp.h"
+	"DBRoutines.h"
+
+1727036871 /home/john/Documents/Source/WxBaseball/FileExports.h
+	<wx/wx.h>
+	<wx/wx.h>
+	<wx/file.h>
+	"sqlite3.h"
+
+1727036727 source:/home/john/Documents/Source/WxBaseball/FileExports.cpp
+	"FileExports.h"
+	"WxBaseballMain.h"
+	"WxBaseballApp.h"
+	"DBRoutines.h"
+
+1727208746 /home/john/Documents/Source/WxBaseball/FileRoutines.h
+	<wx/wx.h>
+	<wx/wx.h>
+	<wx/file.h>
+	<wx/string.h>
+	"sqlite3.h"
+
+1727288355 source:/home/john/Documents/Source/WxBaseball/FileRoutines.cpp
+	"FileRoutines.h"
+	"WxBaseballMain.h"
 	"WxBaseballApp.h"
 	"DBRoutines.h"
 

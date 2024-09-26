@@ -18,6 +18,7 @@
 
 #include "WxBaseballMain.h"
 #include "DBRoutines.h"
+#include "FileRoutines.h"
 
 class WxBaseballApp : public wxApp
 {
@@ -32,12 +33,16 @@ class WxBaseballApp : public wxApp
 //    wxFrame* pWxBaseballFrame;
 
     DBRoutines* pDBRoutines;
+    FileRoutines* pFileRoutines;
 
     // Global print data, to remember settings during the session
     wxPrintData* g_printData;
 
     // Global page setup data
     wxPageSetupData* g_pageSetupData;
+
+    // Global Data Directory without the trailing slash
+    wxString g_DataDirectory;
 
     // Global Options Directory and file name
     //    OptionsFile contains Dir nad filename

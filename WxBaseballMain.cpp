@@ -21,6 +21,7 @@
 #include "WxBaseballApp.h"
 #include "Print.h"
 #include "dialogs.h"
+#include "FileRoutines.h"
 
 //#if !defined(__WXMSW__)
 //    #include "bitmaps/Baseball.xpm"
@@ -367,10 +368,33 @@ void WxBaseballFrame::OnPrintSetup ( wxCommandEvent& event )
 
 void WxBaseballFrame::OnFileExportLeagueTeams ( wxCommandEvent& event )
 {
+	int teamID;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// Use a dialog to select a league then a team.
+	teamID = wxGetApp().pDBRoutines->DBGetATeamID();
+	wxGetApp().pFileRoutines->ExportTeam( teamID );
 }
 
+// Create a list of all teams in a league, then export all of them
 void WxBaseballFrame::OnFileExportLeagueTeamsAll ( wxCommandEvent& event )
 {
+	int leagueID;
+	int i;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// Use a dialog to select a league then create the array of the teams in the league
+	leagueID = wxGetApp().pDBRoutines->DBGetLeague();
+	wxGetApp().pDBRoutines->DBGetLeagueTeams( leagueID );
+
+	for ( i=0; i<wxGetApp().pDBRoutines->m_arrayTeamIDs.GetCount(); i++ )
+	{
+		wxGetApp().pFileRoutines->ExportTeam( wxGetApp().pDBRoutines->m_arrayTeamIDs[i] );
+	}
 }
 
 void WxBaseballFrame::OnExportHTML ( wxCommandEvent& event )

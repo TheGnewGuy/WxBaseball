@@ -67,6 +67,8 @@ bool WxBaseballApp::OnInit()
 
 	pDBRoutines = new DBRoutines();
 
+	pFileRoutines = new FileRoutines();
+
 //    WxBaseballFrame* frame = new WxBaseballFrame(0L, _("wxWidgets Application Template"));
     pWxBaseballFrame = new WxBaseballFrame(0L, _("Baseball Statistics for Strat-O-Matic"));
 //	pWxBaseballFrame = new WxBaseballFrame ( ( wxFrame * ) NULL, -1,

@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="include" />
+					<Add directory="WBaseball/" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -26,6 +27,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add directory="include" />
+					<Add directory="WBaseball/" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -43,6 +45,8 @@
 		</Linker>
 		<Unit filename="DBRoutines.cpp" />
 		<Unit filename="DBRoutines.h" />
+		<Unit filename="FileRoutines.cpp" />
+		<Unit filename="FileRoutines.h" />
 		<Unit filename="FileStruct.cpp" />
 		<Unit filename="FileStruct.h" />
 		<Unit filename="Forms.cpp" />

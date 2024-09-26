@@ -1607,7 +1607,7 @@ void BatterNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structBatterData.Stealing = m_combo_Stealing->GetSelection();
     wxGetApp().pDBRoutines->structBatterData.Bunting = m_combo_Bunting->GetSelection();
     wxGetApp().pDBRoutines->structBatterData.HitRun = m_combo_HitRun->GetSelection();
-    wxGetApp().pDBRoutines->structBatterData.BatterHIts = m_combo_BatterHits->GetSelection();
+    wxGetApp().pDBRoutines->structBatterData.BatterHits = m_combo_BatterHits->GetSelection();
     wxGetApp().pDBRoutines->structBatterData.PowerLeft = m_combo_PowerLeft->GetSelection();
     wxGetApp().pDBRoutines->structBatterData.PowerRight = m_combo_PowerRight->GetSelection();
     // OutArm is -6 to 5 so selection is off by 6. Value of 6 is actually 0
@@ -1787,7 +1787,7 @@ void BatterNotebook::OnComboBatterSelect(wxCommandEvent& event)
     // Populate Info Notebook Page - 11 entries
     m_textFirstName->SetValue( wxString::Format(wxT("%s"), (wxGetApp().pDBRoutines->structBatterData.FirstName )));
     m_textLastName->SetValue( wxString::Format(wxT("%s"), (wxGetApp().pDBRoutines->structBatterData.LastName )));
-    m_combo_BatterHits->SetSelection(wxGetApp().pDBRoutines->structBatterData.BatterHIts);
+    m_combo_BatterHits->SetSelection(wxGetApp().pDBRoutines->structBatterData.BatterHits);
     m_combo_PowerLeft->SetSelection(wxGetApp().pDBRoutines->structBatterData.PowerLeft);
     m_combo_PowerRight->SetSelection(wxGetApp().pDBRoutines->structBatterData.PowerRight);
 //    m_combo_OutfieldArm->SetSelection(wxGetApp().pDBRoutines->structBatterData.OutArm);
@@ -3186,14 +3186,8 @@ void PitcherNotebook::CreateTeamComboBox( wxWindow* parent, int combobox )
 // Display a selection of Leagues then create an array of teams
 bool PitcherNotebook::GetTeamNamesArray()
 {
-    wxString Foobar;
-
-    if( wxGetApp().pDBRoutines->m_dbOpen )
-    {
-        Foobar.Printf( wxT("Database has not been opened"));
-        wxMessageBox(Foobar);
-        wxGetApp().pDBRoutines->DBOpen();
-    }
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
 
     wxGetApp().pDBRoutines->DBGetTeamNamesArray();
 
@@ -3460,21 +3454,21 @@ void PitcherNotebook::GetNotebookData()
 
     // Retrieve Stats Notebook Page - 14 entries
     // ERA and WHIP are calculated and therefor are not saved
-    wxGetApp().pDBRoutines->structPictherStats.CompleteGames = m_spinStatsCGames->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.ER = m_spinStatsER->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Games = m_spinStatsGames->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Hits = m_spinStatsHits->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.HomeRuns = m_spinStatsHR->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.InningsPitched = atof( m_textStatsIP->GetValue() );
+    wxGetApp().pDBRoutines->structPitcherStats.CompleteGames = m_spinStatsCGames->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.ER = m_spinStatsER->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Games = m_spinStatsGames->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Hits = m_spinStatsHits->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.HomeRuns = m_spinStatsHR->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.InningsPitched = atof( m_textStatsIP->GetValue() );
     // The following clears out the field.
     // The write will take only the first 7 positions of the variable.
 //    my_PitcherStruct.m_IP.Append('\0',7);
-    wxGetApp().pDBRoutines->structPictherStats.Strikeouts = m_spinStatsK->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Loss = m_spinStatsLoss->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Saves = m_spinStatsSave->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Starts = m_spinStatsStarts->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Walks = m_spinStatsW->GetValue();
-    wxGetApp().pDBRoutines->structPictherStats.Wins = m_spinStatsWins->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Strikeouts = m_spinStatsK->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Loss = m_spinStatsLoss->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Saves = m_spinStatsSave->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Starts = m_spinStatsStarts->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Walks = m_spinStatsW->GetValue();
+    wxGetApp().pDBRoutines->structPitcherStats.Wins = m_spinStatsWins->GetValue();
     // End Stats Notebook Page
 //
 //    wxString Foobar;
@@ -3584,19 +3578,19 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
     // End Chance Notebook Page
 
     // Populate Stats Notebook Page - 14 entries
-    m_spinStatsCGames->SetValue( wxGetApp().pDBRoutines->structPictherStats.CompleteGames );
-    m_spinStatsER->SetValue( wxGetApp().pDBRoutines->structPictherStats.ER );
-    m_spinStatsGames->SetValue( wxGetApp().pDBRoutines->structPictherStats.Games );
-    m_spinStatsHits->SetValue( wxGetApp().pDBRoutines->structPictherStats.Hits );
-    m_spinStatsHR->SetValue( wxGetApp().pDBRoutines->structPictherStats.HomeRuns );
-    m_textStatsIP->SetValue( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPictherStats.InningsPitched )));;
-    m_spinStatsK->SetValue( wxGetApp().pDBRoutines->structPictherStats.Strikeouts );
-    m_spinStatsLoss->SetValue( wxGetApp().pDBRoutines->structPictherStats.Loss );
-    m_spinStatsSave->SetValue( wxGetApp().pDBRoutines->structPictherStats.Saves );
-    m_spinStatsStarts->SetValue( wxGetApp().pDBRoutines->structPictherStats.Starts );
-    m_spinStatsW->SetValue( wxGetApp().pDBRoutines->structPictherStats.Walks );
-    m_spinStatsWins->SetValue( wxGetApp().pDBRoutines->structPictherStats.Wins );
-	fIP = atof( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPictherStats.InningsPitched )));
+    m_spinStatsCGames->SetValue( wxGetApp().pDBRoutines->structPitcherStats.CompleteGames );
+    m_spinStatsER->SetValue( wxGetApp().pDBRoutines->structPitcherStats.ER );
+    m_spinStatsGames->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Games );
+    m_spinStatsHits->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Hits );
+    m_spinStatsHR->SetValue( wxGetApp().pDBRoutines->structPitcherStats.HomeRuns );
+    m_textStatsIP->SetValue( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));;
+    m_spinStatsK->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Strikeouts );
+    m_spinStatsLoss->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Loss );
+    m_spinStatsSave->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Saves );
+    m_spinStatsStarts->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Starts );
+    m_spinStatsW->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Walks );
+    m_spinStatsWins->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Wins );
+	fIP = atof( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));
 
 	if (fIP == 0)
 	{
@@ -3605,10 +3599,10 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
 	}
 	else
 	{
-		fERA = (double)( wxGetApp().pDBRoutines->structPictherStats.ER *9 ) / fIP;
+		fERA = (double)( wxGetApp().pDBRoutines->structPitcherStats.ER *9 ) / fIP;
 		sprintf(buf,"%1.2f",fERA);
         m_textStatsERA->SetValue( buf );
-		fWHIP = (double)( wxGetApp().pDBRoutines->structPictherStats.Hits + wxGetApp().pDBRoutines->structPictherStats.Walks ) / fIP;
+		fWHIP = (double)( wxGetApp().pDBRoutines->structPitcherStats.Hits + wxGetApp().pDBRoutines->structPitcherStats.Walks ) / fIP;
 		sprintf(buf,"%1.2f",fWHIP);
         m_textStatsWHIP->SetValue( buf );
 	}
@@ -3643,7 +3637,7 @@ void PitcherNotebook::MakePitcherUpdate()
     {
         if (wxGetApp().pDBRoutines->structTeamData.BaseTeam == TRUE)
         {
-            wxGetApp().pDBRoutines->DBUpdatePitcherData( wxGetApp().pDBRoutines->structPictherStats.PitcherID );
+            wxGetApp().pDBRoutines->DBUpdatePitcherData( wxGetApp().pDBRoutines->structPitcherStats.PitcherID );
         }
         else
         {
