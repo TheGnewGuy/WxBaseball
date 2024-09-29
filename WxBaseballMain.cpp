@@ -230,7 +230,7 @@ WxBaseballFrame::WxBaseballFrame(wxFrame *frame, const wxString& title)
 	wxMenu* pStatisticsMenu = new wxMenu;
 	pStatisticsMenu->Append ( myID_CREATESTATS, _T ( "&Create Statistics" ), _T ( "Create Statistics" ) );
 	pStatisticsMenu->Append ( myID_UPDATESTATS, _T ( "&Update Statistics" ), _T ( "Update Statistics" ) );
-	pStatisticsMenu->Append ( myID_HTMLSTATS, _T ( "&League Statistics HTML" ), _T ( "League Statistics HTML" ) );
+	pStatisticsMenu->Append ( myID_HTMLSTATS, _T ( "&League Statistics" ), _T ( "League Statistics" ) );
 	pStatisticsMenu->Enable ( myID_CREATESTATS, FALSE );
 	pStatisticsMenu->Enable ( myID_UPDATESTATS, FALSE );
 
@@ -469,6 +469,20 @@ void WxBaseballFrame::OnStatistics ( wxCommandEvent& event )
 
 void WxBaseballFrame::OnStatisticsHTMLLeagueStats ( wxCommandEvent& event )
 {
+	int LeagueID;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// DBGetLeague will prompt for the league
+	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
+	// This will populate the structLeagueData
+	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+	// The following will look at the League for Conferences and Divisions
+	// which in turn will involk pFileRoutines->BuildPlayerStats to
+	// create the stats report for each division
+	wxGetApp().pDBRoutines->DBGetLeagueConferenceDivision( LeagueID );
+//	wxGetApp().pFileRoutines->BuildPlayerStats( 1, 2, 3 );
 }
 
 void WxBaseballFrame::OnLeaguesEditLeague ( wxCommandEvent& event )

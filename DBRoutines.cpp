@@ -3624,3 +3624,115 @@ int DBRoutines::DBUpdatePitcherData(int passedPitcherID)
 
     return TRUE;
 }
+
+// This routing will look at the League for Conferences and Divisions
+// It will rotate through the Conferences and Divisions involking
+// wxGetApp().pFileRoutines->BuildPlayerStats(leagueID, conferenceID, divisionID)
+// with the approprate information.
+void DBRoutines::DBGetLeagueConferenceDivision( int leagueID )
+{
+//	m_LeagueRecord leagueRecord;
+//	m_ConferenceRecord conferenceRecord;
+//	m_DivisionRecord divisionRecord;
+	int rcSqlStepConf = 0;
+	int rcSqlStepDiv = 0;
+	int rc = 0;
+//	CHAR buffer[100];
+	wxString sqlConference;
+	wxString sqlDivision;
+	sqlite3_stmt *localStmtConf;
+	sqlite3_stmt *localStmtDivision;
+	int conferenceID = 0;
+	int divisionID = 0;
+	wxString MsgBuffer;
+
+	/* Create SQL statement */
+	sqlConference = "SELECT "  \
+		"ConferenceID " \
+		" from CONFERENCES "
+		" WHERE LeagueID = ?1 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlConference, strlen(sqlConference), &localStmtConf, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	else
+	{
+//		MsgBuffer.Printf( wxT("Prepare for CONFERENCES Select OK:\n"), sqlite3_errmsg(m_db));
+//        wxMessageBox(MsgBuffer);
+	}
+	// Bind the data to field '1' which is the first '?' in the INSERT statement
+	rc = sqlite3_bind_int(localStmtConf, 1, leagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind leagueID int: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rcSqlStepConf = sqlite3_step(localStmtConf);
+	while (rcSqlStepConf == SQLITE_ROW)
+	{
+		// Get ID of conference
+		conferenceID = sqlite3_column_int(localStmtConf, 0);
+
+		/* Create SQL statement */
+		sqlDivision = "SELECT "  \
+			"DivisionID " \
+			" from DIVISIONS "
+			" WHERE LeagueID = ?1 AND ConferenceID = ?2";
+
+		rc = sqlite3_prepare_v2(m_db, sqlDivision, strlen(sqlDivision), &localStmtDivision, 0);
+		if (rc != SQLITE_OK)
+		{
+			MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+			wxMessageBox(MsgBuffer);
+		}
+		else
+		{
+//			MsgBuffer.Printf( wxT("Prepare for CONFERENCES Select OK:\n"), sqlite3_errmsg(m_db));
+//			wxMessageBox(MsgBuffer);
+		}
+		// Bind the data to field '1' which is the first '?' in the INSERT statement
+		rc = sqlite3_bind_int(localStmtDivision, 1, leagueID);
+		if (rc != SQLITE_OK)
+		{
+			MsgBuffer.Printf( wxT("Could not bind leagueID int: %s\n"), sqlite3_errmsg(m_db));
+			wxMessageBox(MsgBuffer);
+		}
+		rc = sqlite3_bind_int(localStmtDivision, 2, conferenceID);
+		if (rc != SQLITE_OK)
+		{
+			MsgBuffer.Printf( wxT("Could not bind conferenceID int: %s\n"), sqlite3_errmsg(m_db));
+			wxMessageBox(MsgBuffer);
+		}
+
+		rcSqlStepDiv = sqlite3_step(localStmtDivision);
+		if (rcSqlStepDiv == SQLITE_DONE)
+		{
+			// Process League data with default division
+			wxGetApp().pFileRoutines->BuildPlayerStats(leagueID, conferenceID, 1);
+		}
+		else
+		{
+			while (rcSqlStepDiv == SQLITE_ROW)
+			{
+				// Get ID of division
+				divisionID = sqlite3_column_int(localStmtDivision, 0);
+
+				// Process League data
+				wxGetApp().pFileRoutines->BuildPlayerStats(leagueID, conferenceID, divisionID);
+
+				// Get next Division
+				rcSqlStepDiv = sqlite3_step(localStmtDivision);
+			}
+		}
+		sqlite3_finalize(localStmtDivision);
+
+		// Get next Conference
+		rcSqlStepConf = sqlite3_step(localStmtConf);
+	}
+	sqlite3_finalize(localStmtConf);
+}
+

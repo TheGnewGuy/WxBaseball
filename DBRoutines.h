@@ -40,6 +40,7 @@ class DBRoutines
         int DBGetTeamNamesArray();
         int DBGetLeague();
         int DBGetLeague(int passedLeagueID);
+        void DBGetLeagueConferenceDivision( int leagueID );
         int DBGetLeagueID(wxString passedLeagueName);
         int DBGetLeagueTeams(int passedLeagueID);
         int DBGetATeamID();
