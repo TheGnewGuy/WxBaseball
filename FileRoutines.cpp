@@ -278,7 +278,7 @@ int FileRoutines::ExportTeam( int passedTeamID )
 			wxGetApp().pDBRoutines->structPitcherData.OBChanceRight);
 		exportPitcher.Write( strexportData,strexportData.Length() );
 
-		strexportData.Printf( _T("%1.2f,%1.2f,"),
+		strexportData.Printf( _T("%1.2f,%1.3f,"),
 			wxGetApp().pDBRoutines->structPitcherStats.ERA,
 			wxGetApp().pDBRoutines->structPitcherStats.WHIP);
 		exportPitcher.Write( strexportData,strexportData.Length() );
@@ -505,7 +505,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 
     strexportData.Printf( _T("\n\nBATTING\n") );
 	TXTFile.Write( strexportData,strexportData.Length() );
-    strexportData.Printf( _T("    TEAM             AVG   SLG   OBP     AB    R     H  RBI   2B   3B  HR   SB   CS\n"));
+    strexportData.Printf( _T("    TEAM              AVG   SLG   OBP    AB    R     H  RBI   2B   3B  HR   SB   CS\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 
@@ -624,7 +624,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	strexportData.Printf( _T("\nPITCHING\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
-	strexportData.Printf( _T("    TEAM             ERA   WHIP  Wins  Loss      IP  Hits   ER  HR Walks    K\n"));
+	strexportData.Printf( _T("    TEAM              ERA   WHIP  Wins  Loss      IP  Hits   ER  HR Walks    K\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	/* Create SQL statement */
@@ -634,7 +634,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		"sum(P.Loss) AS loss, " \
 		"sum(CAST(P.InningsPitched AS FLOAT)) AS sumIP, " \
 		"sum(P.ER) AS sumER, " \
-		"sum(P.Hits)," \
+		"sum(P.Hits), " \
 		"sum(P.HomeRuns), " \
 		"sum(P.Walks), " \
 		"sum(P.Strikeouts) " \
@@ -705,7 +705,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 
 		wxGetApp().pDBRoutines->DBGetTeam(teamID);
 
-		strexportData.Printf( _T("%s %-15.15s %5.2f  %4.1f   %3i   %3i  %6.1f %5i %4i %3i  %4i %4i\n"),
+		strexportData.Printf( _T("%s %-15.15s %5.2f  %5.3f   %3i   %3i  %6.1f %5i %4i %3i  %4i %4i\n"),
 			wxGetApp().pDBRoutines->structTeamData.TeamNameShort, wxGetApp().pDBRoutines->structTeamData.TeamName,
 			fERA, fWHIP, sumWins, sumLoss, sumInningsPitched, sumPHits,
 			sumER, sumPHomeRun, sumWalks, sumStrikeouts);
@@ -716,13 +716,13 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtTeam);
 
-	strexportData.Printf( _T("--- --------------- -----  ----  ----  ---- -------  ---- ---- ---   ---  ---\n"));
+	strexportData.Printf( _T("--- --------------- -----  -----  ----  ---- -------  ---- ---- ---   ---  ---\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	fERA = ((float)totalER * 9) / totalInningsPitched;
 	fWHIP = (float)(totalHits + totalWalks) / totalInningsPitched;
-	strexportData.Printf( _T("LEAGUE TOTALS       %5.2f  %4.1f   %3i   %3i  %6.1f %5i %4i %3i  %4i %4i\n\n"),
-		fERA, fWHIP, totalWins, totalLoss, totalInningsPitched, totalHits, totalER, totalHomeRun, totalWalks, totalStrikeouts);
+	strexportData.Printf( _T("LEAGUE TOTALS       %5.2f  %5.3f   %3i   %3i  %6.1f %5i %4i %3i  %4i %4i\n\n"),
+		fERA, fWHIP, totalWins, totalLoss, totalInningsPitched, totalPHits, totalER, totalPHomeRun, totalWalks, totalStrikeouts);
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	/* Create SQL statement */
@@ -1995,7 +1995,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		whip = (float)sqlite3_column_double(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %5.2f "),
+		strexportData.Printf( _T("%s %-16.16s %5.3f "),
 			teamNameShort, playerName, whip);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -2483,7 +2483,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 
 	// Write the Last date and time Updated line in the file
-	strexportData.Printf( _T("\nLast Updated on %s at %i:%i.\n"),
+	strexportData.Printf( _T("\nLast Updated on %s at %2.2i:%2.2i.\n"),
 		wxDateTime::Today().FormatDate(), wxDateTime::GetTmNow()->tm_hour, wxDateTime::GetTmNow()->tm_min );
 	TXTFile.Write( strexportData,strexportData.Length() );
 
