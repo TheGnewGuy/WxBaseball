@@ -314,7 +314,9 @@ int DBRoutines::DBGetLeague( int passedLeagueID )
 		"NumberOfDivisions, " \
 		"BaseLeague, " \
 		"LeagueYear, " \
-		"ActiveRec" \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
 		" FROM LEAGUES " \
 		" WHERE LeagueID = ?1 " ;
 
@@ -340,6 +342,8 @@ int DBRoutines::DBGetLeague( int passedLeagueID )
         structLeagueData.BaseLeague = sqlite3_column_int(m_stmtLeague, 4);
         structLeagueData.LeagueYear = sqlite3_column_int(m_stmtLeague, 5);
         structLeagueData.ActiveRec = sqlite3_column_int(m_stmtLeague, 6);
+		structLeagueData.CreateTime = sqlite3_column_text(m_stmtLeague, 7);
+		structLeagueData.LastUpdateTime = sqlite3_column_text(m_stmtLeague, 8);
 	}
 
 	sqlite3_finalize(m_stmtLeague);
@@ -347,7 +351,7 @@ int DBRoutines::DBGetLeague( int passedLeagueID )
     return structLeagueData.LeagueID;
 }
 
-// Routine will return the selected Conference
+// Routine will return the selected Conference data
 int DBRoutines::DBGetConference( int passedConferenceID )
 {
 	int rc;
@@ -361,7 +365,9 @@ int DBRoutines::DBGetConference( int passedConferenceID )
 		"ConferenceName, " \
 		"LeagueID, " \
 		"BaseConference, " \
-		"ActiveRec" \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
 		" FROM CONFERENCES " \
 		" WHERE ConferenceID = ?1 " ;
 
@@ -385,6 +391,8 @@ int DBRoutines::DBGetConference( int passedConferenceID )
         structConferenceData.LeagueID = sqlite3_column_int(m_stmtConference, 2);
         structConferenceData.BaseConference = sqlite3_column_int(m_stmtConference, 3);
         structConferenceData.ActiveRec = sqlite3_column_int(m_stmtConference, 4);
+		structConferenceData.CreateTime = (sqlite3_column_text(m_stmtConference, 5));
+		structConferenceData.LastUpdateTime = (sqlite3_column_text(m_stmtConference, 6));
 	}
 
 	sqlite3_finalize(m_stmtConference);
@@ -407,7 +415,9 @@ int DBRoutines::DBGetDivision( int passedDivisionID )
 		"LeagueID, " \
 		"ConferenceID, " \
 		"BaseDivisions, " \
-		"ActiveRec" \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
 		" FROM DIVISIONS " \
 		" WHERE DivisionID = ?1 " ;
 
@@ -432,6 +442,8 @@ int DBRoutines::DBGetDivision( int passedDivisionID )
         structDivisionData.ConferenceID = sqlite3_column_int(m_stmtDivision, 3);
         structDivisionData.BaseDivisions = sqlite3_column_int(m_stmtDivision, 4);
         structDivisionData.ActiveRec = sqlite3_column_int(m_stmtDivision, 5);
+		structDivisionData.CreateTime = (sqlite3_column_text(m_stmtDivision, 6));
+		structDivisionData.LastUpdateTime = (sqlite3_column_text(m_stmtDivision, 7));
 	}
 
 	sqlite3_finalize(m_stmtDivision);
@@ -468,6 +480,298 @@ int DBRoutines::DBSortLeagueNames()
     return 0;
 }
 
+// Routine will populate structConferenceData
+int DBRoutines::DBGetConferenceID(wxString passedConferenceName, int passedLeagueID)
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString sqlConference;
+
+	/* Create SQL statement */
+	sqlConference = "SELECT "  \
+		"ConferenceID," \
+		"ConferenceName," \
+		"LeagueID," \
+		"BaseConference," \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
+		" FROM CONFERENCES " \
+		" WHERE ConferenceName = ?1 AND LeagueID = ?2 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlConference, strlen(sqlConference), &m_stmtConference, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtConference, 1, passedConferenceName, strlen(passedConferenceName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ConferenceName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtConference, 2, passedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedLeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	// Now retrieve inserted record to get new ConferenceID value
+	while (sqlite3_step(m_stmtConference) == SQLITE_ROW)
+	{
+		structConferenceData.ConferenceID = (sqlite3_column_int(m_stmtConference, 0));
+		structConferenceData.ConferenceName = (sqlite3_column_text(m_stmtConference, 1));
+		structConferenceData.LeagueID = (sqlite3_column_int(m_stmtConference, 2));
+		structConferenceData.BaseConference = (sqlite3_column_int(m_stmtConference, 3));
+		structConferenceData.ActiveRec = (sqlite3_column_int(m_stmtConference, 4));
+		structConferenceData.CreateTime = (sqlite3_column_text(m_stmtConference, 5));
+		structConferenceData.LastUpdateTime = (sqlite3_column_text(m_stmtConference, 6));
+	}
+
+	rc = sqlite3_finalize(m_stmtConference);
+
+    // Return the new ConferenceID
+    return structConferenceData.ConferenceID;
+}
+
+// Routine will return the selected ConferenceID
+int DBRoutines::DBGetConferenceID( int passedLeagueID )
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString Foobar;
+	wxString sqlConference;
+
+	/* Create SQL statement */
+	sqlConference = "SELECT "  \
+		"ConferenceID," \
+		"ConferenceName" \
+		" FROM CONFERENCES " \
+		" WHERE LeagueID = ?1 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlConference, strlen(sqlConference), &m_stmt, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmt, 1, passedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedLeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	m_arrayConferenceIDs.Clear();
+	m_arrayConferenceNames.Clear();
+
+	while (sqlite3_step(m_stmt) == SQLITE_ROW)
+	{
+        m_arrayConferenceIDs.Add(sqlite3_column_int(m_stmt, 0));
+		m_arrayConferenceNames.Add(sqlite3_column_text(m_stmt, 1));
+	}
+
+	sqlite3_finalize(m_stmt);
+
+	DBSortConferenceNames();
+
+    wxSingleChoiceDialog dialogConference(wxGetApp().GetTopWindow(),
+                                "Conference List",
+                                "Please select a Conference",
+                                m_arrayConferenceNames);
+
+    dialogConference.SetSelection(0);
+
+    if (dialogConference.ShowModal() == wxID_OK)
+    {
+        m_strConferenceName = dialogConference.GetStringSelection();
+        m_intConferenceID = m_arrayConferenceIDs[dialogConference.GetSelection()];
+    }
+
+    return m_intConferenceID;
+}
+
+// Routine will sort the Conference names and ID in seperate arrays
+int DBRoutines::DBSortConferenceNames()
+{
+    wxString strTempConferenceName;
+    int intTempConferenceID;
+    int intArrayCount=0;
+    int i;
+    int j;
+
+    intArrayCount = m_arrayConferenceNames.GetCount();
+
+    for ( i=0; i<intArrayCount; i++ )
+    {
+        for ( j=i+1; j<intArrayCount; j++ )
+        {
+            if ( m_arrayConferenceNames[i] > m_arrayConferenceNames[j] )
+            {
+                strTempConferenceName = m_arrayConferenceNames[i];
+                m_arrayConferenceNames[i] = m_arrayConferenceNames[j];
+                m_arrayConferenceNames[j] = strTempConferenceName;
+                intTempConferenceID = m_arrayConferenceIDs[i];
+                m_arrayConferenceIDs[i] = m_arrayConferenceIDs[j];
+                m_arrayConferenceIDs[j] = intTempConferenceID;
+            }
+        }
+    }
+    return 0;
+}
+
+// Routine will return the selected DivisionID
+int DBRoutines::DBGetDivisionID( int passedConferenceID )
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString Foobar;
+	wxString sqlDivision;
+
+	/* Create SQL statement */
+	sqlDivision = "SELECT "  \
+		"DivisionID," \
+		"DivisionName" \
+		" FROM DIVISIONS " \
+		" WHERE ConferenceID = ?1 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlDivision, strlen(sqlDivision), &m_stmt, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmt, 1, passedConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	m_arrayDivisionIDs.Clear();
+	m_arrayDivisionNames.Clear();
+
+	while (sqlite3_step(m_stmt) == SQLITE_ROW)
+	{
+        m_arrayDivisionIDs.Add(sqlite3_column_int(m_stmt, 0));
+		m_arrayDivisionNames.Add(sqlite3_column_text(m_stmt, 1));
+	}
+
+	sqlite3_finalize(m_stmt);
+
+	if ( m_arrayDivisionNames.GetCount() == 0 )
+	{
+        m_arrayDivisionIDs.Add(1);
+		m_arrayDivisionNames.Add("DEFAULT");
+	}
+
+	DBSortDivisionNames();
+
+    wxSingleChoiceDialog dialogDivision(wxGetApp().GetTopWindow(),
+                                "Division List",
+                                "Please select a Division",
+                                m_arrayDivisionNames);
+
+    dialogDivision.SetSelection(0);
+
+    if (dialogDivision.ShowModal() == wxID_OK)
+    {
+        m_strDivisionName = dialogDivision.GetStringSelection();
+        m_intDivisionID = m_arrayDivisionIDs[dialogDivision.GetSelection()];
+    }
+
+    return m_intDivisionID;
+}
+
+// Routine will sort the Division names and ID in seperate arrays
+int DBRoutines::DBSortDivisionNames()
+{
+    wxString strTempDivisionName;
+    int intTempDivisionID;
+    int intArrayCount=0;
+    int i;
+    int j;
+
+    intArrayCount = m_arrayDivisionNames.GetCount();
+
+    for ( i=0; i<intArrayCount; i++ )
+    {
+        for ( j=i+1; j<intArrayCount; j++ )
+        {
+            if ( m_arrayDivisionNames[i] > m_arrayDivisionNames[j] )
+            {
+                strTempDivisionName = m_arrayDivisionNames[i];
+                m_arrayDivisionNames[i] = m_arrayDivisionNames[j];
+                m_arrayDivisionNames[j] = strTempDivisionName;
+                intTempDivisionID = m_arrayDivisionIDs[i];
+                m_arrayDivisionIDs[i] = m_arrayDivisionIDs[j];
+                m_arrayDivisionIDs[j] = intTempDivisionID;
+            }
+        }
+    }
+    return 0;
+}
+
+// Routine will populate structConferenceData
+int DBRoutines::DBGetDivisionID(wxString passedDivisionName, int passedLeagueID)
+{
+	int rc;
+	wxString MsgBuffer;
+	wxString sqlDivision;
+
+	/* Create SQL statement */
+	sqlDivision = "SELECT "  \
+		"DivisionID," \
+		"DivisionName," \
+		"LeagueID," \
+		"ConferenceID," \
+		"BaseDivisions," \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
+		" FROM DIVISIONS " \
+		" WHERE DivisionName = ?1 AND LeagueID = ?2 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlDivision, strlen(sqlDivision), &m_stmtDivision, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtDivision, 1, passedDivisionName, strlen(passedDivisionName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind DivisionName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtDivision, 2, passedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedLeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	// Now retrieve inserted record to get new DivisionID value
+	while (sqlite3_step(m_stmtDivision) == SQLITE_ROW)
+	{
+		structDivisionData.DivisionID = (sqlite3_column_int(m_stmtDivision, 0));
+		structDivisionData.DivisionName = (sqlite3_column_text(m_stmtDivision, 1));
+		structDivisionData.LeagueID = (sqlite3_column_int(m_stmtDivision, 2));
+		structDivisionData.ConferenceID = (sqlite3_column_int(m_stmtDivision, 2));
+		structDivisionData.BaseDivisions = (sqlite3_column_int(m_stmtDivision, 4));
+		structDivisionData.ActiveRec = (sqlite3_column_int(m_stmtDivision, 5));
+		structDivisionData.CreateTime = (sqlite3_column_text(m_stmtDivision, 6));
+		structDivisionData.LastUpdateTime = (sqlite3_column_text(m_stmtDivision, 7));
+	}
+
+	sqlite3_finalize(m_stmtDivision);
+
+    // Return the new DivisionID
+    return structDivisionData.DivisionID;
+}
+
 // Routine will populate arrays with teams in the league
 int DBRoutines::DBGetLeagueID(wxString passedLeagueName)
 {
@@ -494,9 +798,12 @@ int DBRoutines::DBGetLeagueID(wxString passedLeagueName)
         wxMessageBox(MsgBuffer);
 	}
 
+	// If there are multiple Leagues with the same name
+	// then return the last one retrieved
 	while (sqlite3_step(m_stmt) == SQLITE_ROW)
 	{
 		m_intLeagueID = (sqlite3_column_int(m_stmt, 0));
+		structLeagueData.LeagueID = m_intLeagueID;
 	}
 
 	sqlite3_finalize(m_stmt);
@@ -580,6 +887,92 @@ int DBRoutines::DBGetTeam(int passedTeamID)
 
 	sqlite3_finalize(m_stmtTeam);
 
+    return m_intTeamID;
+}
+
+// Routine will return the selected TeamID
+int DBRoutines::DBSelectTeam(int passedLeagueID, int passedConferenceID, int passedDivisionID)
+{
+    // Now get a list of teams in this league
+	int rc;
+	wxString MsgBuffer;
+	wxString Foobar;
+	wxString sqlTeam;
+
+	/* Create SQL statement */
+	sqlTeam = "SELECT "  \
+		"TeamID," \
+		"TeamName" \
+		" FROM TEAM " \
+		" WHERE LeagueID = ?1 AND ConferenceID = ?2 AND DivisionID = ?3" ;
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &m_stmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	// Bind the data to field '1' which is the first '?' in the INSERT statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_int(m_stmtTeam, 1, passedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedLeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 2, passedConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 3, passedDivisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedDivisionID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	m_arrayTeamIDs.Clear();
+	m_arrayTeamNames.Clear();
+
+	while (sqlite3_step(m_stmtTeam) == SQLITE_ROW)
+	{
+		m_arrayTeamIDs.Add(sqlite3_column_int(m_stmtTeam, 0));
+		m_arrayTeamNames.Add(sqlite3_column_text(m_stmtTeam, 1));
+
+//        Foobar.Printf( wxT("Team Name: %s"), strTeamName);
+//        wxMessageBox(Foobar);
+
+	}
+
+	sqlite3_finalize(m_stmtTeam);
+
+    DBSortTeamNames();
+
+    // Display a dialog to allow team selection from the array of teams
+    wxSingleChoiceDialog dialogTeam(wxGetApp().GetTopWindow(),
+                                "Team List",
+                                "Please select a Team",
+                                m_arrayTeamNames);
+
+// DEFAULT team name has no teams associated with it and causes and error
+    if (m_strLeagueName != "DEFAULT")
+    {
+        dialogTeam.SetSelection(0);
+    }
+
+    if (dialogTeam.ShowModal() == wxID_OK)
+    {
+        m_strTeamName = dialogTeam.GetStringSelection();
+        m_intTeamID = m_arrayTeamIDs[dialogTeam.GetSelection()];
+
+        // Get all of the team data and place it into structTeamData
+        DBGetTeam( m_intTeamID );
+
+//        wxMessageDialog dialogTeam2(wxGetApp().GetTopWindow(), m_strTeamName, "Got Team");
+//        dialogTeam2.ShowModal();
+    }
     return m_intTeamID;
 }
 
@@ -2709,6 +3102,7 @@ int DBRoutines::DBInsertBatterStats(int passedBatterID, int passedTeamID)
     // Return the new batter stats ID
     return m_intBatterStatsID;
 }
+
 // Routine will Insert the data in the pitcher data record
 int DBRoutines::DBInsertPitcherData(int passedTeamID)
 {
@@ -3182,6 +3576,688 @@ int DBRoutines::DBInsertPitcherStats(int passedPitcherID, int passedTeamID)
     return m_intPitcherStatsID;
 }
 
+// Routine will Insert the data in the conference data record
+int DBRoutines::DBInsertConference()
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlConference;
+
+	/* Create SQL statement */
+	sqlConference = "INSERT INTO CONFERENCES("  \
+		"ConferenceName," \
+		"LeagueID," \
+		"BaseConference" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlConference, strlen(sqlConference), &m_stmtConference, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Conference insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	rc = sqlite3_bind_text(m_stmtConference, 1, structConferenceData.ConferenceName, strlen(structConferenceData.ConferenceName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ConferenceName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtConference, 2, structConferenceData.LeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtConference, 3, structConferenceData.BaseConference);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BaseConference: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtConference);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert ConferenceData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtConference);
+
+	// Now retrieve inserted record to get new ConferenceID value
+
+    m_intConferenceID = DBGetConferenceID( structConferenceData.ConferenceName, structConferenceData.LeagueID );
+    structConferenceData.ConferenceID = m_intConferenceID;
+
+    // Return the new ConferenceID
+    return m_intConferenceID;
+}
+
+// Routine will Insert the data in the division data record
+int DBRoutines::DBInsertDivision()
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlDivision;
+
+	/* Create SQL statement */
+	sqlDivision = "INSERT INTO DIVISIONS("  \
+		"DivisionName," \
+		"LeagueID," \
+		"ConferenceID," \
+		"BaseDivisions" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3," \
+		"?4" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlDivision, strlen(sqlDivision), &m_stmtDivision, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Division insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	rc = sqlite3_bind_text(m_stmtDivision, 1, structDivisionData.DivisionName, strlen(structDivisionData.DivisionName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind DivisionName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtDivision, 2, structDivisionData.LeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtDivision, 3, structDivisionData.ConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtDivision, 4, structDivisionData.BaseDivisions);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BaseConference: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtDivision);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert DivisionData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtDivision);
+
+	// Now retrieve inserted record to get new ConferenceID value
+
+    m_intDivisionID = DBGetDivisionID( structDivisionData.DivisionName, structDivisionData.LeagueID );
+
+    // Return the new ConferenceID
+    return m_intDivisionID;
+}
+
+// Routine will Insert the data in the League data record
+int DBRoutines::DBInsertLeague()
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlLeague;
+
+	/* Create SQL statement */
+	sqlLeague = "INSERT INTO LEAGUES("  \
+		"LeagueName," \
+		"NumberOfConferences," \
+		"NumberOfDivisions," \
+		"BaseLeague," \
+		"LeagueYear" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3," \
+		"?4," \
+		"?5" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlLeague, strlen(sqlLeague), &m_stmtLeague, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for League insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_text(m_stmtLeague, 1, structLeagueData.LeagueName, strlen(structLeagueData.LeagueName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 2, structLeagueData.NumberOfConferences);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind NumberOfConferences: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 3, structLeagueData.NumberOfDivisions);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind NumberOfDivisions: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 4, structLeagueData.BaseLeague);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BaseLeague: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtLeague, 5, structLeagueData.LeagueYear);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtLeague);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert LeagueData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtLeague);
+
+	// Now retrieve inserted record to get new LeagueID value
+
+    m_intLeagueID = DBGetLeagueID( structLeagueData.LeagueName );
+
+    // Return the new LeagueID
+    return m_intLeagueID;
+}
+
+// Routine will Insert the data in the League data record
+int DBRoutines::DBUpdateLeague( int passedLeagueID )
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlLeague;
+
+	/* Create SQL statement */
+	sqlLeague = "UPDATE LEAGUES "  \
+		"SET " \
+		"LeagueName = ?1," \
+		"NumberOfConferences = ?2," \
+		"NumberOfDivisions = ?3," \
+		"BaseLeague = ?4," \
+		"LeagueYear = ?5, "
+		"LastUpdateTime = datetime('NOW','localtime') " \
+		"WHERE LeagueID = ?6 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlLeague, strlen(sqlLeague), &m_stmtLeague, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for League insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_text(m_stmtLeague, 1, structLeagueData.LeagueName, strlen(structLeagueData.LeagueName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 2, structLeagueData.NumberOfConferences);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind NumberOfConferences: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 3, structLeagueData.NumberOfDivisions);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind NumberOfDivisions: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtLeague, 4, structLeagueData.BaseLeague);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BaseLeague: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtLeague, 5, structLeagueData.LeagueYear);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_double(m_stmtLeague, 6, passedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtLeague);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Update LeagueData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtLeague);
+
+    // Return the new LeagueID
+    return structLeagueData.LeagueID;
+}
+
+// Routine will Insert the data in the Team data record
+int DBRoutines::DBInsertTeam()
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlTeam;
+
+	/* Create SQL statement */
+	sqlTeam = "INSERT INTO TEAM("  \
+		"TeamName," \
+		"TeamNameShort," \
+		"BallparkName," \
+		"TotalWins," \
+		"TotalLosses," \
+		"HomeWins," \
+		"HomeLosses," \
+		"AwayWins," \
+		"AwayLosses," \
+		"LeagueID," \
+		"ConferenceID," \
+		"DivisionID," \
+		"TeamYear," \
+		"BaseTeam" \
+		")" \
+		"VALUES (" \
+		"?1," \
+		"?2," \
+		"?3," \
+		"?4," \
+		"?5," \
+		"?6," \
+		"?7," \
+		"?8," \
+		"?9," \
+		"?10," \
+		"?11," \
+		"?12," \
+		"?13," \
+		"?14" \
+		");";
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &m_stmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Team insert data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_text(m_stmtTeam, 1, structTeamData.TeamName, strlen(structTeamData.TeamName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtTeam, 2, structTeamData.TeamNameShort, strlen(structTeamData.TeamNameShort), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamNameShort: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtTeam, 3, structTeamData.BallparkName, strlen(structTeamData.BallparkName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BallparkName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 4, structTeamData.TotalWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TotalWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 5, structTeamData.TotalLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TotalLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 6, structTeamData.HomeWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HomeWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 7, structTeamData.HomeLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HomeLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 8, structTeamData.AwayWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AwayWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 9, structTeamData.AwayLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AwayLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 10, structTeamData.LeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 11, structTeamData.ConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 12, structTeamData.DivisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind DivisionID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 13, structTeamData.TeamYear);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 14, structTeamData.BaseTeam);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtTeam);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Insert TeamData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtTeam);
+
+	// Now retrieve inserted record to get new LeagueID value
+
+    m_intTeamID = DBGetTeamID( structTeamData.TeamName, structTeamData.LeagueID,
+			structTeamData.ConferenceID, structTeamData.DivisionID );
+
+    // Return the new LeagueID
+    return m_intTeamID;
+}
+
+// Routine will Update the data in the Team data record
+int DBRoutines::DBUpdateTeam( int passedTeamID )
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlTeam;
+
+	/* Create SQL statement */
+	sqlTeam = "UPDATE TEAM "  \
+		"SET " \
+		"TeamName = ?1," \
+		"TeamNameShort = ?2," \
+		"BallparkName = ?3," \
+		"TotalWins = ?4," \
+		"TotalLosses = ?5," \
+		"HomeWins = ?6," \
+		"HomeLosses = ?7," \
+		"AwayWins = ?8," \
+		"AwayLosses = ?9," \
+		"LeagueID = ?10," \
+		"ConferenceID = ?11," \
+		"DivisionID = ?12," \
+		"TeamYear = ?13," \
+		"BaseTeam = ?14," \
+		"LastUpdateTime = datetime('NOW','localtime') " \
+		"WHERE TeamID = ?15 ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &m_stmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Team UPDATE data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+ 	// Bind the data to field '1' which is the first '?' in the UPDATE statement
+	//rc = sqlite3_bind_text(m_stmtTeam, 1, strLeagueName, strlen(strLeagueName), NULL );
+	rc = sqlite3_bind_text(m_stmtTeam, 1, structTeamData.TeamName, strlen(structTeamData.TeamName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtTeam, 2, structTeamData.TeamNameShort, strlen(structTeamData.TeamNameShort), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamNameShort: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_text(m_stmtTeam, 3, structTeamData.BallparkName, strlen(structTeamData.BallparkName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind BallparkName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 4, structTeamData.TotalWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TotalWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 5, structTeamData.TotalLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TotalLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 6, structTeamData.HomeWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HomeWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 7, structTeamData.HomeLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HomeLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 8, structTeamData.AwayWins);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AwayWins: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 9, structTeamData.AwayLosses);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind AwayLosses: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 10, structTeamData.LeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind LeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 11, structTeamData.ConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind ConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 12, structTeamData.DivisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind DivisionID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 13, structTeamData.TeamYear);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 14, structTeamData.BaseTeam);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamYear: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 15, passedTeamID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind passedTeamID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_step(m_stmtTeam);
+
+	if (rc != SQLITE_DONE)
+	{
+		MsgBuffer.Printf( wxT("Failed to Update TeamData %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	sqlite3_finalize(m_stmtTeam);
+
+    // Return the TeamID
+    return passedTeamID;
+}
+
+// Routine will retrieve a teamID
+int DBRoutines::DBGetTeamID( wxString PassedTeamName, int PassedLeagueID, int PassedConferenceID, int PassedDivisionID )
+{
+    int rc;
+	wxString MsgBuffer;
+	wxString sqlTeam;
+
+	/* Create SQL statement */
+	sqlTeam = "SELECT "  \
+		"TeamID, " \
+		"TeamName," \
+		"TeamNameShort," \
+		"BallparkName," \
+		"TotalWins," \
+		"TotalLosses," \
+		"HomeWins," \
+		"HomeLosses," \
+		"AwayWins," \
+		"AwayLosses," \
+		"LeagueID," \
+		"ConferenceID," \
+		"DivisionID," \
+		"TeamYear," \
+		"BaseTeam," \
+		"ActiveRec," \
+		"CreateTime," \
+		"LastUpdateTime" \
+		" FROM TEAM " \
+		" WHERE TeamName = ?1 AND LeagueID = ?2 AND ConferenceID = ?3 AND DivisionID = ?4" ;
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &m_stmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to prepare for Team SELECT data: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	rc = sqlite3_bind_text(m_stmtTeam, 1, structTeamData.TeamName, strlen(structTeamData.TeamName), SQLITE_STATIC);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind TeamName: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 2, PassedLeagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind PassedLeagueID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 3, PassedConferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind PassedConferenceID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtTeam, 4, PassedDivisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind PassedDivisionID: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+
+	while (sqlite3_step(m_stmtTeam) == SQLITE_ROW)
+	{
+		m_intTeamID = (sqlite3_column_int(m_stmtTeam, 0));
+		structTeamData.TeamID = m_intTeamID;
+		structTeamData.TeamName = (sqlite3_column_text(m_stmtTeam, 1));
+		structTeamData.TeamNameShort = (sqlite3_column_text(m_stmtTeam, 2));
+		structTeamData.BallparkName = (sqlite3_column_text(m_stmtTeam, 3));
+		structTeamData.TotalWins = (sqlite3_column_int(m_stmtTeam, 4));
+		structTeamData.TotalLosses = (sqlite3_column_int(m_stmtTeam, 5));
+		structTeamData.HomeWins = (sqlite3_column_int(m_stmtTeam, 6));
+		structTeamData.HomeLosses = (sqlite3_column_int(m_stmtTeam, 7));
+		structTeamData.AwayWins = (sqlite3_column_int(m_stmtTeam, 8));
+		structTeamData.AwayLosses = (sqlite3_column_int(m_stmtTeam, 9));
+		structTeamData.LeagueID = (sqlite3_column_int(m_stmtTeam, 10));
+		structTeamData.ConferenceID = (sqlite3_column_int(m_stmtTeam, 11));
+		structTeamData.DivisionID = (sqlite3_column_int(m_stmtTeam, 12));
+		structTeamData.TeamYear = (sqlite3_column_int(m_stmtTeam, 13));
+		structTeamData.BaseTeam = (sqlite3_column_int(m_stmtTeam, 14));
+		structTeamData.ActiveRec = (sqlite3_column_int(m_stmtTeam, 15));
+		structTeamData.CreateTime = (sqlite3_column_text(m_stmtTeam, 16));
+		structTeamData.LastUpdateTime = (sqlite3_column_text(m_stmtTeam, 17));
+	}
+
+	sqlite3_finalize(m_stmtTeam);
+
+    // Return the new TeamID
+    return m_intTeamID;
+}
+
 // Routine will Update the data in the pitcher stats record
 int DBRoutines::DBUpdatePitcherStats(int passedPitcherStatsID)
 {
@@ -3625,7 +4701,7 @@ int DBRoutines::DBUpdatePitcherData(int passedPitcherID)
     return TRUE;
 }
 
-// This routing will look at the League for Conferences and Divisions
+// This routine will look at the League for Conferences and Divisions
 // It will rotate through the Conferences and Divisions involking
 // wxGetApp().pFileRoutines->BuildPlayerStats(leagueID, conferenceID, divisionID)
 // with the approprate information.

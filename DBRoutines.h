@@ -36,7 +36,11 @@ class DBRoutines
         int DBGetBatterStatsID(int TeamID);
         int DBGetBatterStatsID(int passedTeamID, int BatterID);
         int DBGetConference( int passedConferenceID );
+        int DBGetConferenceID ( wxString passedConferenceName, int passedLeagueID );
+        int DBGetConferenceID ( int passedLeagueID );
         int DBGetDivision( int passedDivisionID );
+        int DBGetDivisionID( wxString passedDivisionName, int passedLeagueID );
+        int DBGetDivisionID( int passedConferenceID );
         int DBGetTeamNamesArray();
         int DBGetLeague();
         int DBGetLeague(int passedLeagueID);
@@ -46,6 +50,7 @@ class DBRoutines
         int DBGetATeamID();
         int DBGetTeam(int TeamID);
         int DBGetTeamArray(int LeagueID);
+        int DBGetTeamID(wxString passedTeamName, int passedLeagueID, int passedConferenceID, int passedDivisionID);
         int DBGetBatterData(int BatterStatsID);
         int DBGetBatterID(int TeamID, wxString FirstName, wxString LastName);
         int DBGetPitcherID(int TeamID, wxString FirstName, wxString LastName);
@@ -54,9 +59,16 @@ class DBRoutines
         int DBGetPitcherData(int PitcherStatsID);
         int DBInsertBatterData(int TeamID);
         int DBInsertBatterStats(int BatterID, int TeamID);
+        int DBInsertConference();
+        int DBInsertDivision();
+        int DBInsertLeague();
         int DBInsertPitcherData(int TeamID);
         int DBInsertPitcherStats(int PitcherID, int TeamID);
+        int DBInsertTeam();
         int DBIsDBOpen();
+        int DBSelectTeam(int passedLeagueID, int passedConferenceID, int passedDivisionID);
+		int DBSortConferenceNames();
+		int DBSortDivisionNames();
         int DBSortLeagueNames();
         int DBSortTeamNames();
         int DBSortBatterNames();
@@ -65,6 +77,8 @@ class DBRoutines
         int DBUpdateBatterData(int BatterID);
         int DBUpdatePitcherStats(int PitcherStatsID);
         int DBUpdatePitcherData(int PitcherID);
+        int DBUpdateLeague(int LeagueID);
+        int DBUpdateTeam(int TeamID);
 
         int m_dbOpen;
         sqlite3 *m_db;
@@ -86,16 +100,24 @@ class DBRoutines
         // Directory and filename
         wxString m_DBFileName;
 
+        int m_intConferenceID;
+        int m_intDivisionID;
         int m_intLeagueID;
         int m_intTeamID;
         int m_intBatterStatsID;
         int m_intBatterID;
         int m_intPitcherStatsID;
         int m_intPitcherID;
+        wxString m_strConferenceName;
+        wxString m_strDivisionName;
         wxString m_strLeagueName;
         wxString m_strTeamName;
         wxString m_strPitcherFirstName;
         wxString m_strPitcherLastName;
+        wxArrayInt m_arrayConferenceIDs;
+        wxArrayString m_arrayConferenceNames;
+        wxArrayInt m_arrayDivisionIDs;
+        wxArrayString m_arrayDivisionNames;
         wxArrayString m_arrayLeagueNames;
         wxArrayInt m_arrayLeagueIDs;
         wxArrayString m_arrayTeamNames;
@@ -165,8 +187,8 @@ class DBRoutines
             float OBChanceLeft;
             float OBChanceRight;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
         } structBatterData;
 
         struct{
@@ -192,8 +214,8 @@ class DBRoutines
             int BatterID;
             int TeamID;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
         } structBatterStats;
 
         struct{
@@ -232,8 +254,8 @@ class DBRoutines
             int ER1;
             int TeamID;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
         } structPitcherData;
 
         struct{
@@ -255,8 +277,8 @@ class DBRoutines
             int PitcherID;
             int TeamID;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
         } structPitcherStats;
 
         struct{
@@ -276,22 +298,20 @@ class DBRoutines
             int TeamYear;
             bool BaseTeam;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
 		} structTeamData;
 
 		struct{
             int LeagueID;
             wxString LeagueName;
-            int TotalWins;
-            int TotalLosses;
             int NumberOfConferences;
             int NumberOfDivisions;
             bool BaseLeague;
             int LeagueYear;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
 		} structLeagueData;
 
 		struct{
@@ -300,8 +320,8 @@ class DBRoutines
             int LeagueID;
             bool BaseConference;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
 		} structConferenceData;
 
 		struct{
@@ -311,8 +331,8 @@ class DBRoutines
             int ConferenceID;
             bool BaseDivisions;
             bool ActiveRec;
-            char CreateTime[20];
-            char LastUpdateTime[20];
+            wxString CreateTime;
+            wxString LastUpdateTime;
 		} structDivisionData;
 
     protected:

@@ -61,7 +61,11 @@ class WxBaseballFrame: public wxFrame
         void OnScoreSheetCheckExtra(wxCommandEvent& event);
         void OnStatistics(wxCommandEvent& event);
         // League menu
+        void OnLeaguesAddLeague(wxCommandEvent& event);
         void OnLeaguesEditLeague(wxCommandEvent& event);
+        // Team menu
+        void OnTeamsAddTeam(wxCommandEvent& event);
+        void OnTeamsEditTeam(wxCommandEvent& event);
         // Players menu
         void OnPlayersAddEditBatter(wxCommandEvent& event);
         void OnPlayersAddEditPitcher(wxCommandEvent& event);

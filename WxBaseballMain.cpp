@@ -95,12 +95,12 @@ BEGIN_EVENT_TABLE(WxBaseballFrame, wxFrame)
 	EVT_MENU ( myID_SCORESHEETXTRA, WxBaseballFrame::OnScoreSheetCheckExtra )
 	EVT_MENU ( myID_STATISTICS, WxBaseballFrame::OnStatistics )
 	// Leagues Menu
-	//    EVT_MENU(myID_ADDLEAGUE, WxBaseballFrame::OnLeaguesAddLeague)
+	EVT_MENU ( myID_ADDLEAGUE, WxBaseballFrame::OnLeaguesAddLeague )
 	EVT_MENU ( myID_EDITLEAGUE, WxBaseballFrame::OnLeaguesEditLeague )
 	//    EVT_MENU(myID_LEAGUEOPTIONSHTML, WxBaseballFrame::OnLeagueOptionsHTML)
 	// Teams Menu
-	//    EVT_MENU(myID_ADDTEAMS, WxBaseballFrame::OnAddTeams)
-	//    EVT_MENU(myID_EDITTEAMS, WxBaseballFrame::OnEditTeams)
+	EVT_MENU( myID_ADDTEAMS, WxBaseballFrame::OnTeamsAddTeam )
+	EVT_MENU( myID_EDITTEAMS, WxBaseballFrame::OnTeamsEditTeam )
 	// Players Menu
 	EVT_MENU ( myID_ADDBATTERS, WxBaseballFrame::OnPlayersAddEditBatter )
 	EVT_MENU ( myID_ADDPITCHERS, WxBaseballFrame::OnPlayersAddEditPitcher )
@@ -209,14 +209,14 @@ WxBaseballFrame::WxBaseballFrame(wxFrame *frame, const wxString& title)
 	pLeaguesMenu->Append ( myID_ADDLEAGUE, _T ( "&Add League" ), _T ( "Add League" ) );
 	pLeaguesMenu->Append ( myID_EDITLEAGUE, _T ( "&Edit League" ), _T ( "Edit League" ) );
 	pLeaguesMenu->Append ( myID_LEAGUEOPTIONSHTML, _T ( "&Options" ), _T ( "Options" ) );
-	pLeaguesMenu->Enable ( myID_ADDLEAGUE, FALSE );
+//	pLeaguesMenu->Enable ( myID_ADDLEAGUE, FALSE );
 	pLeaguesMenu->Enable ( myID_LEAGUEOPTIONSHTML, FALSE );
 
 	wxMenu* pTeamsMenu = new wxMenu;
 	pTeamsMenu->Append ( myID_ADDTEAMS, _T ( "&Add Teams" ), _T ( "Add Teams" ) );
 	pTeamsMenu->Append ( myID_EDITTEAMS, _T ( "&Edit Teams" ), _T ( "Edit Teams" ) );
-	pTeamsMenu->Enable ( myID_ADDTEAMS, FALSE );
-	pTeamsMenu->Enable ( myID_EDITTEAMS, FALSE );
+//	pTeamsMenu->Enable ( myID_ADDTEAMS, FALSE );
+//	pTeamsMenu->Enable ( myID_EDITTEAMS, FALSE );
 
 	wxMenu* pPlayersMenu = new wxMenu;
 	pPlayersMenu->Append ( myID_ADDBATTERS, _T ( "&Add/Edit Batters" ), _T ( "Add/Edit Batters" ) );
@@ -391,7 +391,7 @@ void WxBaseballFrame::OnFileExportLeagueTeamsAll ( wxCommandEvent& event )
 	leagueID = wxGetApp().pDBRoutines->DBGetLeague();
 	wxGetApp().pDBRoutines->DBGetLeagueTeams( leagueID );
 
-	for ( i=0; i<wxGetApp().pDBRoutines->m_arrayTeamIDs.GetCount(); i++ )
+	for ( i=0; i<(int)wxGetApp().pDBRoutines->m_arrayTeamIDs.GetCount(); i++ )
 	{
 		wxGetApp().pFileRoutines->ExportTeam( wxGetApp().pDBRoutines->m_arrayTeamIDs[i] );
 	}
@@ -485,8 +485,67 @@ void WxBaseballFrame::OnStatisticsHTMLLeagueStats ( wxCommandEvent& event )
 //	wxGetApp().pFileRoutines->BuildPlayerStats( 1, 2, 3 );
 }
 
+void WxBaseballFrame::OnLeaguesAddLeague ( wxCommandEvent& event )
+{
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	LeagueDialogAdd( this );
+}
+
 void WxBaseballFrame::OnLeaguesEditLeague ( wxCommandEvent& event )
 {
+}
+
+void WxBaseballFrame::OnTeamsAddTeam ( wxCommandEvent& event )
+{
+	int LeagueID;
+	int ConferenceID;
+	int DivisionID;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// DBGetLeague will prompt for the league
+	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
+	// This will populate the structLeagueData
+	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+
+	// Get Conference, check to see if valid, then
+	// get Division and check to see if its valid
+	ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+
+	DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
+
+	TeamDialogAdd( this );
+}
+
+void WxBaseballFrame::OnTeamsEditTeam ( wxCommandEvent& event )
+{
+	int LeagueID;
+	int ConferenceID;
+	int DivisionID;
+	int TeamID;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// DBGetLeague will prompt for the league
+	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
+	// This will populate the structLeagueData
+	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+
+	// Get Conference, check to see if valid, then
+	// get Division and check to see if its valid
+	ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+
+	DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
+
+	TeamID = wxGetApp().pDBRoutines->DBSelectTeam( LeagueID, ConferenceID, DivisionID );
+
+	wxGetApp().pDBRoutines->DBGetTeam( TeamID );
+
+	TeamDialogApply( this );
 }
 
 void WxBaseballFrame::OnPlayersAddEditBatter ( wxCommandEvent& event )

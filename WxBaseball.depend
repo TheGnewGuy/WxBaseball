@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1727121314 source:/home/john/Documents/Source/WxBaseball/WxBaseballApp.cpp
+1728509584 source:/home/john/Documents/Source/WxBaseball/WxBaseballApp.cpp
 	"wx_pch.h"
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1727202071 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1728509584 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -12,8 +12,9 @@
 	"WxBaseballMain.h"
 	"DBRoutines.h"
 	"FileRoutines.h"
+	"dialogs.h"
 
-1727033921 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
+1727901823 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
 	<wx/wx.h>
 	<wx/wx.h>
 	<wx/frame.h>
@@ -21,7 +22,7 @@
 	"MyCanvas.h"
 	"sqlite3.h"
 
-1727645901 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
+1730658686 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
 	"wx_pch.h"
 	<wx/print.h>
 	<wx/printdlg.h>
@@ -100,7 +101,7 @@
 1710242594 /home/john/Documents/Source/WxBaseball/sqlite3.h
 	<stdarg.h>
 
-1727358516 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
+1730659486 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/dialog.h>
@@ -113,7 +114,7 @@
 	"FileStruct.h"
 	"DBRoutines.h"
 
-1726781375 /home/john/Documents/Source/WxBaseball/dialogs.h
+1730657158 /home/john/Documents/Source/WxBaseball/dialogs.h
 	<wx/notebook.h>
 	<wx/spinctrl.h>
 
@@ -1935,13 +1936,13 @@
 	<wx/wx.h>
 	"sqlite3.h"
 
-1727473905 /home/john/Documents/Source/WxBaseball/DBRoutines.h
+1730660042 /home/john/Documents/Source/WxBaseball/DBRoutines.h
 	<wx/wx.h>
 	<wx/wx.h>
 	"sqlite3.h"
 	"dialogs.h"
 
-1727474748 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
+1730660187 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
 	<wx/choicdlg.h>
 	<wx/msgdlg.h>
 	"WxBaseballApp.h"
@@ -1972,7 +1973,7 @@
 	<wx/string.h>
 	"sqlite3.h"
 
-1727645734 source:/home/john/Documents/Source/WxBaseball/FileRoutines.cpp
+1727900641 source:/home/john/Documents/Source/WxBaseball/FileRoutines.cpp
 	"FileRoutines.h"
 	"WxBaseballMain.h"
 	"WxBaseballApp.h"

@@ -19,6 +19,7 @@
 #include "WxBaseballMain.h"
 #include "DBRoutines.h"
 #include "FileRoutines.h"
+#include "dialogs.h"
 
 class WxBaseballApp : public wxApp
 {

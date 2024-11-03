@@ -189,11 +189,20 @@ enum
     ID_INFO_PITCHER_BUNTING,
     ID_INFO_PITCHER_HOLD,
 };
+// Pitcher enum End
 
-// Pitcher enum
+// League enum
 enum
 {
-    ID_OPTIONS_DATADIR     = wxID_HIGHEST + 400,   // Start at 6400
+    ID_LEAGUE_LEAGUENAME     = wxID_HIGHEST + 400,   // Start at 6400
+    ID_LEAGUE_YEAR,
+    ID_LEAGUE_BASE,
+};
+
+// Optione enum
+enum
+{
+    ID_OPTIONS_DATADIR     = wxID_HIGHEST + 500,   // Start at 6400
     ID_OPTIONS_IMAGE,
     ID_OPTIONS_HTMLINDEX,
     ID_OPTIONS_HTMLBG,
@@ -3682,6 +3691,1169 @@ PitcherDialog::PitcherDialog (wxWindow* parent, long style)
 PitcherDialog::~PitcherDialog( )
 {
     Destroy();
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(LeagueDialogAdd, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_ADD, LeagueDialogAdd::OnADD)
+    EVT_BUTTON(wxID_CANCEL, LeagueDialogAdd::OnCancel)
+    EVT_CLOSE(LeagueDialogAdd::OnClose)
+END_EVENT_TABLE()
+
+LeagueDialogAdd::LeagueDialogAdd (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "League Add",
+                    wxPoint(10,10), wxSize(400,225),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	int myRC;
+
+	LeagueDialogAddCreate();
+
+    myRC = ShowModal();
+
+    if ( myRC == wxID_CANCEL)
+    {
+		wxMessageBox(_T("wxID_CANCEL"),
+                 _T("wxID_CANCEL"), wxOK|wxICON_INFORMATION );
+    }
+    if ( myRC == wxID_ADD )
+    {
+//		wxMessageBox(_T("wxID_ADD"),
+//                 _T("wxID_ADD"), wxOK|wxICON_INFORMATION );
+		ConferenceDialog( this );
+	}
+}
+
+LeagueDialogAdd::~LeagueDialogAdd( )
+{
+    Destroy();
+}
+
+void LeagueDialogAdd::LeagueDialogAddCreate()
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pLeaguePanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "League Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer03 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pLeaguePanel, wxID_ANY,
+        _("League Name:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueName = new wxTextCtrl(m_pLeaguePanel, ID_LEAGUE_LEAGUENAME,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizer01->Add( m_pTextLeagueName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer02->Add(new wxStaticText(m_pLeaguePanel, wxID_ANY,
+        _("League Year:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueYear = new wxTextCtrl(m_pLeaguePanel, ID_LEAGUE_YEAR,
+                    _T(""), wxDefaultPosition, wxSize(60,-1) );
+    pItemSizer02->Add( m_pTextLeagueYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer03->Add(new wxStaticText(m_pLeaguePanel, wxID_ANY,
+        _("Base League:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pCheckBoxLeagueBase = new wxCheckBox(m_pLeaguePanel, ID_LEAGUE_BASE,
+		_T(""), wxDefaultPosition, wxDefaultSize );
+    pItemSizer03->Add( m_pCheckBoxLeagueBase, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Add each line item to the panel
+	pItem01->AddSpacer(10);
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pLeaguePanel),
+                    0, wxALIGN_CENTER );
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pLeaguePanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pLeaguePanel);
+
+}
+
+wxBoxSizer* LeagueDialogAdd::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pAddButton = new wxButton (panel, wxID_ADD);
+    m_pAddButton->SetDefault();
+    buttonPane->Add (m_pAddButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void LeagueDialogAdd::OnADD(wxCommandEvent& event)
+{
+	int leagueID;
+//    wxMessageBox(_T("ADD Button Pressed"),
+//                 _T("ADD"), wxOK|wxICON_INFORMATION );
+// Retrieve the League variables and place in the League Structure
+	wxGetApp().pDBRoutines->structLeagueData.LeagueName = m_pTextLeagueName->GetValue();
+	wxGetApp().pDBRoutines->structLeagueData.LeagueYear = atoi(m_pTextLeagueYear->GetValue());
+	// If checked base = 1, not checked base = 0
+	wxGetApp().pDBRoutines->structLeagueData.BaseLeague = m_pCheckBoxLeagueBase->IsChecked();
+
+	// Set defaults of 0 for number of conferences and divisions
+	wxGetApp().pDBRoutines->structLeagueData.NumberOfConferences = 0;
+	wxGetApp().pDBRoutines->structLeagueData.NumberOfDivisions = 0;
+
+	// The following is commented to allow simple testing
+	leagueID = wxGetApp().pDBRoutines->DBInsertLeague();
+
+    // Continue and process this event normally.
+    EndModal(wxID_ADD); // End with a RC of ADD
+}
+
+void LeagueDialogAdd::OnCancel(wxCommandEvent& event)
+{
+//    wxMessageBox(_T("Cancel Button Pressed"),
+//                 _T("Cancel"), wxOK|wxICON_INFORMATION );
+    // If the change flag is TRUE, Ask if updates should be dropped.
+//    if ( m_bChangeOptionsFlag )
+//    {
+//        int answer = wxMessageBox(
+//                (_T("       A field has changed.\n")
+//                 _T("Press Yes to save or No to discard")
+//                ),
+//                _T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+//        if ( answer == wxYES)
+//        {
+//            //Save the data
+//            m_bChangeOptionsFlag = FALSE;
+//            OnApply(event);
+//        }
+//    }
+//    else
+//    {
+//    }
+    // Continue and process this event normally.
+//    event.Skip(TRUE);
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+// The 'X' in the top right was clicked
+void LeagueDialogAdd::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CLOSE); // End with a RC of CLOSE
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(ConferenceDialog, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_ADD, ConferenceDialog::OnADD)
+    EVT_BUTTON(wxID_CANCEL, ConferenceDialog::OnCancel)
+    EVT_CLOSE(ConferenceDialog::OnClose)
+END_EVENT_TABLE()
+
+ConferenceDialog::ConferenceDialog (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Conferences",
+                    wxPoint(10,10), wxSize(400,430),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	ConferenceDialogCreate();
+
+	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+
+    int myRC = ShowModal();
+
+}
+
+
+ConferenceDialog::~ConferenceDialog( )
+{
+    Destroy();
+}
+
+void ConferenceDialog::ConferenceDialogCreate( )
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pConferencePanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Conference Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf03 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf04 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf05 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerConf06 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("League Name:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueName = new wxTextCtrl(m_pConferencePanel, ID_LEAGUE_LEAGUENAME,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer01->Add( m_pTextLeagueName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer02->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("League Year:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueYear = new wxTextCtrl(m_pConferencePanel, ID_LEAGUE_YEAR,
+                    _T(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    pItemSizer02->Add( m_pTextLeagueYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Conference section
+    pItemSizerConf01->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 1:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference01 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf01->Add( m_pTextConference01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerConf02->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 2:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference02 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf02->Add( m_pTextConference02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerConf03->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 3:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference03 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf03->Add( m_pTextConference03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerConf04->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 4:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference04 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf04->Add( m_pTextConference04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerConf05->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 5:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference05 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf05->Add( m_pTextConference05, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerConf06->Add(new wxStaticText(m_pConferencePanel, wxID_ANY,
+        _("Conference 6:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConference06 = new wxTextCtrl(m_pConferencePanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerConf06->Add( m_pTextConference06, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Add each line item to the panel
+	pItem01->AddSpacer(10);
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add (new wxStaticLine(m_pConferencePanel, wxID_ANY, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+//    pItem01->AddSpacer(20);
+    pItem01->Add( pItemSizerConf01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerConf02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerConf03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerConf04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerConf05, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerConf06, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pConferencePanel),
+                    0, wxALIGN_CENTER );
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pConferencePanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pConferencePanel);
+//    pTopSizer->SetSizeHints(this);
+}
+
+wxBoxSizer* ConferenceDialog::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pAddButton = new wxButton (panel, wxID_ADD);
+    m_pAddButton->SetDefault();
+    buttonPane->Add (m_pAddButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void ConferenceDialog::OnADD(wxCommandEvent& event)
+{
+	wxArrayString arrayConference;
+	int i_conference;
+	int i_division;
+
+//    wxMessageBox(_T("ADD Button Pressed"),
+//                 _T("ADD"), wxOK|wxICON_INFORMATION );
+// Retrieve the Conference variables and place in the Conference Structure
+
+	arrayConference.Clear();
+
+	if (!m_pTextConference01->IsEmpty()) arrayConference.Add(m_pTextConference01->GetValue());
+	if (!m_pTextConference02->IsEmpty()) arrayConference.Add(m_pTextConference02->GetValue());
+	if (!m_pTextConference03->IsEmpty()) arrayConference.Add(m_pTextConference03->GetValue());
+	if (!m_pTextConference04->IsEmpty()) arrayConference.Add(m_pTextConference04->GetValue());
+	if (!m_pTextConference05->IsEmpty()) arrayConference.Add(m_pTextConference05->GetValue());
+	if (!m_pTextConference06->IsEmpty()) arrayConference.Add(m_pTextConference06->GetValue());
+
+	// Conference dialog forces the entry of one conference.
+	if (!arrayConference.GetCount()) arrayConference.Add("DEFAULT");
+
+	wxGetApp().pDBRoutines->structLeagueData.NumberOfConferences = arrayConference.GetCount();
+
+	for (i_conference = 0; i_conference < wxGetApp().pDBRoutines->structLeagueData.NumberOfConferences; i_conference++)
+	{
+		wxGetApp().pDBRoutines->structConferenceData.ConferenceName = arrayConference[i_conference];
+		wxGetApp().pDBRoutines->structConferenceData.LeagueID = wxGetApp().pDBRoutines->structLeagueData.LeagueID;
+		wxGetApp().pDBRoutines->structConferenceData.BaseConference = wxGetApp().pDBRoutines->structLeagueData.BaseLeague;
+
+		// Insert the new Conference, The new conferenceID will be in the structConferenceData.ConferenceID field
+		wxGetApp().pDBRoutines->DBInsertConference();
+
+		DivisionDialog( this );
+	}
+
+	wxGetApp().pDBRoutines->DBUpdateLeague( wxGetApp().pDBRoutines->structLeagueData.LeagueID );
+
+    // Continue and process this event normally.
+    EndModal(wxID_ADD); // End with a RC of ADD
+}
+
+void ConferenceDialog::OnCancel(wxCommandEvent& event)
+{
+//    wxMessageBox(_T("Cancel Button Pressed"),
+//                 _T("Cancel"), wxOK|wxICON_INFORMATION );
+    // If the change flag is TRUE, Ask if updates should be dropped.
+//    if ( m_bChangeOptionsFlag )
+//    {
+//        int answer = wxMessageBox(
+//                (_T("       A field has changed.\n")
+//                 _T("Press Yes to save or No to discard")
+//                ),
+//                _T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+//        if ( answer == wxYES)
+//        {
+//            //Save the data
+//            m_bChangeOptionsFlag = FALSE;
+//            OnApply(event);
+//        }
+//    }
+//    else
+//    {
+//    }
+    // Continue and process this event normally.
+//    event.Skip(TRUE);
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void ConferenceDialog::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(DivisionDialog, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_ADD, DivisionDialog::OnADD)
+    EVT_BUTTON(wxID_CANCEL, DivisionDialog::OnCancel)
+    EVT_CLOSE(DivisionDialog::OnClose)
+END_EVENT_TABLE()
+
+DivisionDialog::DivisionDialog (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Divisions",
+                    wxPoint(10,10), wxSize(400,430),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	DivisionDialogCreate();
+
+	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+
+    int myRC = ShowModal();
+
+}
+
+
+DivisionDialog::~DivisionDialog( )
+{
+    Destroy();
+}
+
+void DivisionDialog::DivisionDialogCreate( )
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pDivisionPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Division Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision03 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision04 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision05 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizerDivision06 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("League Name:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueName = new wxTextCtrl(m_pDivisionPanel, ID_LEAGUE_LEAGUENAME,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer01->Add( m_pTextLeagueName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer02->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("League Year:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueYear = new wxTextCtrl(m_pDivisionPanel, ID_LEAGUE_YEAR,
+                    _T(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    pItemSizer02->Add( m_pTextLeagueYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Conference section
+    pItemSizerDivision01->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 1:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision01 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision01->Add( m_pTextDivision01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerDivision02->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 2:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision02 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision02->Add( m_pTextDivision02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerDivision03->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 3:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision03 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision03->Add( m_pTextDivision03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerDivision04->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 4:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision04 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision04->Add( m_pTextDivision04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerDivision05->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 5:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision05 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision05->Add( m_pTextDivision05, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizerDivision06->Add(new wxStaticText(m_pDivisionPanel, wxID_ANY,
+        _("Division 6:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivision06 = new wxTextCtrl(m_pDivisionPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemSizerDivision06->Add( m_pTextDivision06, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Add each line item to the panel
+	pItem01->AddSpacer(10);
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add (new wxStaticLine(m_pDivisionPanel, wxID_ANY, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+//    pItem01->AddSpacer(20);
+    pItem01->Add( pItemSizerDivision01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerDivision02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerDivision03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerDivision04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerDivision05, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizerDivision06, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pDivisionPanel),
+                    0, wxALIGN_CENTER );
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pDivisionPanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pDivisionPanel);
+//    pTopSizer->SetSizeHints(this);
+}
+
+wxBoxSizer* DivisionDialog::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pAddButton = new wxButton (panel, wxID_ADD);
+    m_pAddButton->SetDefault();
+    buttonPane->Add (m_pAddButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void DivisionDialog::OnADD(wxCommandEvent& event)
+{
+	wxArrayString arrayDivision;
+	//int i_conference;
+	int i_division;
+	int numberofdivisions;
+
+//    wxMessageBox(_T("ADD Button Pressed"),
+//                 _T("ADD"), wxOK|wxICON_INFORMATION );
+// Retrieve the Conference variables and place in the Conference Structure
+
+	arrayDivision.Clear();
+
+	if (!m_pTextDivision01->IsEmpty()) arrayDivision.Add(m_pTextDivision01->GetValue());
+	if (!m_pTextDivision02->IsEmpty()) arrayDivision.Add(m_pTextDivision02->GetValue());
+	if (!m_pTextDivision03->IsEmpty()) arrayDivision.Add(m_pTextDivision03->GetValue());
+	if (!m_pTextDivision04->IsEmpty()) arrayDivision.Add(m_pTextDivision04->GetValue());
+	if (!m_pTextDivision05->IsEmpty()) arrayDivision.Add(m_pTextDivision05->GetValue());
+	if (!m_pTextDivision06->IsEmpty()) arrayDivision.Add(m_pTextDivision06->GetValue());
+
+//	// Division dialog forces the entry of one division.
+//	if (!arrayDivision.GetCount()) arrayDivision.Add("DEFAULT");
+
+	wxGetApp().pDBRoutines->structLeagueData.NumberOfDivisions =
+		arrayDivision.GetCount() + wxGetApp().pDBRoutines->structLeagueData.NumberOfDivisions;
+
+	numberofdivisions = arrayDivision.GetCount();
+	for (i_division = 0; i_division < numberofdivisions; i_division++)
+	{
+		wxGetApp().pDBRoutines->structDivisionData.DivisionName = arrayDivision[i_division];
+		wxGetApp().pDBRoutines->structDivisionData.LeagueID = wxGetApp().pDBRoutines->structLeagueData.LeagueID;
+		wxGetApp().pDBRoutines->structDivisionData.ConferenceID = wxGetApp().pDBRoutines->structConferenceData.ConferenceID;
+		wxGetApp().pDBRoutines->structDivisionData.BaseDivisions = wxGetApp().pDBRoutines->structLeagueData.BaseLeague;
+
+		// Insert the new Conference, The new conferenceID will be in the structConferenceData.ConferenceID field
+		wxGetApp().pDBRoutines->DBInsertDivision();
+	}
+
+    // Continue and process this event normally.
+    EndModal(wxID_ADD); // End with a RC of ADD
+}
+
+void DivisionDialog::OnCancel(wxCommandEvent& event)
+{
+//    wxMessageBox(_T("Cancel Button Pressed"),
+//                 _T("Cancel"), wxOK|wxICON_INFORMATION );
+    // If the change flag is TRUE, Ask if updates should be dropped.
+//    if ( m_bChangeOptionsFlag )
+//    {
+//        int answer = wxMessageBox(
+//                (_T("       A field has changed.\n")
+//                 _T("Press Yes to save or No to discard")
+//                ),
+//                _T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+//        if ( answer == wxYES)
+//        {
+//            //Save the data
+//            m_bChangeOptionsFlag = FALSE;
+//            OnApply(event);
+//        }
+//    }
+//    else
+//    {
+//    }
+    // Continue and process this event normally.
+//    event.Skip(TRUE);
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void DivisionDialog::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(TeamDialogAdd, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_ADD, TeamDialogAdd::OnADD)
+    EVT_BUTTON(wxID_CANCEL, TeamDialogAdd::OnCancel)
+    EVT_CLOSE(TeamDialogAdd::OnClose)
+END_EVENT_TABLE()
+
+TeamDialogAdd::TeamDialogAdd (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Team",
+                    wxPoint(10,10), wxSize(400,540),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	TeamDialogCreate();
+//
+//	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+//	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+
+	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+	m_pTextConferenceName->SetValue( wxGetApp().pDBRoutines->m_strConferenceName );
+	m_pTextDivisionName->SetValue( wxGetApp().pDBRoutines->m_strDivisionName );
+	m_pTextTotalWins->SetValue("0");
+	m_pTextTotalLosses->SetValue("0");
+	m_pTextHomeWins->SetValue("0");
+	m_pTextHomeLosses->SetValue("0");
+	m_pTextAwayWins->SetValue("0");
+	m_pTextAwayLosses->SetValue("0");
+	m_pCheckBoxTeamBase->SetValue(wxGetApp().pDBRoutines->structLeagueData.BaseLeague);
+
+    int myRC = ShowModal();
+
+}
+
+TeamDialogAdd::~TeamDialogAdd( )
+{
+    Destroy();
+}
+
+void TeamDialogAdd::TeamDialogCreate( )
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pTeamPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Team Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer03 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer04 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamName = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamNameShort = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemBallpark = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTotalWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemHomeWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemAwayWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamYearBase = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("League Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueName = new wxTextCtrl(m_pTeamPanel, ID_LEAGUE_LEAGUENAME,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer01->Add( m_pTextLeagueName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer02->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("League Year:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueYear = new wxTextCtrl(m_pTeamPanel, ID_LEAGUE_YEAR,
+                    _T(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    pItemSizer02->Add( m_pTextLeagueYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer03->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Conference Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConferenceName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer03->Add( m_pTextConferenceName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer04->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Division Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivisionName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer04->Add( m_pTextDivisionName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Team section
+
+    pItemTeamName->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemTeamName->Add( m_pTextTeamName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamNameShort->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Name Short:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamNameShort = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemTeamNameShort->Add( m_pTextTeamNameShort, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemBallpark->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Ballpark:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextBallpark = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemBallpark->Add( m_pTextBallpark, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTotalWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Total Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTotalWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTotalWinsLoss->Add( m_pTextTotalWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTotalWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Total Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTotalLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTotalWinsLoss->Add( m_pTextTotalLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemHomeWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Home Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextHomeWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemHomeWinsLoss->Add( m_pTextHomeWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemHomeWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Home Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextHomeLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemHomeWinsLoss->Add( m_pTextHomeLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemAwayWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Away Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextAwayWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemAwayWinsLoss->Add( m_pTextAwayWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemAwayWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Away Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextAwayLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemAwayWinsLoss->Add( m_pTextAwayLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamYearBase->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Year:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamYear = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTeamYearBase->Add( m_pTextTeamYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamYearBase->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Base Team:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pCheckBoxTeamBase = new wxCheckBox(m_pTeamPanel, ID_LEAGUE_BASE,
+		_T(""), wxDefaultPosition, wxDefaultSize );
+    pItemTeamYearBase->Add( m_pCheckBoxTeamBase, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Add each line item to the panel
+	pItem01->AddSpacer(10);
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add (new wxStaticLine(m_pTeamPanel, wxID_ANY, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    pItem01->Add( pItemTeamName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTeamNameShort, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemBallpark, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTotalWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemHomeWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemAwayWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTeamYearBase, 0, wxALIGN_LEFT|wxLEFT, 0 );
+//    pItem01->AddSpacer(20);
+
+	// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pTeamPanel),
+                    0, wxALIGN_CENTER );
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pTeamPanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pTeamPanel);
+//    pTopSizer->SetSizeHints(this);
+}
+
+wxBoxSizer* TeamDialogAdd::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pAddButton = new wxButton (panel, wxID_ADD);
+    m_pAddButton->SetDefault();
+    buttonPane->Add (m_pAddButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void TeamDialogAdd::OnADD(wxCommandEvent& event)
+{
+    wxGetApp().pDBRoutines->structTeamData.TeamName = m_pTextTeamName->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.TeamNameShort = m_pTextTeamNameShort->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.BallparkName = m_pTextBallpark->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.TotalWins = atoi(m_pTextTotalWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.TotalLosses = atoi(m_pTextTotalLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.HomeWins = atoi(m_pTextHomeWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.HomeLosses = atoi(m_pTextHomeLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.AwayWins = atoi(m_pTextAwayWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.AwayLosses = atoi(m_pTextAwayLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.LeagueID = wxGetApp().pDBRoutines->structLeagueData.LeagueID;
+    wxGetApp().pDBRoutines->structTeamData.ConferenceID = wxGetApp().pDBRoutines->m_intConferenceID;
+    wxGetApp().pDBRoutines->structTeamData.DivisionID = wxGetApp().pDBRoutines->m_intDivisionID;
+    wxGetApp().pDBRoutines->structTeamData.TeamYear = atoi( m_pTextTeamYear->GetValue() );
+    wxGetApp().pDBRoutines->structTeamData.BaseTeam = m_pCheckBoxTeamBase->IsChecked();
+
+    wxGetApp().pDBRoutines->DBInsertTeam();
+
+    // Continue and process this event normally.
+    EndModal(wxID_ADD); // End with a RC of ADD
+}
+
+void TeamDialogAdd::OnCancel(wxCommandEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void TeamDialogAdd::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(TeamDialogApply, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_APPLY, TeamDialogApply::OnApply)
+    EVT_BUTTON(wxID_CANCEL, TeamDialogApply::OnCancel)
+    EVT_CLOSE(TeamDialogApply::OnClose)
+END_EVENT_TABLE()
+
+TeamDialogApply::TeamDialogApply (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Team",
+                    wxPoint(10,10), wxSize(400,540),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	TeamDialogCreate();
+//
+//	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+//	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+
+	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+	m_pTextConferenceName->SetValue( wxGetApp().pDBRoutines->m_strConferenceName );
+	m_pTextDivisionName->SetValue( wxGetApp().pDBRoutines->m_strDivisionName );
+	m_pTextTeamName->SetValue( wxGetApp().pDBRoutines->structTeamData.TeamName );
+	m_pTextTeamNameShort->SetValue( wxGetApp().pDBRoutines->structTeamData.TeamNameShort );
+	m_pTextBallpark->SetValue( wxGetApp().pDBRoutines->structTeamData.BallparkName );
+	m_pTextTotalWins->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.TotalWins) );
+	m_pTextTotalLosses->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.TotalLosses) );
+	m_pTextHomeWins->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.HomeWins) );
+	m_pTextHomeLosses->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.HomeLosses) );
+	m_pTextAwayWins->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.AwayWins) );
+	m_pTextAwayLosses->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.AwayLosses) );
+	m_pTextTeamYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structTeamData.TeamYear) );
+	m_pCheckBoxTeamBase->SetValue( wxGetApp().pDBRoutines->structTeamData.BaseTeam );
+
+    int myRC = ShowModal();
+
+}
+
+TeamDialogApply::~TeamDialogApply( )
+{
+    Destroy();
+}
+
+void TeamDialogApply::TeamDialogCreate( )
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pTeamPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Team Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer03 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemSizer04 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamName = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamNameShort = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemBallpark = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTotalWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemHomeWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemAwayWinsLoss = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItemTeamYearBase = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("League Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueName = new wxTextCtrl(m_pTeamPanel, ID_LEAGUE_LEAGUENAME,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer01->Add( m_pTextLeagueName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer02->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("League Year:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextLeagueYear = new wxTextCtrl(m_pTeamPanel, ID_LEAGUE_YEAR,
+                    _T(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    pItemSizer02->Add( m_pTextLeagueYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer03->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Conference Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextConferenceName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer03->Add( m_pTextConferenceName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemSizer04->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Division Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextDivisionName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1), wxTE_READONLY );
+    pItemSizer04->Add( m_pTextDivisionName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+	// Team section
+
+    pItemTeamName->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Name:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamName = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemTeamName->Add( m_pTextTeamName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamNameShort->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Name Short:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamNameShort = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemTeamNameShort->Add( m_pTextTeamNameShort, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemBallpark->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Ballpark:"), wxDefaultPosition, wxSize(125,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextBallpark = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(250,-1) );
+    pItemBallpark->Add( m_pTextBallpark, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTotalWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Total Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTotalWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTotalWinsLoss->Add( m_pTextTotalWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTotalWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Total Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTotalLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTotalWinsLoss->Add( m_pTextTotalLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemHomeWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Home Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextHomeWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemHomeWinsLoss->Add( m_pTextHomeWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemHomeWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Home Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextHomeLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemHomeWinsLoss->Add( m_pTextHomeLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemAwayWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Away Wins:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextAwayWins = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemAwayWinsLoss->Add( m_pTextAwayWins, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemAwayWinsLoss->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Away Losses:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextAwayLosses = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemAwayWinsLoss->Add( m_pTextAwayLosses, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamYearBase->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Team Year:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pTextTeamYear = new wxTextCtrl(m_pTeamPanel, wxID_ANY,
+                    _T(""), wxDefaultPosition, wxSize(55,-1) );
+    pItemTeamYearBase->Add( m_pTextTeamYear, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    pItemTeamYearBase->Add(new wxStaticText(m_pTeamPanel, wxID_ANY,
+        _("Base Team:"), wxDefaultPosition, wxSize(100,-1)), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+    m_pCheckBoxTeamBase = new wxCheckBox(m_pTeamPanel, ID_LEAGUE_BASE,
+		_T(""), wxDefaultPosition, wxDefaultSize );
+    pItemTeamYearBase->Add( m_pCheckBoxTeamBase, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Add each line item to the panel
+	pItem01->AddSpacer(10);
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add (new wxStaticLine(m_pTeamPanel, wxID_ANY, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    pItem01->Add( pItemTeamName, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTeamNameShort, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemBallpark, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTotalWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemHomeWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemAwayWinsLoss, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemTeamYearBase, 0, wxALIGN_LEFT|wxLEFT, 0 );
+//    pItem01->AddSpacer(20);
+
+	// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pTeamPanel),
+                    0, wxALIGN_CENTER );
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pTeamPanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pTeamPanel);
+//    pTopSizer->SetSizeHints(this);
+}
+
+wxBoxSizer* TeamDialogApply::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pApplyButton = new wxButton (panel, wxID_APPLY);
+    m_pApplyButton->SetDefault();
+    buttonPane->Add (m_pApplyButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void TeamDialogApply::OnApply(wxCommandEvent& event)
+{
+    wxGetApp().pDBRoutines->structTeamData.TeamName = m_pTextTeamName->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.TeamNameShort = m_pTextTeamNameShort->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.BallparkName = m_pTextBallpark->GetValue();
+    wxGetApp().pDBRoutines->structTeamData.TotalWins = atoi(m_pTextTotalWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.TotalLosses = atoi(m_pTextTotalLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.HomeWins = atoi(m_pTextHomeWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.HomeLosses = atoi(m_pTextHomeLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.AwayWins = atoi(m_pTextAwayWins->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.AwayLosses = atoi(m_pTextAwayLosses->GetValue());
+    wxGetApp().pDBRoutines->structTeamData.LeagueID = wxGetApp().pDBRoutines->structLeagueData.LeagueID;
+    wxGetApp().pDBRoutines->structTeamData.ConferenceID = wxGetApp().pDBRoutines->m_intConferenceID;
+    wxGetApp().pDBRoutines->structTeamData.DivisionID = wxGetApp().pDBRoutines->m_intDivisionID;
+    wxGetApp().pDBRoutines->structTeamData.TeamYear = atoi( m_pTextTeamYear->GetValue() );
+    wxGetApp().pDBRoutines->structTeamData.BaseTeam = m_pCheckBoxTeamBase->IsChecked();
+
+    wxGetApp().pDBRoutines->DBUpdateTeam( wxGetApp().pDBRoutines->structTeamData.TeamID );
+
+    // Continue and process this event normally.
+    EndModal(wxID_APPLY); // End with a RC of ADD
+}
+
+void TeamDialogApply::OnCancel(wxCommandEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void TeamDialogApply::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
 }
 
 // ---------------------------------------------------------------------------

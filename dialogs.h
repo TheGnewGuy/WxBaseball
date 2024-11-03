@@ -22,7 +22,6 @@
     #include <wx/spinctrl.h>
 #endif // _WX_SPINCTRL_H_
 
-
 class BatterNotebook: public wxPanel
 {
 public:
@@ -347,6 +346,158 @@ public:
 
 private:
 //    DECLARE_EVENT_TABLE()
+};
+
+class LeagueDialogAdd: public wxDialog
+{
+public:
+    ~LeagueDialogAdd ();
+    LeagueDialogAdd( wxWindow* parent, long style = 0 );
+    void LeagueDialogAddCreate();
+    void OnADD( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pLeaguePanel;
+    wxTextCtrl *m_pTextLeagueName;
+    wxTextCtrl *m_pTextLeagueYear;
+    wxCheckBox *m_pCheckBoxLeagueBase;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    DECLARE_EVENT_TABLE()
+};
+
+class ConferenceDialog: public wxDialog
+{
+public:
+    ~ConferenceDialog ();
+    ConferenceDialog( wxWindow* parent, long style = 0 );
+    void ConferenceDialogCreate();
+    void OnADD( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pConferencePanel;
+    wxTextCtrl *m_pTextLeagueName;
+    wxTextCtrl *m_pTextLeagueYear;
+    wxTextCtrl *m_pTextConference01;
+    wxTextCtrl *m_pTextConference02;
+    wxTextCtrl *m_pTextConference03;
+    wxTextCtrl *m_pTextConference04;
+    wxTextCtrl *m_pTextConference05;
+    wxTextCtrl *m_pTextConference06;
+    wxCheckBox *m_pCheckBoxLeagueBase;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    DECLARE_EVENT_TABLE()
+};
+
+class DivisionDialog: public wxDialog
+{
+public:
+    ~DivisionDialog ();
+    DivisionDialog( wxWindow* parent, long style = 0 );
+    void DivisionDialogCreate();
+    void OnADD( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pDivisionPanel;
+    wxTextCtrl *m_pTextLeagueName;
+    wxTextCtrl *m_pTextLeagueYear;
+    wxTextCtrl *m_pTextDivision01;
+    wxTextCtrl *m_pTextDivision02;
+    wxTextCtrl *m_pTextDivision03;
+    wxTextCtrl *m_pTextDivision04;
+    wxTextCtrl *m_pTextDivision05;
+    wxTextCtrl *m_pTextDivision06;
+    wxCheckBox *m_pCheckBoxLeagueBase;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    DECLARE_EVENT_TABLE()
+};
+
+class TeamDialogAdd: public wxDialog
+{
+public:
+    ~TeamDialogAdd ();
+    TeamDialogAdd( wxWindow* parent, long style = 0 );
+    void TeamDialogCreate();
+    void OnADD( wxCommandEvent& event );
+    void OnUpdate( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pTeamPanel;
+    wxTextCtrl *m_pTextTeamName;
+    wxTextCtrl *m_pTextTeamNameShort;
+    wxTextCtrl *m_pTextTeamYear;
+    wxTextCtrl *m_pTextBallpark;
+    wxTextCtrl *m_pTextTotalWins;
+    wxTextCtrl *m_pTextTotalLosses;
+    wxTextCtrl *m_pTextHomeWins;
+    wxTextCtrl *m_pTextHomeLosses;
+    wxTextCtrl *m_pTextAwayWins;
+    wxTextCtrl *m_pTextAwayLosses;
+    wxTextCtrl *m_pTextConferenceName;
+    wxTextCtrl *m_pTextDivisionName;
+    wxTextCtrl *m_pTextLeagueName;
+    wxTextCtrl *m_pTextLeagueYear;
+    wxCheckBox *m_pCheckBoxTeamBase;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    DECLARE_EVENT_TABLE()
+};
+
+class TeamDialogApply: public wxDialog
+{
+public:
+    ~TeamDialogApply ();
+    TeamDialogApply( wxWindow* parent, long style = 0 );
+    void TeamDialogCreate();
+    void OnApply( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pTeamPanel;
+    wxTextCtrl *m_pTextTeamName;
+    wxTextCtrl *m_pTextTeamNameShort;
+    wxTextCtrl *m_pTextTeamYear;
+    wxTextCtrl *m_pTextBallpark;
+    wxTextCtrl *m_pTextTotalWins;
+    wxTextCtrl *m_pTextTotalLosses;
+    wxTextCtrl *m_pTextHomeWins;
+    wxTextCtrl *m_pTextHomeLosses;
+    wxTextCtrl *m_pTextAwayWins;
+    wxTextCtrl *m_pTextAwayLosses;
+    wxTextCtrl *m_pTextConferenceName;
+    wxTextCtrl *m_pTextDivisionName;
+    wxTextCtrl *m_pTextLeagueName;
+    wxTextCtrl *m_pTextLeagueYear;
+    wxCheckBox *m_pCheckBoxTeamBase;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    DECLARE_EVENT_TABLE()
 };
 
 class OptionsDialog: public wxDialog
