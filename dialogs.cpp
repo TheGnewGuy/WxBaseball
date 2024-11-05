@@ -1489,8 +1489,163 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
 
 void BatterNotebook::OnNew(wxCommandEvent& event)
 {
-    wxMessageBox(_T("New Button Pressed"),
-                 _T("New"), wxOK|wxICON_INFORMATION );
+//    wxMessageBox(_T("New Button Pressed"),
+//                 _T("New"), wxOK|wxICON_INFORMATION );
+
+	m_textFirstName->SetValue("");
+	m_textLastName->SetValue("");
+    wxGetApp().pDBRoutines->structBatterData.FirstName = "";
+    wxGetApp().pDBRoutines->structBatterData.LastName = "";
+
+    // Initialize Position Notebook Page to 0
+    m_spinPosition1->SetValue(0);
+    m_spinPosition2->SetValue(0);
+    m_spinPosition3->SetValue(0);
+    m_spinPosition4->SetValue(0);
+    m_spinPosition5->SetValue(0);
+    m_spinPosition6->SetValue(0);
+    m_spinPosition7->SetValue(0);
+    m_spinPosition8->SetValue(0);
+    m_spinPosition9->SetValue(0);
+    m_spinPositionER1->SetValue(0);
+    m_spinPositionER2->SetValue(0);
+    m_spinPositionER3->SetValue(0);
+    m_spinPositionER4->SetValue(0);
+    m_spinPositionER5->SetValue(0);
+    m_spinPositionER6->SetValue(0);
+    m_spinPositionER7->SetValue(0);
+    m_spinPositionER8->SetValue(0);
+    m_spinPositionER9->SetValue(0);
+    wxGetApp().pDBRoutines->structBatterData.Pitcher = 0;
+    wxGetApp().pDBRoutines->structBatterData.Catcher = 0;
+    wxGetApp().pDBRoutines->structBatterData.FirstBase = 0;
+    wxGetApp().pDBRoutines->structBatterData.SecondBase = 0;
+    wxGetApp().pDBRoutines->structBatterData.Shortstop = 0;
+    wxGetApp().pDBRoutines->structBatterData.ThirdBase = 0;
+    wxGetApp().pDBRoutines->structBatterData.LeftField = 0;
+    wxGetApp().pDBRoutines->structBatterData.CenterField = 0;
+    wxGetApp().pDBRoutines->structBatterData.RightField = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER1 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER2 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER3 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER4 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER5 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER6 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER7 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER8 = 0;
+    wxGetApp().pDBRoutines->structBatterData.ER9 = 0;
+
+    // Initialize Stats Notebook Page to 0
+    m_spinStats2B->SetValue(0);
+    m_spinStats3B->SetValue(0);
+    m_spinStatsHR->SetValue(0);
+    m_spinStatsAB->SetValue(0);
+    m_spinStatsHITS->SetValue(0);
+    m_spinStatsRBI->SetValue(0);
+    m_spinStatsRE->SetValue(0);
+    m_spinStatsRUNS->SetValue(0);
+    m_spinStatsSACRICIFE->SetValue(0);
+    m_spinStatsSB->SetValue(0);
+    m_spinStatsCS->SetValue(0);
+    m_spinStatsK->SetValue(0);
+    m_spinStatsW->SetValue(0);
+    m_spinStatsHBP->SetValue(0);
+    m_spinStatsGAMES->SetValue(0);
+    m_textStatsAVG->SetValue( "0" );
+    m_textStatsSLG->SetValue( "0" );
+    m_textStatsOBP->SetValue( "0" );
+    wxGetApp().pDBRoutines->structBatterStats.AB = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Runs = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Hits = 0;
+    wxGetApp().pDBRoutines->structBatterStats.RBI = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Doubles = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Triples = 0;
+    wxGetApp().pDBRoutines->structBatterStats.HomeRuns = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Walk = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Strikeout = 0;
+    wxGetApp().pDBRoutines->structBatterStats.ReachedOnError = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Sacrifice = 0;
+    wxGetApp().pDBRoutines->structBatterStats.StollenBase = 0;
+    wxGetApp().pDBRoutines->structBatterStats.CS = 0;
+    wxGetApp().pDBRoutines->structBatterStats.Games = 0;
+    wxGetApp().pDBRoutines->structBatterStats.HBP = 0;
+    wxGetApp().pDBRoutines->structBatterStats.AVG = 0;
+    wxGetApp().pDBRoutines->structBatterStats.SLG = 0;
+    wxGetApp().pDBRoutines->structBatterStats.OBP = 0;
+    wxGetApp().pDBRoutines->structBatterStats.BatterID = 0;
+    wxGetApp().pDBRoutines->structBatterStats.BatterStatsID = 0;
+    // End Stats Notebook Page
+
+    // Initialize Chance Notebook Page to 0
+    m_textChanceBasic->SetValue( "0     " );
+    m_textChanceLeft->SetValue( "0     " );
+    m_textChanceRight->SetValue( "0     " );
+    m_textChanceB1B->SetValue( "0     " );
+    m_textChanceB2B->SetValue( "0     " );
+    m_textChanceB3B->SetValue( "0     " );
+    m_textChanceBHR->SetValue( "0     " );
+    m_textChanceBW->SetValue( "0     " );
+    m_textChanceBDP->SetValue( "0     " );
+    m_textChanceL1B->SetValue( "0     " );
+    m_textChanceL2B->SetValue( "0     " );
+    m_textChanceL3B->SetValue( "0     " );
+    m_textChanceLHR->SetValue( "0     " );
+    m_textChanceLW->SetValue( "0     " );
+    m_textChanceLDP->SetValue( "0     " );
+    m_textChanceR1B->SetValue( "0     " );
+    m_textChanceR2B->SetValue( "0     " );
+    m_textChanceR3B->SetValue( "0     " );
+    m_textChanceRHR->SetValue( "0     " );
+    m_textChanceRW->SetValue( "0     " );
+    m_textChanceRDP->SetValue( "0     " );
+    wxGetApp().pDBRoutines->structBatterData.OBChanceBasic = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceHomeRun = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceTriple = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceDouble = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceSingle = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceWalk = 0;
+    wxGetApp().pDBRoutines->structBatterData.ChanceDoublePlay = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceHomeRunRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceTripleRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceDoubleRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceSingleRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceWalkRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.ChanceDoublePlayRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceHomeRunLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceTripleLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceDoubleLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceSingleLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.OBChanceWalkLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.ChanceDoublePlayLeft = 0;
+    // End Chance Notebook Page
+
+    // Initialize Info Notebook Page to 0 or defaults
+    m_combo_BatterHits->SetValue( "R" );
+    m_combo_PowerLeft->SetValue( "N" );
+    m_combo_PowerRight->SetValue( "N" );
+    m_combo_OutfieldArm->SetValue( "0" );
+    m_combo_CatcherArm->SetValue( "0" );
+    m_combo_Passball->SetValue( "0" );
+    m_combo_Stealing->SetValue( "B" );
+    m_combo_Bunting->SetValue( "A" );
+    m_combo_HitRun->SetValue( "A" );
+    m_combo_Running->SetValue( "10" );
+    m_combo_TRating->SetValue( "0" );
+    wxGetApp().pDBRoutines->structBatterData.BatterHits = 0;
+    wxGetApp().pDBRoutines->structBatterData.PowerRight = 0;
+    wxGetApp().pDBRoutines->structBatterData.PowerLeft = 0;
+    wxGetApp().pDBRoutines->structBatterData.CatchArm = 0;
+    wxGetApp().pDBRoutines->structBatterData.OutArm = 0;
+    wxGetApp().pDBRoutines->structBatterData.Pass = 0;
+    wxGetApp().pDBRoutines->structBatterData.Stealing = 0;
+    wxGetApp().pDBRoutines->structBatterData.Bunting = 0;
+    wxGetApp().pDBRoutines->structBatterData.HitRun = 0;
+    wxGetApp().pDBRoutines->structBatterData.Running = 0;
+    wxGetApp().pDBRoutines->structBatterData.TRate = 0;
+    wxGetApp().pDBRoutines->structBatterData.BatterID = 0;
+    // End Info Notebook Page
 }
 
 void BatterNotebook::OnOK(wxCommandEvent& event)
@@ -3415,8 +3570,116 @@ bool PitcherNotebook::UpdatePitcherNames()
 
 void PitcherNotebook::OnNew(wxCommandEvent& event)
 {
-    wxMessageBox(_T("New Button Pressed"),
-                 _T("New"), wxOK|wxICON_INFORMATION );
+//    wxMessageBox(_T("New Button Pressed"),
+//                 _T("New"), wxOK|wxICON_INFORMATION );
+    // Initialize Name
+    m_textFirstName->SetValue("");
+    m_textLastName->SetValue("");
+    wxGetApp().pDBRoutines->structPitcherData.FirstName = "";
+    wxGetApp().pDBRoutines->structPitcherData.LastName = "";
+    wxGetApp().pDBRoutines->structPitcherData.PitcherID = 0;
+
+    // Initialize Stats Notebook Page - 14 entries
+    m_spinStatsWins->SetValue(0);
+    m_spinStatsLoss->SetValue(0);
+    m_spinStatsStarts->SetValue(0);
+    m_spinStatsSave->SetValue(0);
+    m_spinStatsHits->SetValue(0);
+    m_spinStatsGames->SetValue(0);
+    m_spinStatsCGames->SetValue(0);
+    m_spinStatsW->SetValue(0);
+    m_spinStatsK->SetValue(0);
+    m_spinStatsHR->SetValue(0);
+    m_spinStatsER->SetValue(0);
+    m_textStatsIP->SetValue( "0" );
+    m_textStatsERA->SetValue( "0" );
+    m_textStatsWHIP->SetValue( "0" );
+    wxGetApp().pDBRoutines->structPitcherStats.Wins = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Loss = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Starts = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Saves = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.InningsPitched = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.ER = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Hits = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Walks = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Strikeouts = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.HomeRuns = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.Games = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.CompleteGames = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.ERA = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.WHIP = 0;
+
+    wxGetApp().pDBRoutines->structPitcherStats.PitcherID = 0;
+    wxGetApp().pDBRoutines->structPitcherStats.PitcherStatsID = 0;
+    // End Stats Notebook Page
+
+    // Initialize Chance Notebook Page - 21 entries
+    m_textChanceBasic->SetValue( "0     " );
+    m_textChanceLeft->SetValue( "0     " );
+    m_textChanceRight->SetValue( "0     " );
+    m_textChanceB1B->SetValue( "0     " );
+    m_textChanceB2B->SetValue( "0     " );
+    m_textChanceB3B->SetValue( "0     " );
+    m_textChanceBHR->SetValue( "0     " );
+    m_textChanceBW->SetValue( "0     " );
+    m_textChanceBDP->SetValue( "0     " );
+    m_textChanceL1B->SetValue( "0     " );
+    m_textChanceL2B->SetValue( "0     " );
+    m_textChanceL3B->SetValue( "0     " );
+    m_textChanceLHR->SetValue( "0     " );
+    m_textChanceLW->SetValue( "0     " );
+    m_textChanceLDP->SetValue( "0     " );
+    m_textChanceR1B->SetValue( "0     " );
+    m_textChanceR2B->SetValue( "0     " );
+    m_textChanceR3B->SetValue( "0     " );
+    m_textChanceRHR->SetValue( "0     " );
+    m_textChanceRW->SetValue( "0     " );
+    m_textChanceRDP->SetValue( "0     " );
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceBasic = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceSingle = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceDouble = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceTriple = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceHomeRun = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceWalk = 0;
+    wxGetApp().pDBRoutines->structPitcherData.ChanceDoublePlay = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceSingleRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceDoubleRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceTripleRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceHomeRunRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceWalkRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.ChanceDoublePlayRight = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceSingleLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceDoubleLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceTripleLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceHomeRunLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.OBChanceWalkLeft = 0;
+    wxGetApp().pDBRoutines->structPitcherData.ChanceDoublePlayLeft = 0;
+    // End Chance Notebook Page
+
+    // Initialize Info Notebook Page - 9 entries
+    m_combo_InfoStarter->SetValue( "1" );
+    m_combo_InfoRelief->SetValue( "1" );
+    m_combo_InfoBalk->SetValue( "0" );
+    m_combo_InfoP->SetValue( "0" );
+    m_combo_InfoERP->SetValue( "0" );
+    m_combo_InfoWP->SetValue( "0" );
+    m_combo_InfoThrows->SetValue( "R" );
+    m_combo_InfoBunting->SetValue( "A" );
+    m_combo_InfoHold->SetValue( "0" );
+    wxGetApp().pDBRoutines->structPitcherData.FirstName = "";
+    wxGetApp().pDBRoutines->structPitcherData.LastName = "";
+    wxGetApp().pDBRoutines->structPitcherData.Balk = 0;
+    wxGetApp().pDBRoutines->structPitcherData.ER1 = 0;
+    wxGetApp().pDBRoutines->structPitcherData.Pitcher = 0;
+    wxGetApp().pDBRoutines->structPitcherData.Relief = 1;
+    wxGetApp().pDBRoutines->structPitcherData.Starter = 1;
+    wxGetApp().pDBRoutines->structPitcherData.WP = 0;
+    wxGetApp().pDBRoutines->structPitcherData.Bunting = 1;
+    wxGetApp().pDBRoutines->structPitcherData.Hold = 0;
+    wxGetApp().pDBRoutines->structPitcherData.Throws = 1;
+    // End Info Notebook Page
 }
 
 void PitcherNotebook::GetNotebookData()
