@@ -307,8 +307,10 @@ void WxBaseballFrame::OnQuit(wxCommandEvent &event)
 
 void WxBaseballFrame::OnAbout(wxCommandEvent &event)
 {
-    wxString msg = wxbuildinfo(long_f);
-    wxMessageBox(msg, _("Welcome to..."));
+    wxString msg;
+    wxString strWxVersion = wxbuildinfo(long_f);
+    msg.Printf( wxT( "WxBaseball Tracking System\nVersion:  %s\nWxWidgets Version: %s"), APP_VERSION_STR, strWxVersion );
+    wxMessageBox(msg, _("Welcome to WxBaseball"));
 }
 
 void WxBaseballFrame::OnPrint ( wxCommandEvent& event )

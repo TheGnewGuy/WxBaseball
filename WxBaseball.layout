@@ -2,19 +2,14 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="dialogs.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="dialogs.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="15662" topLine="221" />
+			<Cursor1 position="67224" topLine="1475" />
 		</Cursor>
 	</File>
-	<File name="WxBaseballApp.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="FileStruct.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="977" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="DBRoutines.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6171" topLine="160" />
+			<Cursor1 position="4018" topLine="174" />
 		</Cursor>
 	</File>
 	<File name="FileRoutines.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -22,9 +17,19 @@
 			<Cursor1 position="29679" topLine="715" />
 		</Cursor>
 	</File>
-	<File name="WxBaseballMain.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="DBRoutines.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="18772" topLine="535" />
+			<Cursor1 position="6171" topLine="160" />
+		</Cursor>
+	</File>
+	<File name="WxBaseballApp.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="606" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="WxBaseballMain.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11811" topLine="305" />
 		</Cursor>
 	</File>
 	<File name="WxBaseballMain.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -32,9 +37,19 @@
 			<Cursor1 position="2096" topLine="52" />
 		</Cursor>
 	</File>
-	<File name="FileRoutines.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="FileStruct.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1352" topLine="24" />
+			<Cursor1 position="31944" topLine="934" />
+		</Cursor>
+	</File>
+	<File name="dialogs.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="15662" topLine="221" />
+		</Cursor>
+	</File>
+	<File name="DBRoutines.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="39024" topLine="1323" />
 		</Cursor>
 	</File>
 	<File name="WxBaseballApp.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -42,19 +57,9 @@
 			<Cursor1 position="1993" topLine="63" />
 		</Cursor>
 	</File>
-	<File name="DBRoutines.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="FileRoutines.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="37556" topLine="1269" />
-		</Cursor>
-	</File>
-	<File name="dialogs.cpp" open="1" top="1" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="67224" topLine="1490" />
-		</Cursor>
-	</File>
-	<File name="FileStruct.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4018" topLine="174" />
+			<Cursor1 position="1352" topLine="24" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
