@@ -4,7 +4,7 @@
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1731351545 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1733005067 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -14,7 +14,7 @@
 	"FileRoutines.h"
 	"dialogs.h"
 
-1727901823 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
+1731361148 /home/john/Documents/Source/WxBaseball/WxBaseballMain.h
 	<wx/wx.h>
 	<wx/wx.h>
 	<wx/frame.h>
@@ -22,7 +22,7 @@
 	"MyCanvas.h"
 	"sqlite3.h"
 
-1730658686 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
+1731862415 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
 	"wx_pch.h"
 	<wx/print.h>
 	<wx/printdlg.h>
@@ -101,7 +101,7 @@
 1710242594 /home/john/Documents/Source/WxBaseball/sqlite3.h
 	<stdarg.h>
 
-1730841517 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
+1732919297 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/dialog.h>
@@ -114,9 +114,13 @@
 	"FileStruct.h"
 	"DBRoutines.h"
 
-1730657158 /home/john/Documents/Source/WxBaseball/dialogs.h
+1732304077 /home/john/Documents/Source/WxBaseball/dialogs.h
 	<wx/notebook.h>
 	<wx/spinctrl.h>
+	"wx/treelist.h"
+	"wx/artprov.h"
+	<wx/log.h>
+	"wx/regex.h"
 
 1723080298 /home/john/Documents/Source/WxBaseball/FileStruct.h
 	<wx/dc.h>
@@ -1936,13 +1940,13 @@
 	<wx/wx.h>
 	"sqlite3.h"
 
-1730660042 /home/john/Documents/Source/WxBaseball/DBRoutines.h
+1732916846 /home/john/Documents/Source/WxBaseball/DBRoutines.h
 	<wx/wx.h>
 	<wx/wx.h>
 	"sqlite3.h"
 	"dialogs.h"
 
-1730660187 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
+1732917385 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
 	<wx/choicdlg.h>
 	<wx/msgdlg.h>
 	"WxBaseballApp.h"
@@ -1966,16 +1970,43 @@
 	"WxBaseballApp.h"
 	"DBRoutines.h"
 
-1727383615 /home/john/Documents/Source/WxBaseball/FileRoutines.h
+1731703114 /home/john/Documents/Source/WxBaseball/FileRoutines.h
 	<wx/wx.h>
 	<wx/wx.h>
 	<wx/file.h>
 	<wx/string.h>
 	"sqlite3.h"
 
-1727900641 source:/home/john/Documents/Source/WxBaseball/FileRoutines.cpp
+1731703114 source:/home/john/Documents/Source/WxBaseball/FileRoutines.cpp
 	"FileRoutines.h"
 	"WxBaseballMain.h"
 	"WxBaseballApp.h"
 	"DBRoutines.h"
+
+1719260044 /usr/local/include/wx-3.2/wx/treelist.h
+	"wx/defs.h"
+	"wx/compositewin.h"
+	"wx/containr.h"
+	"wx/headercol.h"
+	"wx/itemid.h"
+	"wx/vector.h"
+	"wx/window.h"
+	"wx/withimages.h"
+
+1719260043 /usr/local/include/wx-3.2/wx/headercol.h
+	"wx/bmpbndl.h"
+
+1719260043 /usr/local/include/wx-3.2/wx/itemid.h
+
+1719260043 /usr/local/include/wx-3.2/wx/artprov.h
+	"wx/string.h"
+	"wx/bitmap.h"
+	"wx/icon.h"
+	"wx/iconbndl.h"
+	"wx/bmpbndl.h"
+
+1719260043 /usr/local/include/wx-3.2/wx/regex.h
+	"wx/defs.h"
+	"wx/string.h"
+	"wx/versioninfo.h"
 

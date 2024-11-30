@@ -31,7 +31,7 @@ class FileRoutines
 	public:
 		FileRoutines();
 		virtual ~FileRoutines();
-		int ExportTeam( int passedTeamID );
+		void ExportTeam( int passedTeamID );
 		void BuildPlayerStats( int leagueID, int conferenceID, int divisionID );
 
 	protected:

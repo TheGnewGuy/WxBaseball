@@ -33,24 +33,30 @@ class DBRoutines
         int DBSetForeginKeys(bool OnOffToggle);
         int DBOpen();
         int DBClose();
+        void DBClearBatterStats();
+        void DBClearPitcherStats();
         int DBGetBatterStatsID(int TeamID);
         int DBGetBatterStatsID(int passedTeamID, int BatterID);
         int DBGetConference( int passedConferenceID );
         int DBGetConferenceID ( wxString passedConferenceName, int passedLeagueID );
         int DBGetConferenceID ( int passedLeagueID );
+        void DBGetConferenceList ( int passedLeagueID );
         int DBGetDivision( int passedDivisionID );
         int DBGetDivisionID( wxString passedDivisionName, int passedLeagueID );
         int DBGetDivisionID( int passedConferenceID );
+        void DBGetDivisionList( int passedConferenceID );
         int DBGetTeamNamesArray();
         int DBGetLeague();
         int DBGetLeague(int passedLeagueID);
         void DBGetLeagueConferenceDivision( int leagueID );
         int DBGetLeagueID(wxString passedLeagueName);
         int DBGetLeagueTeams(int passedLeagueID);
+        void DBGetBaseLeagues(int base);
         int DBGetATeamID();
         int DBGetTeam(int TeamID);
         int DBGetTeamArray(int LeagueID);
         int DBGetTeamID(wxString passedTeamName, int passedLeagueID, int passedConferenceID, int passedDivisionID);
+        void DBGetTeamList(int passedLeagueID, int passedConferenceID, int passedDivisionID);
         int DBGetBatterData(int BatterStatsID);
         int DBGetBatterID(int TeamID, wxString FirstName, wxString LastName);
         int DBGetPitcherID(int TeamID, wxString FirstName, wxString LastName);
@@ -125,10 +131,12 @@ class DBRoutines
         wxArrayString m_arrayPitcherFirstNames;
         wxArrayString m_arrayPitcherLastNames;
         wxArrayString m_arrayPitcherFullNames;
+        wxArrayString m_arrayPitcherLastFirst;
         wxArrayInt m_arrayPitcherStatsIDs;
         wxArrayString m_arrayBatterFirstNames;
         wxArrayString m_arrayBatterLastNames;
         wxArrayString m_arrayBatterFullNames;
+        wxArrayString m_arrayBatterLastFirst;
         wxArrayInt m_arrayBatterStatsIDs;
 
         struct{

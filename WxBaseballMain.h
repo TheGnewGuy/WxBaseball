@@ -66,6 +66,7 @@ class WxBaseballFrame: public wxFrame
         // Team menu
         void OnTeamsAddTeam(wxCommandEvent& event);
         void OnTeamsEditTeam(wxCommandEvent& event);
+        void OnTeamsCreateTeam(wxCommandEvent& event);
         // Players menu
         void OnPlayersAddEditBatter(wxCommandEvent& event);
         void OnPlayersAddEditPitcher(wxCommandEvent& event);
@@ -100,6 +101,7 @@ enum
     myID_LEAGUEOPTIONSHTML,
     myID_ADDTEAMS,
     myID_EDITTEAMS,
+    myID_CREATETEAM,
     myID_ADDBATTERS,
     myID_ADDPITCHERS,
     myID_DELBATTERS,

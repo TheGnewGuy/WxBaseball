@@ -5123,6 +5123,524 @@ void TeamDialogApply::OnClose(wxCloseEvent& event)
 // event tables
 // ---------------------------------------------------------------------------
 
+BEGIN_EVENT_TABLE(TeamDialogCreate, wxPanel)
+    // Controls
+    EVT_BUTTON(wxID_APPLY, TeamDialogCreate::OnApply)
+    EVT_BUTTON(wxID_CANCEL, TeamDialogCreate::OnCancel)
+    EVT_CLOSE(TeamDialogCreate::OnClose)
+    EVT_TREELIST_ITEM_CHECKED(wxID_ANY, TeamDialogCreate::OnItemChecked)
+END_EVENT_TABLE()
+
+TeamDialogCreate::TeamDialogCreate (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Team",
+                    wxPoint(10,10), wxSize(800,540),
+//                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+	int DBRC;
+
+	DBRC = wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	TeamDialogCreateDLG();
+//
+//	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
+//	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
+
+    int myRC = ShowModal();
+
+}
+
+TeamDialogCreate::~TeamDialogCreate( )
+{
+    Destroy();
+}
+
+void TeamDialogCreate::TeamDialogCreateDLG( )
+{
+//  Create a Panel that will be used to display and edit the Leagues
+    m_pTeamPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Team Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pHorizontal = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem02 = new wxBoxSizer( wxVERTICAL );
+
+// Data section
+
+    m_isFlat = false;
+
+    // Construct the image list with the standard images.
+    InitImageList();
+
+    // Create and layout child controls.
+//    m_treelist = CreateTreeListCtrl(wxTL_DEFAULT_STYLE);
+    m_treelist = CreateTreeListCtrl( wxTL_DEFAULT_STYLE | wxTL_CHECKBOX | wxTL_MULTIPLE );
+    m_treelistOut = CreateTreeListCtrlOut( wxTL_DEFAULT_STYLE | wxTL_CHECKBOX );
+
+	// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pTeamPanel),
+                    0, wxALIGN_CENTER );
+
+    pHorizontal->Add( m_treelist, 1, wxGROW|wxALL, 5 );
+    pHorizontal->Add( m_treelistOut, 1, wxGROW|wxALL, 5 );
+    pTopSizer->Add( pHorizontal, wxSizerFlags(2).Expand() );
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pTeamPanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pTeamPanel);
+//    pTopSizer->SetSizeHints(this);
+}
+
+wxBoxSizer* TeamDialogCreate::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons (Apply, Add, and Cancel)
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+
+    m_pApplyButton = new wxButton (panel, wxID_APPLY);
+    m_pApplyButton->SetDefault();
+    buttonPane->Add (m_pApplyButton, 0, wxALIGN_CENTER);
+
+    buttonPane->AddSpacer( 10 );
+
+    m_pCancelButton = new wxButton (panel, wxID_CANCEL);
+    buttonPane->Add (m_pCancelButton, 0, wxALIGN_CENTER);
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    // Add a space under the buttons
+    sizer->AddSpacer( 10 );
+
+    return (sizer);
+}
+
+void TeamDialogCreate::InitImageList()
+{
+    wxSize iconSize = wxArtProvider::GetSizeHint(wxART_LIST, this);
+    if ( iconSize == wxDefaultSize )
+        iconSize = FromDIP(wxSize(16, 16));
+
+    m_imageList = new wxImageList(iconSize.x, iconSize.y);
+
+    // The order should be the same as for the enum elements.
+    static const wxString icons[] =
+    {
+        wxART_NORMAL_FILE,
+        wxART_FOLDER,
+        wxART_FOLDER_OPEN
+    };
+
+    for ( unsigned n = 0; n < WXSIZEOF(icons); n++ )
+    {
+        m_imageList->Add
+                     (
+                        wxArtProvider::GetIcon(icons[n], wxART_LIST, iconSize)
+                     );
+    }
+}
+
+wxTreeListCtrl* TeamDialogCreate::CreateTreeListCtrl(long style)
+{
+    wxTreeListCtrl* const tree = new wxTreeListCtrl(m_pTeamPanel, wxID_ANY,
+                                  wxDefaultPosition, wxSize( 390, 420 ),
+                                  style);
+	int myCountLeague;
+	int myCountConference;
+	int myCountDivision;
+	int myCountTeams;
+	int myCountBatters;
+	int myCountPitchers;
+//	wxString myLeagueName;
+	wxTreeListItem myItemLeague;
+	wxTreeListItem myItemConference;
+	wxTreeListItem myItemDivision;
+	wxTreeListItem myItemTeam;
+	wxTreeListItem myItemBatters;
+	wxTreeListItem myItemPitchers;
+
+//    tree->SetImageList(m_imageList);
+
+    tree->AppendColumn("Base Leagues",
+                       wxCOL_WIDTH_AUTOSIZE,
+                       wxALIGN_LEFT,
+                       wxCOL_RESIZABLE | wxCOL_SORTABLE);
+
+	wxGetApp().pDBRoutines->DBGetBaseLeagues( TRUE );
+//	wxString myLeague = "Base 1965";
+	myCountLeague = wxGetApp().pDBRoutines->m_arrayLeagueNames.Count();
+
+    wxTreeListItem root = tree->GetRootItem();
+
+	// Loop through all Base Leagues, their conferences,
+	// there divisions, teams and then players.
+	for ( int iL = 0; iL < myCountLeague; iL++ )
+	{
+		myItemLeague = tree->AppendItem( root, wxGetApp().pDBRoutines->m_arrayLeagueNames[iL], -1, -1 );
+		wxGetApp().pDBRoutines->DBGetConferenceList( wxGetApp().pDBRoutines->m_arrayLeagueIDs[iL] );
+		myCountConference = wxGetApp().pDBRoutines->m_arrayConferenceNames.Count();
+		for ( int iC = 0; iC < myCountConference; iC++ )
+		{
+			myItemConference = tree->AppendItem( myItemLeague, wxGetApp().pDBRoutines->m_arrayConferenceNames[iC], -1, -1 );
+			wxGetApp().pDBRoutines->DBGetDivisionList( wxGetApp().pDBRoutines->m_arrayConferenceIDs[iC] );
+			myCountDivision = wxGetApp().pDBRoutines->m_arrayDivisionNames.Count();
+			for ( int iD = 0; iD < myCountDivision; iD++ )
+			{
+				myItemDivision = tree->AppendItem( myItemConference, wxGetApp().pDBRoutines->m_arrayDivisionNames[iD], -1, -1 );
+				wxGetApp().pDBRoutines->DBGetTeamList(
+					wxGetApp().pDBRoutines->m_arrayLeagueIDs[iL],
+					wxGetApp().pDBRoutines->m_arrayConferenceIDs[iC],
+					wxGetApp().pDBRoutines->m_arrayDivisionIDs[iD]
+					);
+				myCountTeams = wxGetApp().pDBRoutines->m_arrayTeamNames.Count();
+				for ( int iT = 0; iT < myCountTeams; iT++ )
+				{
+					myItemTeam = tree->AppendItem( myItemDivision, wxGetApp().pDBRoutines->m_arrayTeamNames[iT], -1, -1 );
+					myItemBatters = tree->AppendItem( myItemTeam, "Batters", -1, -1 );
+					wxGetApp().pDBRoutines->DBGetBatterStatsID( wxGetApp().pDBRoutines->m_arrayTeamIDs[iT] );
+					myCountBatters = wxGetApp().pDBRoutines->m_arrayBatterLastFirst.Count();
+					// It is possible that a team does not have any batters
+					if ( myCountBatters |= 0 )
+					{
+						for ( int iB = 0; iB < myCountBatters; iB++ )
+						{
+							tree->AppendItem( myItemBatters, wxGetApp().pDBRoutines->m_arrayBatterLastFirst[iB], -1, -1 );
+						}
+					}
+					myItemPitchers = tree->AppendItem( myItemTeam, "Pitchers", -1, -1 );
+					wxGetApp().pDBRoutines->DBGetPitcherStatsID( wxGetApp().pDBRoutines->m_arrayTeamIDs[iT] );
+					myCountPitchers = wxGetApp().pDBRoutines->m_arrayPitcherLastFirst.Count();
+					// It is possible that a team does not have any pitchers
+					if ( myCountPitchers |= 0 )
+					{
+						for ( int iP = 0; iP < myCountPitchers; iP++ )
+						{
+							tree->AppendItem( myItemPitchers, wxGetApp().pDBRoutines->m_arrayPitcherLastFirst[iP], -1, -1 );
+						}
+					}
+				}
+			}
+		}
+	}
+
+//	wxTreeListItem myItemLeague = tree->AppendItem( root, myLeagueName, -1, -1 );
+//		wxTreeListItem myItemConference = tree->AppendItem( myItemLeague, "BaseAL1965", -1, -1 );
+//			wxTreeListItem myItemDivision = tree->AppendItem( myItemConference, "DEFAULT", -1, -1 );
+//				wxTreeListItem myItemTeam = tree->AppendItem( myItemDivision, "Cleveland Indians", -1, -1 );
+//					wxTreeListItem myItemBatters = tree->AppendItem( myItemTeam, "Batters", -1, -1 );
+//					wxTreeListItem myItemPitchers = tree->AppendItem( myItemTeam, "Pitchers", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Fred Whitfield", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Pedro Gonzalez", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Joe Azcue", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Chuck Hinton", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Max Alvis", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Larry Brown", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Rocky Colavito", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Vic Davalillo", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Phil Roof", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Dick Howser", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Chico Salmon", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Leon Wagner", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Lee Stange", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Sam McDowell", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Luis Tiant", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Sonny Siebert", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Ralph Terry", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Gary Bell", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Jack Kralick", -1, -1 );
+//						tree->AppendItem( myItemBatters, "Don McMahon", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Lee Stange", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Sam McDowell", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Luis Tiant", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Sonny Siebert", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Ralph Terry", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Gary Bell", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Jack Kralick", -1, -1 );
+//						tree->AppendItem( myItemPitchers, "Don McMahon", -1, -1 );
+
+    return tree;
+}
+
+wxTreeListCtrl* TeamDialogCreate::CreateTreeListCtrlOut(long style)
+{
+    wxTreeListCtrl* const tree = new wxTreeListCtrl(m_pTeamPanel, wxID_ANY,
+                                  wxDefaultPosition, wxSize( 390, 420 ),
+                                  style);
+	int myCountLeague;
+	int myCountConference;
+	int myCountDivision;
+	int myCountTeams;
+	int myCountBatters;
+	int myCountPitchers;
+	wxTreeListItem myItemLeague;
+	wxTreeListItem myItemConference;
+	wxTreeListItem myItemDivision;
+	wxTreeListItem myItemTeam;
+	wxTreeListItem myItemBatters;
+	wxTreeListItem myItemPitchers;
+
+//    tree->SetImageList(m_imageList);
+
+    tree->AppendColumn("Target Leagues",
+                       wxCOL_WIDTH_AUTOSIZE,
+                       wxALIGN_LEFT,
+                       wxCOL_RESIZABLE | wxCOL_SORTABLE);
+
+	// Get Non base teams
+	wxGetApp().pDBRoutines->DBGetBaseLeagues( FALSE );
+	myCountLeague = wxGetApp().pDBRoutines->m_arrayLeagueNames.Count();
+
+    wxTreeListItem root = tree->GetRootItem();
+
+	// Loop through all Leagues, their conferences,
+	// there divisions and teams
+	for ( int iL = 0; iL < myCountLeague; iL++ )
+	{
+		myItemLeague = tree->AppendItem( root, wxGetApp().pDBRoutines->m_arrayLeagueNames[iL], -1, -1 );
+		wxGetApp().pDBRoutines->DBGetConferenceList( wxGetApp().pDBRoutines->m_arrayLeagueIDs[iL] );
+		myCountConference = wxGetApp().pDBRoutines->m_arrayConferenceNames.Count();
+		for ( int iC = 0; iC < myCountConference; iC++ )
+		{
+			myItemConference = tree->AppendItem( myItemLeague, wxGetApp().pDBRoutines->m_arrayConferenceNames[iC], -1, -1 );
+			wxGetApp().pDBRoutines->DBGetDivisionList( wxGetApp().pDBRoutines->m_arrayConferenceIDs[iC] );
+			myCountDivision = wxGetApp().pDBRoutines->m_arrayDivisionNames.Count();
+			for ( int iD = 0; iD < myCountDivision; iD++ )
+			{
+				myItemDivision = tree->AppendItem( myItemConference, wxGetApp().pDBRoutines->m_arrayDivisionNames[iD], -1, -1 );
+				wxGetApp().pDBRoutines->DBGetTeamList(
+					wxGetApp().pDBRoutines->m_arrayLeagueIDs[iL],
+					wxGetApp().pDBRoutines->m_arrayConferenceIDs[iC],
+					wxGetApp().pDBRoutines->m_arrayDivisionIDs[iD]
+					);
+				myCountTeams = wxGetApp().pDBRoutines->m_arrayTeamNames.Count();
+				for ( int iT = 0; iT < myCountTeams; iT++ )
+				{
+					myItemTeam = tree->AppendItem( myItemDivision, wxGetApp().pDBRoutines->m_arrayTeamNames[iT], -1, -1 );
+				}
+			}
+		}
+	}
+    return tree;
+}
+
+void TeamDialogCreate::OnApply(wxCommandEvent& event)
+{
+	int numSelected;
+	numSelected = 0;
+	int numSelectedOut;
+	numSelectedOut = 0;
+	int numIsSelected;
+	numIsSelected = 0;
+	int mynumber;
+	wxString MsgBuffer;
+    wxTreeListItems selections;
+    wxString strPlayerLastFirst;
+    wxString strPlayerType;
+    wxString strTeam;
+    wxString strDivision;
+    wxString strConference;
+    wxString strLeague;
+    int leagueIDIn;
+    int conferenceIDIn;
+    int divisionIDIn;
+    int teamIDIn;
+    int leagueIDOut;
+    int conferenceIDOut;
+    int divisionIDOut;
+    int teamIDOut;
+	int mycomma;
+	int mycount;
+	int myBatterID;
+	int myPitcherID;
+	int noDestTeamSelected = false;
+    wxTreeListItem itemPlayer;
+    wxTreeListItem itemTeam;
+
+	// Get the destination Team
+	for ( wxTreeListItem item = m_treelistOut->GetFirstItem();
+			item.IsOk();
+			item = m_treelistOut->GetNextItem(item) )
+			{
+				if ( m_treelistOut->GetCheckedState(item) == wxCHK_CHECKED )
+				{
+					// This check will determin if we are selecting a team
+					// or if something like a division was selected.
+					// We can only select a team for this to work.
+					itemTeam = m_treelistOut->GetFirstChild( item );
+					if ( itemTeam.IsOk() )
+					{
+						wxMessageBox("The selected item is not a Team!");
+						return;
+					}
+
+					noDestTeamSelected = true;
+					strTeam = m_treelistOut->GetItemText( item );
+					strDivision = m_treelistOut->GetItemText( m_treelistOut->GetItemParent( item ) );
+					strConference = m_treelistOut->GetItemText( m_treelistOut->GetItemParent( m_treelistOut->GetItemParent( item ) ) );
+					strLeague = m_treelistOut->GetItemText( m_treelistOut->GetItemParent( m_treelistOut->GetItemParent( m_treelistOut->GetItemParent( item ) ) ) );
+
+					leagueIDOut = wxGetApp().pDBRoutines->DBGetLeagueID( strLeague );
+					conferenceIDOut = wxGetApp().pDBRoutines->DBGetConferenceID( strConference, leagueIDOut );
+					if ( strDivision == "DEFAULT" )
+					{
+						divisionIDOut = 1;
+					}
+					else
+					{
+						divisionIDOut = wxGetApp().pDBRoutines->DBGetDivisionID( strDivision, leagueIDOut );
+					}
+					teamIDOut = wxGetApp().pDBRoutines->DBGetTeamID( strTeam, leagueIDOut, conferenceIDOut, divisionIDOut );
+				}
+			}
+			if ( noDestTeamSelected == false )
+			{
+				wxMessageBox("No destination Team was selected!");
+				return;
+			}
+
+	for ( wxTreeListItem item = m_treelist->GetFirstItem();
+			item.IsOk();
+			item = m_treelist->GetNextItem(item) )
+			{
+				if ( m_treelist->GetCheckedState(item) == wxCHK_CHECKED )
+				{
+					// This check will determin if we are selecting a player
+					// or if something like a division was selected.
+					// We can only select a Player for this to work.
+					itemPlayer = m_treelist->GetFirstChild( item );
+					if ( itemPlayer.IsOk() )
+					{
+						wxMessageBox("The selected item is not a Player!");
+						return;
+					}
+
+					strTeam = m_treelist->GetItemText( m_treelist->GetItemParent( m_treelist->GetItemParent( item ) ) );
+					strDivision = m_treelist->GetItemText( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( item ) ) ) );
+					strConference = m_treelist->GetItemText( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( item ) ) ) ) );
+					strLeague = m_treelist->GetItemText( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( m_treelist->GetItemParent( item ) ) ) ) ) );
+
+					leagueIDIn = wxGetApp().pDBRoutines->DBGetLeagueID( strLeague );
+					conferenceIDIn = wxGetApp().pDBRoutines->DBGetConferenceID( strConference, leagueIDIn );
+					if ( strDivision == "DEFAULT" )
+					{
+						divisionIDIn = 1;
+					}
+					else
+					{
+						divisionIDIn = wxGetApp().pDBRoutines->DBGetDivisionID( strDivision, leagueIDIn );
+					}
+					teamIDIn = wxGetApp().pDBRoutines->DBGetTeamID( strTeam, leagueIDIn, conferenceIDIn, divisionIDIn );
+//					MsgBuffer.Printf( wxT("The input League is: %s\nThe input Team is: %s\nThe input Division is: %s\nThe input Conference is: %s\n"), strLeague, strTeam, strDivision, strConference );
+//					wxMessageBox(MsgBuffer);
+//					MsgBuffer.Printf( wxT("The input TeamID is: %i"), teamIDIn );
+//					wxMessageBox(MsgBuffer);
+
+					// Retrieve the player name in Last, First format
+					strPlayerLastFirst = m_treelist->GetItemText( item );
+					mycomma = strPlayerLastFirst.Find(", ");
+					mycount = strPlayerLastFirst.size();
+					wxString myLast = strPlayerLastFirst.substr(0, mycomma);
+					wxString myFirst = strPlayerLastFirst.substr(mycomma+2, mycount);
+
+					// Decide if player is a batter or a pitcher
+					// Field will have either Batters ot Pitchers
+					strPlayerType = m_treelist->GetItemText( m_treelist->GetItemParent( item ) );
+					if ( strPlayerType == "Batters")
+					{
+						// Get BatterID using teamIDIn, myFirst, myLast
+//						MsgBuffer.Printf( wxT("The TeamID is: %i\nFirstName is: %S\nLastNAme is:%s"), teamIDIn, myFirst, myLast );
+//						wxMessageBox(MsgBuffer);
+						myBatterID = wxGetApp().pDBRoutines->DBGetBatterID( teamIDIn, myFirst, myLast );
+						// Clear the BatterStats
+						wxGetApp().pDBRoutines->DBClearBatterStats();
+						// Create new Batter stats using teamIDOut and myBatterID
+//						MsgBuffer.Printf( wxT("The Selected TeamOutID is: %i\nThe Selected BatterID is: %i"), teamIDOut, myBatterID );
+//						wxMessageBox(MsgBuffer);
+						wxGetApp().pDBRoutines->DBInsertBatterStats( myBatterID, teamIDOut );
+//						wxMessageBox("The selected item is a Batter!");
+//						MsgBuffer.Printf( wxT("The Selected BatterID is: %i"), myBatterID );
+//						wxMessageBox(MsgBuffer);
+					}
+					else
+					{
+						// Get PitcherID using teamIDIn, myFirst, myLast
+						myPitcherID = wxGetApp().pDBRoutines->DBGetPitcherID( teamIDIn, myFirst, myLast );
+						// Clear the PitcherStats
+						wxGetApp().pDBRoutines->DBClearPitcherStats();
+						// Create new PitcherStats using teamIDOut and myPitcherID
+						wxGetApp().pDBRoutines->DBInsertPitcherStats( myPitcherID, teamIDOut );
+//						wxMessageBox("The selected item is a Pitcher!");
+//						MsgBuffer.Printf( wxT("The Selected PitcherID is: %i"), myPitcherID );
+//						wxMessageBox(MsgBuffer);
+					}
+				}	// End if ifChecked
+			}
+    // Continue and process this event normally.
+    EndModal(wxID_APPLY); // End with a RC of ADD
+}
+
+wxString TeamDialogCreate::DumpItem(wxTreeListItem item) const
+{
+    return item.IsOk() ? m_treelist->GetItemText(item) : wxString("NONE");
+}
+
+void TeamDialogCreate::OnCancel(wxCommandEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void TeamDialogCreate::OnClose(wxCloseEvent& event)
+{
+    EndModal(wxID_CANCEL); // End with a RC of CANCEL
+}
+
+void TeamDialogCreate::OnItemChecked(wxTreeListEvent& event)
+{
+    wxTreeListItem item = event.GetItem();
+
+    if ( m_treelist->GetCheckedState(item) == wxCHK_CHECKED )
+    {
+		m_treelist->Select( item );
+//		wxLogMessage("Item Checked and Selected: %s", DumpItem( item ));
+    }
+    else
+    {
+		m_treelist->Unselect( item );
+//		wxLogMessage("Item UnChecked and UnSelected: %s", DumpItem( item ));
+    }
+
+//    wxLogMessage("Item \"%s\" toggled, now %s (was %s)",
+//                 DumpItem(item),
+//                 CheckedStateString(m_treelist->GetCheckedState(item)),
+//                 CheckedStateString(event.GetOldCheckedState()));
+}
+
+/* static */
+const char* TeamDialogCreate::CheckedStateString(wxCheckBoxState state)
+{
+    switch ( state )
+    {
+        case wxCHK_UNCHECKED:
+            return "unchecked";
+
+        case wxCHK_UNDETERMINED:
+            return "undetermined";
+
+        case wxCHK_CHECKED:
+            return "checked";
+    }
+
+    return "invalid";
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
 BEGIN_EVENT_TABLE(OptionsDialog, wxDialog)
     // Controls
     EVT_BUTTON(wxID_APPLY, OptionsDialog::OnApply)

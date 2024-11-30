@@ -28,7 +28,7 @@ FileRoutines::~FileRoutines()
 	//dtor
 }
 
-int FileRoutines::ExportTeam( int passedTeamID )
+void FileRoutines::ExportTeam( int passedTeamID )
 {
 	wxFile exportBatter;
 	wxFile exportPitcher;

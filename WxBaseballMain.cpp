@@ -101,6 +101,7 @@ BEGIN_EVENT_TABLE(WxBaseballFrame, wxFrame)
 	// Teams Menu
 	EVT_MENU( myID_ADDTEAMS, WxBaseballFrame::OnTeamsAddTeam )
 	EVT_MENU( myID_EDITTEAMS, WxBaseballFrame::OnTeamsEditTeam )
+	EVT_MENU( myID_CREATETEAM, WxBaseballFrame::OnTeamsCreateTeam )
 	// Players Menu
 	EVT_MENU ( myID_ADDBATTERS, WxBaseballFrame::OnPlayersAddEditBatter )
 	EVT_MENU ( myID_ADDPITCHERS, WxBaseballFrame::OnPlayersAddEditPitcher )
@@ -215,6 +216,8 @@ WxBaseballFrame::WxBaseballFrame(wxFrame *frame, const wxString& title)
 	wxMenu* pTeamsMenu = new wxMenu;
 	pTeamsMenu->Append ( myID_ADDTEAMS, _T ( "&Add Teams" ), _T ( "Add Teams" ) );
 	pTeamsMenu->Append ( myID_EDITTEAMS, _T ( "&Edit Teams" ), _T ( "Edit Teams" ) );
+	pTeamsMenu->AppendSeparator();
+	pTeamsMenu->Append ( myID_CREATETEAM, _T ( "&Create Team" ), _T ( "Create Team" ) );
 //	pTeamsMenu->Enable ( myID_ADDTEAMS, FALSE );
 //	pTeamsMenu->Enable ( myID_EDITTEAMS, FALSE );
 
@@ -371,13 +374,19 @@ void WxBaseballFrame::OnPrintSetup ( wxCommandEvent& event )
 void WxBaseballFrame::OnFileExportLeagueTeams ( wxCommandEvent& event )
 {
 	int teamID;
+	wxString msg;
 
 	// Check is DB is open, if not, open one
-	wxGetApp().pDBRoutines->DBIsDBOpen();
+    if( !wxGetApp().pDBRoutines->DBIsDBOpen() )
+    {
+        msg.Printf( wxT("Database has not been opened"));
+        wxMessageBox(msg);
+    }
 
 	// Use a dialog to select a league then a team.
 	teamID = wxGetApp().pDBRoutines->DBGetATeamID();
-	wxGetApp().pFileRoutines->ExportTeam( teamID );
+	if ( teamID != false )
+		wxGetApp().pFileRoutines->ExportTeam( teamID );
 }
 
 // Create a list of all teams in a league, then export all of them
@@ -385,17 +394,25 @@ void WxBaseballFrame::OnFileExportLeagueTeamsAll ( wxCommandEvent& event )
 {
 	int leagueID;
 	int i;
+	wxString msg;
 
 	// Check is DB is open, if not, open one
-	wxGetApp().pDBRoutines->DBIsDBOpen();
+    if( !wxGetApp().pDBRoutines->DBIsDBOpen() )
+    {
+        msg.Printf( wxT("Database has not been opened"));
+        wxMessageBox(msg);
+    }
 
 	// Use a dialog to select a league then create the array of the teams in the league
 	leagueID = wxGetApp().pDBRoutines->DBGetLeague();
-	wxGetApp().pDBRoutines->DBGetLeagueTeams( leagueID );
-
-	for ( i=0; i<(int)wxGetApp().pDBRoutines->m_arrayTeamIDs.GetCount(); i++ )
+	if ( leagueID != false )
 	{
-		wxGetApp().pFileRoutines->ExportTeam( wxGetApp().pDBRoutines->m_arrayTeamIDs[i] );
+		wxGetApp().pDBRoutines->DBGetLeagueTeams( leagueID );
+
+		for ( i=0; i<(int)wxGetApp().pDBRoutines->m_arrayTeamIDs.GetCount(); i++ )
+		{
+			wxGetApp().pFileRoutines->ExportTeam( wxGetApp().pDBRoutines->m_arrayTeamIDs[i] );
+		}
 	}
 }
 
@@ -472,9 +489,16 @@ void WxBaseballFrame::OnStatistics ( wxCommandEvent& event )
 void WxBaseballFrame::OnStatisticsHTMLLeagueStats ( wxCommandEvent& event )
 {
 	int LeagueID;
+    wxString msg;
 
 	// Check is DB is open, if not, open one
-	wxGetApp().pDBRoutines->DBIsDBOpen();
+    if( !wxGetApp().pDBRoutines->DBIsDBOpen() )
+    {
+        msg.Printf( wxT("Database has not been opened"));
+        wxMessageBox(msg);
+    }
+//    msg.Printf( wxT( "DB opened in Frame") );
+//    wxMessageBox(msg);
 
 	// DBGetLeague will prompt for the league
 	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
@@ -548,6 +572,15 @@ void WxBaseballFrame::OnTeamsEditTeam ( wxCommandEvent& event )
 	wxGetApp().pDBRoutines->DBGetTeam( TeamID );
 
 	TeamDialogApply( this );
+}
+
+void WxBaseballFrame::OnTeamsCreateTeam ( wxCommandEvent& event )
+{
+
+	// Check is DB is open, if not, open one
+//	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	TeamDialogCreate( this );
 }
 
 void WxBaseballFrame::OnPlayersAddEditBatter ( wxCommandEvent& event )

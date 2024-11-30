@@ -21,8 +21,8 @@
 #include "FileRoutines.h"
 #include "dialogs.h"
 
-#define    APP_VERSION      10
-#define    APP_VERSION_STR  _T("0.0.1.0")
+//#define    APP_VERSION      111130
+#define    APP_VERSION_STR  _T("1.1.11.30")
 
 class WxBaseballApp : public wxApp
 {

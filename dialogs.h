@@ -22,6 +22,11 @@
     #include <wx/spinctrl.h>
 #endif // _WX_SPINCTRL_H_
 
+#include "wx/treelist.h"
+#include "wx/artprov.h"
+#include <wx/log.h>
+#include "wx/regex.h"
+
 class BatterNotebook: public wxPanel
 {
 public:
@@ -500,6 +505,64 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+class TeamDialogCreate: public wxDialog
+{
+public:
+    ~TeamDialogCreate ();
+    TeamDialogCreate( wxWindow* parent, long style = 0 );
+    void TeamDialogCreateDLG();
+    void OnApply( wxCommandEvent& event );
+    void OnCancel( wxCommandEvent& event );
+    void OnClose( wxCloseEvent& event );
+
+private:
+
+    // Create the image list, called once only. Should add images to it in the
+    // same order as they appear in the enum above.
+    void InitImageList();
+
+    // Create the control with the given styles.
+    wxTreeListCtrl* CreateTreeListCtrl(long style);
+    wxTreeListCtrl* CreateTreeListCtrlOut(long style);
+    void OnItemChecked(wxTreeListEvent& event);
+
+    // Change Flags
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxPanel *m_pTeamPanel;
+    wxButton *m_pAddButton;
+    wxButton *m_pApplyButton;
+    wxButton *m_pCancelButton;
+
+    wxImageList* m_imageList;
+
+    wxTreeListCtrl* m_treelist;
+    wxTreeListCtrl* m_treelistOut;
+    bool m_isFlat;
+
+    // Helper: return the text of the item or "NONE" if the item is invalid.
+    wxString DumpItem(wxTreeListItem item) const;
+
+    // Another helper: just translate wxCheckBoxState to user-readable text.
+    static const char* CheckedStateString(wxCheckBoxState state);
+
+    enum
+    {
+        Icon_File,
+        Icon_FolderClosed,
+        Icon_FolderOpened
+    };
+
+// Tree list columns.
+enum
+{
+    Col_Component,
+    Col_Files,
+    Col_Size
+};
+
+    DECLARE_EVENT_TABLE()
+};
+
 class OptionsDialog: public wxDialog
 {
 public:
@@ -514,7 +577,6 @@ public:
 
 private:
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
-    // Change Flags
 
     bool m_bSetValueFlagOptions;
     bool m_bChangeOptionsFlag;
