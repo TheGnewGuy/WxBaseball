@@ -4,7 +4,7 @@
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1733005067 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1733167688 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -114,7 +114,7 @@
 	"FileStruct.h"
 	"DBRoutines.h"
 
-1732304077 /home/john/Documents/Source/WxBaseball/dialogs.h
+1733166877 /home/john/Documents/Source/WxBaseball/dialogs.h
 	<wx/notebook.h>
 	<wx/spinctrl.h>
 	"wx/treelist.h"

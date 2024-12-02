@@ -22,7 +22,8 @@
 #include "dialogs.h"
 
 //#define    APP_VERSION      111130
-#define    APP_VERSION_STR  _T("1.1.11.30")
+// Julian 336 = 12/2/24 wxDateTime::GetJulianDayNumber()
+#define    APP_VERSION_STR  _T("1.1.336.24")
 
 class WxBaseballApp : public wxApp
 {

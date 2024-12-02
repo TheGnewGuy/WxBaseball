@@ -14,6 +14,19 @@
 // 07/28/05     Added comments for Todo list                               //
 // 09/15/24     Corrected code for OutArm, CatchArm and Running            //
 // 09/19/24     Added batter insert code                                   //
+// 12/02/24     Changed bool UpdateBatterNames to void                     //
+//              Changed bool UpdatePitcherNames to void                    //
+//              The routines in the release mode did not return a value    //
+//              and were causing the app to close                          //
+//              Power Right text was 75, change to 85                      //
+//              Updated BatterNotebook::GetNotebookData to calculate       //
+//              AVG, SLG and OBP and store in the structure                //
+//              Updated BatterNotebook::OnComboPitcherSelect to load       //
+//              AVG, SLG and OBP from the structure                        //
+//              Updated PitcherNotebook::GetNotebookData to calculate      //
+//              ERA and WHIP and store in structure                        //
+//              Updated PitcherNotebook::OnComboPitcherSelect to load      //
+//              ERA and WHIP from the structure                            //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -1114,7 +1127,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
                     0, wxALIGN_LEFT|wxLEFT, 0 );
 
     m_hGridSizer04->Add( new wxStaticText(m_panel_04, wxID_ANY,
-                    _T("Power Right"), wxDefaultPosition, wxSize(75,-1), 0), 0,
+                    _T("Power Right"), wxDefaultPosition, wxSize(85,-1), 0), 0,
                     wxALIGN_RIGHT|wxRIGHT, 0 );
     m_combo_PowerRight = new wxComboBox(m_panel_04, ID_INFO_BATTER_POWERRIGHT,
                     _T("N"), wxDefaultPosition, wxSize(70,-1), m_arrayPower,
@@ -1464,8 +1477,8 @@ void BatterNotebook::OnApply(wxCommandEvent& event)
 
 void BatterNotebook::OnAdd(wxCommandEvent& event)
 {
-    wxMessageBox(_T("Add Button Pressed"),
-                 _T("Add"), wxOK|wxICON_INFORMATION );
+//    wxMessageBox(_T("Add Button Pressed"),
+//                 _T("Add"), wxOK|wxICON_INFORMATION );
 //     wxWindow::Validate();
 //     wxWindow::TransferDataFromWindow();
 
@@ -1479,6 +1492,7 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
         wxGetApp().pDBRoutines->DBGetBatterStatsID(wxGetApp().pDBRoutines->m_intTeamID);
         //m_combo_pitcher_01. //  ( wxGetApp().pDBRoutines->m_arrayPitcherFullNames );
         UpdateBatterNames();
+//		event.Skip(TRUE);
     }
     else
     {
@@ -1755,6 +1769,45 @@ void BatterNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structBatterStats.Sacrifice = m_spinStatsSACRICIFE->GetValue();
     wxGetApp().pDBRoutines->structBatterStats.StollenBase = m_spinStatsSB->GetValue();
     wxGetApp().pDBRoutines->structBatterStats.Walk = m_spinStatsW->GetValue();
+
+    if ( wxGetApp().pDBRoutines->structBatterStats.AB == 0 )
+    {
+		wxGetApp().pDBRoutines->structBatterStats.AVG = 0.0f;
+		wxGetApp().pDBRoutines->structBatterStats.OBP = 0.0f;
+		wxGetApp().pDBRoutines->structBatterStats.SLG = 0.0f;
+    }
+    else
+    {
+		wxGetApp().pDBRoutines->structBatterStats.AVG =
+			(float)wxGetApp().pDBRoutines->structBatterStats.Hits / wxGetApp().pDBRoutines->structBatterStats.AB;
+		wxGetApp().pDBRoutines->structBatterStats.SLG = (float)
+            (
+                (
+                    wxGetApp().pDBRoutines->structBatterStats.Hits -
+                    (
+                        wxGetApp().pDBRoutines->structBatterStats.Doubles +
+                        wxGetApp().pDBRoutines->structBatterStats.Triples +
+                        wxGetApp().pDBRoutines->structBatterStats.HomeRuns
+                    )
+                ) +
+                (2 * wxGetApp().pDBRoutines->structBatterStats.Doubles) +
+                (3 * wxGetApp().pDBRoutines->structBatterStats.Triples) +
+                (4 * wxGetApp().pDBRoutines->structBatterStats.HomeRuns)
+            ) /
+            (wxGetApp().pDBRoutines->structBatterStats.AB);
+
+		wxGetApp().pDBRoutines->structBatterStats.OBP =
+			(float)(wxGetApp().pDBRoutines->structBatterStats.Hits +
+			wxGetApp().pDBRoutines->structBatterStats.Walk +
+ 			wxGetApp().pDBRoutines->structBatterStats.ReachedOnError +
+ 			wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
+			wxGetApp().pDBRoutines->structBatterStats.StollenBase) /
+			(wxGetApp().pDBRoutines->structBatterStats.AB +
+				wxGetApp().pDBRoutines->structBatterStats.Walk +
+				wxGetApp().pDBRoutines->structBatterStats.ReachedOnError +
+				wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
+				wxGetApp().pDBRoutines->structBatterStats.StollenBase);
+	}
     // End Stats Notebook Page
 
     // Retrieve Info Notebook Page - 13 entries
@@ -1909,43 +1962,47 @@ void BatterNotebook::OnComboBatterSelect(wxCommandEvent& event)
     m_spinStatsSB->SetValue( wxGetApp().pDBRoutines->structBatterStats.StollenBase );
     m_spinStatsW->SetValue( wxGetApp().pDBRoutines->structBatterStats.Walk );
 
-    if ( wxGetApp().pDBRoutines->structBatterStats.AB == 0 )
-    {
-		fBattingAverage = 0.0f;
-		fSLG = 0.0f;
-		fOnBasePercentage = 0.0f;
-    }
-    else
-    {
-		fBattingAverage = (float)wxGetApp().pDBRoutines->structBatterStats.Hits / wxGetApp().pDBRoutines->structBatterStats.AB;
-		fSLG = (float)
-            (
-                (
-                    wxGetApp().pDBRoutines->structBatterStats.Hits -
-                    (
-                        wxGetApp().pDBRoutines->structBatterStats.Doubles +
-                        wxGetApp().pDBRoutines->structBatterStats.Triples +
-                        wxGetApp().pDBRoutines->structBatterStats.HomeRuns
-                    )
-                ) +
-                (2 * wxGetApp().pDBRoutines->structBatterStats.Doubles) +
-                (3 * wxGetApp().pDBRoutines->structBatterStats.Triples) +
-                (4 * wxGetApp().pDBRoutines->structBatterStats.HomeRuns)
-            ) /
-            (wxGetApp().pDBRoutines->structBatterStats.AB);
-		fOnBasePercentage = (float)(wxGetApp().pDBRoutines->structBatterStats.Hits + wxGetApp().pDBRoutines->structBatterStats.Walk +
-            wxGetApp().pDBRoutines->structBatterStats.ReachedOnError + wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
-            wxGetApp().pDBRoutines->structBatterStats.StollenBase) / (wxGetApp().pDBRoutines->structBatterStats.AB +
-            wxGetApp().pDBRoutines->structBatterStats.Walk +
-            wxGetApp().pDBRoutines->structBatterStats.ReachedOnError + wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
-            wxGetApp().pDBRoutines->structBatterStats.StollenBase);
-    }
-    sprintf(buf,"%1.3f",fBattingAverage);
-    m_textStatsAVG->SetValue( buf );
-    sprintf(buf,"%1.3f",fOnBasePercentage);
-    m_textStatsOBP->SetValue( buf );
-    sprintf(buf,"%1.3f",fSLG);
-    m_textStatsSLG->SetValue( buf );
+    m_textStatsAVG->SetValue( wxString::Format(wxT("%1.3f"), (wxGetApp().pDBRoutines->structBatterStats.AVG )));
+    m_textStatsOBP->SetValue( wxString::Format(wxT("%1.3f"), (wxGetApp().pDBRoutines->structBatterStats.OBP )));
+    m_textStatsSLG->SetValue( wxString::Format(wxT("%1.3f"), (wxGetApp().pDBRoutines->structBatterStats.SLG )));
+
+//    if ( wxGetApp().pDBRoutines->structBatterStats.AB == 0 )
+//    {
+//		fBattingAverage = 0.0f;
+//		fSLG = 0.0f;
+//		fOnBasePercentage = 0.0f;
+//    }
+//    else
+//    {
+//		fBattingAverage = (float)wxGetApp().pDBRoutines->structBatterStats.Hits / wxGetApp().pDBRoutines->structBatterStats.AB;
+//		fSLG = (float)
+//            (
+//                (
+//                    wxGetApp().pDBRoutines->structBatterStats.Hits -
+//                    (
+//                        wxGetApp().pDBRoutines->structBatterStats.Doubles +
+//                        wxGetApp().pDBRoutines->structBatterStats.Triples +
+//                        wxGetApp().pDBRoutines->structBatterStats.HomeRuns
+//                    )
+//                ) +
+//                (2 * wxGetApp().pDBRoutines->structBatterStats.Doubles) +
+//                (3 * wxGetApp().pDBRoutines->structBatterStats.Triples) +
+//                (4 * wxGetApp().pDBRoutines->structBatterStats.HomeRuns)
+//            ) /
+//            (wxGetApp().pDBRoutines->structBatterStats.AB);
+//		fOnBasePercentage = (float)(wxGetApp().pDBRoutines->structBatterStats.Hits + wxGetApp().pDBRoutines->structBatterStats.Walk +
+//			wxGetApp().pDBRoutines->structBatterStats.ReachedOnError + wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
+//			wxGetApp().pDBRoutines->structBatterStats.StollenBase) / (wxGetApp().pDBRoutines->structBatterStats.AB +
+//			wxGetApp().pDBRoutines->structBatterStats.Walk +
+//			wxGetApp().pDBRoutines->structBatterStats.ReachedOnError + wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
+//			wxGetApp().pDBRoutines->structBatterStats.StollenBase);
+//    }
+//    sprintf(buf,"%1.3f",fBattingAverage);
+//    m_textStatsAVG->SetValue( buf );
+//    sprintf(buf,"%1.3f",fOnBasePercentage);
+//    m_textStatsOBP->SetValue( buf );
+//    sprintf(buf,"%1.3f",fSLG);
+//    m_textStatsSLG->SetValue( buf );
     // End Stats Notebook Page
 
     // Populate Info Notebook Page - 11 entries
@@ -2191,7 +2248,7 @@ bool BatterNotebook::GetTeamNamesArray()
     return(TRUE);
 }
 
-bool BatterNotebook::UpdateBatterNames()
+void BatterNotebook::UpdateBatterNames()
 {
     // This is kind of working
     // I am forcing the positioning and when
@@ -3518,7 +3575,7 @@ void PitcherNotebook::OnAdd(wxCommandEvent& event)
     }
 }
 
-bool PitcherNotebook::UpdatePitcherNames()
+void PitcherNotebook::UpdatePitcherNames()
 {
     // This is kind of working
     // I am forcing the positioning and when
@@ -3684,6 +3741,8 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
 
 void PitcherNotebook::GetNotebookData()
 {
+	double fIP;
+
     // Retrieve Info Notebook Page - 9 entries
     wxGetApp().pDBRoutines->structPitcherData.FirstName = m_textFirstName->GetValue();
     wxGetApp().pDBRoutines->structPitcherData.LastName = m_textLastName->GetValue();
@@ -3742,6 +3801,21 @@ void PitcherNotebook::GetNotebookData()
     wxGetApp().pDBRoutines->structPitcherStats.Starts = m_spinStatsStarts->GetValue();
     wxGetApp().pDBRoutines->structPitcherStats.Walks = m_spinStatsW->GetValue();
     wxGetApp().pDBRoutines->structPitcherStats.Wins = m_spinStatsWins->GetValue();
+
+	fIP = atof( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));
+
+	if (fIP == 0)
+	{
+		wxGetApp().pDBRoutines->structPitcherStats.ERA = 0.0f;
+		wxGetApp().pDBRoutines->structPitcherStats.WHIP = 0.0f;
+	}
+	else
+	{
+		wxGetApp().pDBRoutines->structPitcherStats.ERA =
+			(double)( wxGetApp().pDBRoutines->structPitcherStats.ER *9 ) / fIP;
+		wxGetApp().pDBRoutines->structPitcherStats.WHIP =
+			(double)( wxGetApp().pDBRoutines->structPitcherStats.Hits + wxGetApp().pDBRoutines->structPitcherStats.Walks ) / fIP;
+	}
     // End Stats Notebook Page
 //
 //    wxString Foobar;
@@ -3786,25 +3860,11 @@ void PitcherNotebook::GetNotebookData()
 
 void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
 {
-    // GetSelection will return the zero based index from the combobox
     int iPitcherSelection;
-    int origselection;
-    wxString strPitcherName;
-    PitcherStruct my_PitcherStruct;
-	char buf[10];
-	double fIP;
-	double fERA;
-	double fWHIP;
 
     iPitcherSelection = event.GetSelection();
-    strPitcherName = event.GetString();
-    // origselection can be used to calculate displacement into file
-//    origselection = m_arrayPitchersOrig.Index( strPitcherName );
-
     // Since a pitcher has been selected, we now need to retrieve
     // the pitcher information and populate the dialog.
-//    my_PitcherStruct.GetPitcher( m_strLeagueDirName + m_strTeamFileNamePitcher,
-//        origselection );
     wxGetApp().pDBRoutines->DBGetPitcherData(wxGetApp().pDBRoutines->m_arrayPitcherStatsIDs[iPitcherSelection]);
     wxGetApp().pDBRoutines->m_intPitcherStatsID = wxGetApp().pDBRoutines->m_arrayPitcherStatsIDs[iPitcherSelection];
 //    wxGetApp().pDBRoutines->DBGetPitcherData(iPitcherSelection);
@@ -3863,32 +3923,30 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
     m_spinStatsStarts->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Starts );
     m_spinStatsW->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Walks );
     m_spinStatsWins->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Wins );
-	fIP = atof( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));
 
-	if (fIP == 0)
-	{
-		m_textStatsERA->SetValue( "0" );
-		m_textStatsWHIP->SetValue( "0" );
-	}
-	else
-	{
-		fERA = (double)( wxGetApp().pDBRoutines->structPitcherStats.ER *9 ) / fIP;
-		sprintf(buf,"%1.2f",fERA);
-        m_textStatsERA->SetValue( buf );
-		fWHIP = (double)( wxGetApp().pDBRoutines->structPitcherStats.Hits + wxGetApp().pDBRoutines->structPitcherStats.Walks ) / fIP;
-		sprintf(buf,"%1.2f",fWHIP);
-        m_textStatsWHIP->SetValue( buf );
-	}
+    m_textStatsERA->SetValue( wxString::Format(wxT("%1.2f"), (wxGetApp().pDBRoutines->structPitcherStats.ERA )));
+    m_textStatsWHIP->SetValue( wxString::Format(wxT("%1.2f"), (wxGetApp().pDBRoutines->structPitcherStats.WHIP )));
+
+//	fIP = atof( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));
+//
+//	if (fIP == 0)
+//	{
+//		m_textStatsERA->SetValue( "0" );
+//		m_textStatsWHIP->SetValue( "0" );
+//	}
+//	else
+//	{
+//		fERA = (double)( wxGetApp().pDBRoutines->structPitcherStats.ER *9 ) / fIP;
+//		sprintf(buf,"%1.2f",fERA);
+//        m_textStatsERA->SetValue( buf );
+//		fWHIP = (double)( wxGetApp().pDBRoutines->structPitcherStats.Hits + wxGetApp().pDBRoutines->structPitcherStats.Walks ) / fIP;
+//		sprintf(buf,"%1.2f",fWHIP);
+//        m_textStatsWHIP->SetValue( buf );
+//	}
     // End Stats Notebook Page
 
     // Clear the flag since we are done setting initial values
     m_bSetValueFlagPitcher = FALSE;
-
-//    wxMessageDialog dialog2(NULL, strBatterName + _T("\n")+
-//               m_arrayBattersOrig[origselection],
-//               _T("Got string"),
-//               wxOK|wxICON_INFORMATION );
-//    dialog2.ShowModal();
 }
 
 void PitcherNotebook::OnComboTeamSelect(wxCommandEvent& event)

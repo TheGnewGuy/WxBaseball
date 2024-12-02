@@ -60,7 +60,7 @@ private:
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
     bool GetTeamNamesArray();
-    bool UpdateBatterNames();
+    void UpdateBatterNames();
     void GetNotebookData();
 
     wxBoxSizer* m_sizerBatter;
@@ -240,7 +240,7 @@ private:
 	// Used to create the Batter Notebook and its four panels
 	void CreateNotebook(int x, int y, int w, int h);
     bool GetTeamNamesArray();
-    bool UpdatePitcherNames();
+    void UpdatePitcherNames();
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
     void GetNotebookData();
