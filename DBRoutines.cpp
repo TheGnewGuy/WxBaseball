@@ -4707,11 +4707,11 @@ int DBRoutines::DBUpdatePitcherData(int passedPitcherID)
     // This routine needs to be verified and tested
     ////////////////////////////////////////////////////////////////
 
-    wxString Foobar;
-    Foobar.Printf( wxT("Pitcher On Base Chance = %f"), structPitcherData.OBChanceBasic);
-    wxMessageBox(Foobar);
-    Foobar.Printf( wxT("Pitcher ID = %i"), passedPitcherID);
-    wxMessageBox(Foobar);
+//    wxString Foobar;
+//    Foobar.Printf( wxT("Pitcher On Base Chance = %f"), structPitcherData.OBChanceBasic);
+//    wxMessageBox(Foobar);
+//    Foobar.Printf( wxT("Pitcher ID = %i"), passedPitcherID);
+//    wxMessageBox(Foobar);
 
 	rc = sqlite3_prepare_v2(m_db, sqlPitcherData, strlen(sqlPitcherData), &m_stmtPitcherUpdateData, 0);
 	if (rc != SQLITE_OK)

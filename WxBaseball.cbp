@@ -33,6 +33,34 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="WinRelease">
+				<Option output="bin/WinRelease/WxBaseball" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/WinRelease/" />
+				<Option type="0" />
+				<Option compiler="cross_compiler_windows" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Option projectLinkerOptionsRelation="1" />
+				<Option projectIncludeDirsRelation="1" />
+				<Option projectResourceIncludeDirsRelation="1" />
+				<Option projectLibDirsRelation="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="`wx-configmsw --cflags`" />
+					<Add option="-D__WXMSW__" />
+					<Add directory="/usr/x86_64-w64-mingw32/include" />
+					<Add directory="include" />
+					<Add directory="WBaseball/" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="/usr/x86_64-w64-mingw32/include" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="`wx-configmsw --libs`" />
+					<Add library="/home/john/Documents/Installed/sqlite/sqlite-autoconf-3450200/libsMSW/libsqlite3.a" />
+					<Add directory="/usr/x86_64-w64-mingw32/lib" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />

@@ -30,6 +30,9 @@ IMPLEMENT_APP(WxBaseballApp);
 //}
 bool WxBaseballApp::OnInit()
 {
+//	wxDateTime dt;
+//	myAppVersion.Printf( wxT("1.1.%i.24"), dt.GetDayOfYear());
+
 	pWxBaseballFrame = ( WxBaseballFrame * ) NULL;
 
 	// Global print data, to remember settings during the session

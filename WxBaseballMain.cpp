@@ -313,6 +313,7 @@ void WxBaseballFrame::OnAbout(wxCommandEvent &event)
     wxString msg;
     wxString strWxVersion = wxbuildinfo(long_f);
     msg.Printf( wxT( "WxBaseball Tracking System\nVersion:  %s\nWxWidgets Version: %s"), APP_VERSION_STR, strWxVersion );
+//    msg.Printf( wxT( "WxBaseball Tracking System\nVersion:  %s\nWxWidgets Version: %s"), wxGetApp().myAppVersion, strWxVersion );
     wxMessageBox(msg, _("Welcome to WxBaseball"));
 }
 

@@ -27,6 +27,8 @@
 //              ERA and WHIP and store in structure                        //
 //              Updated PitcherNotebook::OnComboPitcherSelect to load      //
 //              ERA and WHIP from the structure                            //
+// 12/08/24     Set values for relief pitcher to be 0 to 5 insetad of      //
+//              0 to 4                                                     //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -731,7 +733,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
 
     m_panel_01->SetSizer( sizer_01 );
 
-    m_pNotebook->AddPage(m_panel_01, _T("Position"), true, -1);
+    m_pNotebook->AddPage(m_panel_01, _T("Position"), false, -1);
 
     // Add Chance Notebook page
     m_panel_02 = new wxPanel(m_pNotebook);
@@ -1218,7 +1220,8 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
     m_panel_04->SetSizer( sizer_04 );
-    m_pNotebook->AddPage(m_panel_04, _T("Info"), false, -1);
+//    m_pNotebook->AddPage(m_panel_04, _T("Info"), false, -1);
+    m_pNotebook->InsertPage(0, m_panel_04, _T("Info"), true, -1);
 }
 
 void BatterNotebook::DefaultPanelValues( )
@@ -1492,6 +1495,11 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
         wxGetApp().pDBRoutines->DBGetBatterStatsID(wxGetApp().pDBRoutines->m_intTeamID);
         //m_combo_pitcher_01. //  ( wxGetApp().pDBRoutines->m_arrayPitcherFullNames );
         UpdateBatterNames();
+
+		m_bChangeInfoFlag = FALSE;
+		m_bChangeStatsFlag = FALSE;
+		m_bChangeChanceFlag = FALSE;
+		m_bChangePositionFlag = FALSE;
 //		event.Skip(TRUE);
     }
     else
@@ -2113,36 +2121,36 @@ void BatterNotebook::OnPageChanged(wxNotebookEvent& event)
          case -1:
              break;
          case 0:   // Position Notebook Page
-             m_combo_batter_02->SetSelection(m_combo_batter_01->GetSelection());
-             m_combo_batter_03->SetSelection(m_combo_batter_01->GetSelection());
-             m_combo_batter_04->SetSelection(m_combo_batter_01->GetSelection());
+             m_combo_batter_01->SetSelection(m_combo_batter_04->GetSelection());
+             m_combo_batter_02->SetSelection(m_combo_batter_04->GetSelection());
+             m_combo_batter_03->SetSelection(m_combo_batter_04->GetSelection());
 
 //             m_combo_team_02->SetSelection(m_combo_team_01->GetSelection());
 //             m_combo_team_03->SetSelection(m_combo_team_01->GetSelection());
 //             m_combo_team_04->SetSelection(m_combo_team_01->GetSelection());
              break;
          case 1:   // Chance Notebook Page
-             m_combo_batter_01->SetSelection(m_combo_batter_02->GetSelection());
-             m_combo_batter_03->SetSelection(m_combo_batter_02->GetSelection());
-             m_combo_batter_04->SetSelection(m_combo_batter_02->GetSelection());
+             m_combo_batter_02->SetSelection(m_combo_batter_01->GetSelection());
+             m_combo_batter_03->SetSelection(m_combo_batter_01->GetSelection());
+             m_combo_batter_04->SetSelection(m_combo_batter_01->GetSelection());
 
 //             m_combo_team_01->SetSelection(m_combo_team_02->GetSelection());
 //             m_combo_team_03->SetSelection(m_combo_team_02->GetSelection());
 //             m_combo_team_04->SetSelection(m_combo_team_02->GetSelection());
              break;
          case 2:   // Stats Notebook Page
-             m_combo_batter_01->SetSelection(m_combo_batter_03->GetSelection());
-             m_combo_batter_02->SetSelection(m_combo_batter_03->GetSelection());
-             m_combo_batter_04->SetSelection(m_combo_batter_03->GetSelection());
+             m_combo_batter_01->SetSelection(m_combo_batter_02->GetSelection());
+             m_combo_batter_03->SetSelection(m_combo_batter_02->GetSelection());
+             m_combo_batter_04->SetSelection(m_combo_batter_02->GetSelection());
 
 //             m_combo_team_01->SetSelection(m_combo_team_03->GetSelection());
 //             m_combo_team_02->SetSelection(m_combo_team_03->GetSelection());
 //             m_combo_team_04->SetSelection(m_combo_team_03->GetSelection());
              break;
          case 3:   // Info Notebook Page
-             m_combo_batter_01->SetSelection(m_combo_batter_04->GetSelection());
-             m_combo_batter_02->SetSelection(m_combo_batter_04->GetSelection());
-             m_combo_batter_03->SetSelection(m_combo_batter_04->GetSelection());
+             m_combo_batter_01->SetSelection(m_combo_batter_03->GetSelection());
+             m_combo_batter_02->SetSelection(m_combo_batter_03->GetSelection());
+             m_combo_batter_04->SetSelection(m_combo_batter_03->GetSelection());
 
 //             m_combo_team_01->SetSelection(m_combo_team_04->GetSelection());
 //             m_combo_team_02->SetSelection(m_combo_team_04->GetSelection());
@@ -3100,6 +3108,7 @@ void PitcherNotebook::Initialization( )
     m_array_InfoRelief.Add("2");
     m_array_InfoRelief.Add("3");
     m_array_InfoRelief.Add("4");
+    m_array_InfoRelief.Add("5");
     m_array_InfoBalk.Add("0");
     m_array_InfoBalk.Add("1");
     m_array_InfoBalk.Add("2");
@@ -3567,6 +3576,10 @@ void PitcherNotebook::OnAdd(wxCommandEvent& event)
         wxGetApp().pDBRoutines->DBGetPitcherStatsID(wxGetApp().pDBRoutines->m_intTeamID);
         //m_combo_pitcher_01. //  ( wxGetApp().pDBRoutines->m_arrayPitcherFullNames );
         UpdatePitcherNames();
+
+		m_bChangeInfoFlag = FALSE;
+		m_bChangeStatsFlag = FALSE;
+		m_bChangeChanceFlag = FALSE;
     }
     else
     {
