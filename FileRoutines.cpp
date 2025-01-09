@@ -6,7 +6,7 @@
 // Copyright:     (c) John Gnew                                            //
 // Modifications:                                                          //
 //   Date       Description                                                //
-// ??/??/??    X                                                           //
+// 01/09/24    In BuildPlayerStats the RBI section was displaying hits     //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -983,7 +983,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 
 		playerName = firstName + _T(" ") + lastName;
 		strexportData.Printf( _T("%s %-16.16s %4i  "),
-			teamNameShort, playerName, hits);
+			teamNameShort, playerName, rbi);
 		strArrayHTMLData1.Add(strexportData);
 
 		// Get next player

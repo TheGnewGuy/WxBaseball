@@ -29,10 +29,16 @@
 //              ERA and WHIP from the structure                            //
 // 12/08/24     Set values for relief pitcher to be 0 to 5 insetad of      //
 //              0 to 4                                                     //
+// 01/09/25     Set defaults for OnNew pitcher starter and Relief to 0     //
+//              Instead of 1                                               //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
-//       Setup PitcherNotebook::GetTeamNamesArray for SQL calls            //
+//       Correct actions and messages when Cancel is pressed               //
+//       Correct messages when Apply is pressed                            //
+//       Force NEW to be pressed prior to allowing the activation of the   //
+//          Add button                                                     //
+//       In AddBatter, think about renumbering tabs since 4 became tab 1   //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -3001,8 +3007,8 @@ void PitcherNotebook::DefaultPanelValues( )
     // End Chance Notebook Page
 
     // Initialize Info Notebook Page - 9 entries
-    m_combo_InfoStarter->SetValue( "1" );
-    m_combo_InfoRelief->SetValue( "1" );
+    m_combo_InfoStarter->SetValue( "0" );
+    m_combo_InfoRelief->SetValue( "0" );
     m_combo_InfoBalk->SetValue( "0" );
     m_combo_InfoP->SetValue( "0" );
     m_combo_InfoERP->SetValue( "0" );
@@ -3729,8 +3735,8 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     // End Chance Notebook Page
 
     // Initialize Info Notebook Page - 9 entries
-    m_combo_InfoStarter->SetValue( "1" );
-    m_combo_InfoRelief->SetValue( "1" );
+    m_combo_InfoStarter->SetValue( "0" );
+    m_combo_InfoRelief->SetValue( "0" );
     m_combo_InfoBalk->SetValue( "0" );
     m_combo_InfoP->SetValue( "0" );
     m_combo_InfoERP->SetValue( "0" );
