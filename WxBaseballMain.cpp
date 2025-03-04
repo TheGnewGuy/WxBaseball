@@ -535,16 +535,23 @@ void WxBaseballFrame::OnTeamsAddTeam ( wxCommandEvent& event )
 
 	// DBGetLeague will prompt for the league
 	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
-	// This will populate the structLeagueData
-	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+	if (LeagueID != wxID_CANCEL)\
+	{
+		// This will populate the structLeagueData
+		wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
 
-	// Get Conference, check to see if valid, then
-	// get Division and check to see if its valid
-	ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
-
-	DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
-
-	TeamDialogAdd( this );
+		// Get Conference, check to see if valid, then
+		// get Division and check to see if its valid
+		ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+		if (ConferenceID != wxID_CANCEL)
+		{
+			DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
+			if (DivisionID != wxID_CANCEL)
+			{
+				TeamDialogAdd( this );
+			}
+		}
+	}
 }
 
 void WxBaseballFrame::OnTeamsEditTeam ( wxCommandEvent& event )

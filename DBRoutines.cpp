@@ -7,6 +7,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // Modifications:                                                          //
 //   Date       Description                                                //
+// 03/04/25  Changed return values in DBGetLeague, DBGetConferenceID,      //
+//           and DBGetDivisionID to return wxID_CANCEL if cancel           //
+//           was selected                                                  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -273,7 +276,7 @@ int DBRoutines::DBGetLeague()
     }
     else
     {
-		return false;
+		return wxID_CANCEL;
     }
 
 }
@@ -663,9 +666,12 @@ int DBRoutines::DBGetConferenceID( int passedLeagueID )
     {
         m_strConferenceName = dialogConference.GetStringSelection();
         m_intConferenceID = m_arrayConferenceIDs[dialogConference.GetSelection()];
+		return m_intConferenceID;
     }
-
-    return m_intConferenceID;
+    else
+    {
+		return wxID_CANCEL;
+    }
 }
 
 // Routine will return the selected ConferenceID
@@ -797,9 +803,12 @@ int DBRoutines::DBGetDivisionID( int passedConferenceID )
     {
         m_strDivisionName = dialogDivision.GetStringSelection();
         m_intDivisionID = m_arrayDivisionIDs[dialogDivision.GetSelection()];
+		return m_intDivisionID;
     }
-
-    return m_intDivisionID;
+    else
+    {
+		return wxID_CANCEL;
+    }
 }
 
 // Routine will return the selected DivisionID

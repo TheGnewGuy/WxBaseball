@@ -31,6 +31,7 @@
 //              0 to 4                                                     //
 // 01/09/25     Set defaults for OnNew pitcher starter and Relief to 0     //
 //              Instead of 1                                               //
+// 01/16/25     Changed default chance from "0     " to "0.0"              //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -39,6 +40,8 @@
 //       Force NEW to be pressed prior to allowing the activation of the   //
 //          Add button                                                     //
 //       In AddBatter, think about renumbering tabs since 4 became tab 1   //
+//                                                                         //
+//       OBP is (H+BB+HBP)/(AB+BB+HBP+SF) not whatever I have in the code  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1313,27 +1316,27 @@ void BatterNotebook::DefaultPanelValues( )
     m_textStatsOBP->SetValue( "0" );
 
     // Initialize Chance Notebook Page to 0
-    m_textChanceBasic->SetValue( "0     " );
-    m_textChanceLeft->SetValue( "0     " );
-    m_textChanceRight->SetValue( "0     " );
-    m_textChanceB1B->SetValue( "0     " );
-    m_textChanceB2B->SetValue( "0     " );
-    m_textChanceB3B->SetValue( "0     " );
-    m_textChanceBHR->SetValue( "0     " );
-    m_textChanceBW->SetValue( "0     " );
-    m_textChanceBDP->SetValue( "0     " );
-    m_textChanceL1B->SetValue( "0     " );
-    m_textChanceL2B->SetValue( "0     " );
-    m_textChanceL3B->SetValue( "0     " );
-    m_textChanceLHR->SetValue( "0     " );
-    m_textChanceLW->SetValue( "0     " );
-    m_textChanceLDP->SetValue( "0     " );
-    m_textChanceR1B->SetValue( "0     " );
-    m_textChanceR2B->SetValue( "0     " );
-    m_textChanceR3B->SetValue( "0     " );
-    m_textChanceRHR->SetValue( "0     " );
-    m_textChanceRW->SetValue( "0     " );
-    m_textChanceRDP->SetValue( "0     " );
+    m_textChanceBasic->SetValue( "0.0" );
+    m_textChanceLeft->SetValue( "0.0" );
+    m_textChanceRight->SetValue( "0.0" );
+    m_textChanceB1B->SetValue( "0.0" );
+    m_textChanceB2B->SetValue( "0.0" );
+    m_textChanceB3B->SetValue( "0.0" );
+    m_textChanceBHR->SetValue( "0.0" );
+    m_textChanceBW->SetValue( "0.0" );
+    m_textChanceBDP->SetValue( "0.0" );
+    m_textChanceL1B->SetValue( "0.0" );
+    m_textChanceL2B->SetValue( "0.0" );
+    m_textChanceL3B->SetValue( "0.0" );
+    m_textChanceLHR->SetValue( "0.0" );
+    m_textChanceLW->SetValue( "0.0" );
+    m_textChanceLDP->SetValue( "0.0" );
+    m_textChanceR1B->SetValue( "0.0" );
+    m_textChanceR2B->SetValue( "0.0" );
+    m_textChanceR3B->SetValue( "0.0" );
+    m_textChanceRHR->SetValue( "0.0" );
+    m_textChanceRW->SetValue( "0.0" );
+    m_textChanceRDP->SetValue( "0.0" );
     // End Chance Notebook Page
 
     // Initialize Info Notebook Page to 0 or defaults
@@ -1605,27 +1608,27 @@ void BatterNotebook::OnNew(wxCommandEvent& event)
     // End Stats Notebook Page
 
     // Initialize Chance Notebook Page to 0
-    m_textChanceBasic->SetValue( "0     " );
-    m_textChanceLeft->SetValue( "0     " );
-    m_textChanceRight->SetValue( "0     " );
-    m_textChanceB1B->SetValue( "0     " );
-    m_textChanceB2B->SetValue( "0     " );
-    m_textChanceB3B->SetValue( "0     " );
-    m_textChanceBHR->SetValue( "0     " );
-    m_textChanceBW->SetValue( "0     " );
-    m_textChanceBDP->SetValue( "0     " );
-    m_textChanceL1B->SetValue( "0     " );
-    m_textChanceL2B->SetValue( "0     " );
-    m_textChanceL3B->SetValue( "0     " );
-    m_textChanceLHR->SetValue( "0     " );
-    m_textChanceLW->SetValue( "0     " );
-    m_textChanceLDP->SetValue( "0     " );
-    m_textChanceR1B->SetValue( "0     " );
-    m_textChanceR2B->SetValue( "0     " );
-    m_textChanceR3B->SetValue( "0     " );
-    m_textChanceRHR->SetValue( "0     " );
-    m_textChanceRW->SetValue( "0     " );
-    m_textChanceRDP->SetValue( "0     " );
+    m_textChanceBasic->SetValue( "0.0" );
+    m_textChanceLeft->SetValue( "0.0" );
+    m_textChanceRight->SetValue( "0.0" );
+    m_textChanceB1B->SetValue( "0.0" );
+    m_textChanceB2B->SetValue( "0.0" );
+    m_textChanceB3B->SetValue( "0.0" );
+    m_textChanceBHR->SetValue( "0.0" );
+    m_textChanceBW->SetValue( "0.0" );
+    m_textChanceBDP->SetValue( "0.0" );
+    m_textChanceL1B->SetValue( "0.0" );
+    m_textChanceL2B->SetValue( "0.0" );
+    m_textChanceL3B->SetValue( "0.0" );
+    m_textChanceLHR->SetValue( "0.0" );
+    m_textChanceLW->SetValue( "0.0" );
+    m_textChanceLDP->SetValue( "0.0" );
+    m_textChanceR1B->SetValue( "0.0" );
+    m_textChanceR2B->SetValue( "0.0" );
+    m_textChanceR3B->SetValue( "0.0" );
+    m_textChanceRHR->SetValue( "0.0" );
+    m_textChanceRW->SetValue( "0.0" );
+    m_textChanceRDP->SetValue( "0.0" );
     wxGetApp().pDBRoutines->structBatterData.OBChanceBasic = 0;
     wxGetApp().pDBRoutines->structBatterData.OBChanceLeft = 0;
     wxGetApp().pDBRoutines->structBatterData.OBChanceRight = 0;
@@ -2983,27 +2986,27 @@ void PitcherNotebook::DefaultPanelValues( )
     // End Stats Notebook Page
 
     // Initialize Chance Notebook Page - 21 entries
-    m_textChanceBasic->SetValue( "0     " );
-    m_textChanceLeft->SetValue( "0     " );
-    m_textChanceRight->SetValue( "0     " );
-    m_textChanceB1B->SetValue( "0     " );
-    m_textChanceB2B->SetValue( "0     " );
-    m_textChanceB3B->SetValue( "0     " );
-    m_textChanceBHR->SetValue( "0     " );
-    m_textChanceBW->SetValue( "0     " );
-    m_textChanceBDP->SetValue( "0     " );
-    m_textChanceL1B->SetValue( "0     " );
-    m_textChanceL2B->SetValue( "0     " );
-    m_textChanceL3B->SetValue( "0     " );
-    m_textChanceLHR->SetValue( "0     " );
-    m_textChanceLW->SetValue( "0     " );
-    m_textChanceLDP->SetValue( "0     " );
-    m_textChanceR1B->SetValue( "0     " );
-    m_textChanceR2B->SetValue( "0     " );
-    m_textChanceR3B->SetValue( "0     " );
-    m_textChanceRHR->SetValue( "0     " );
-    m_textChanceRW->SetValue( "0     " );
-    m_textChanceRDP->SetValue( "0     " );
+    m_textChanceBasic->SetValue( "0.0" );
+    m_textChanceLeft->SetValue( "0.0" );
+    m_textChanceRight->SetValue( "0.0" );
+    m_textChanceB1B->SetValue( "0.0" );
+    m_textChanceB2B->SetValue( "0.0" );
+    m_textChanceB3B->SetValue( "0.0" );
+    m_textChanceBHR->SetValue( "0.0" );
+    m_textChanceBW->SetValue( "0.0" );
+    m_textChanceBDP->SetValue( "0.0" );
+    m_textChanceL1B->SetValue( "0.0" );
+    m_textChanceL2B->SetValue( "0.0" );
+    m_textChanceL3B->SetValue( "0.0" );
+    m_textChanceLHR->SetValue( "0.0" );
+    m_textChanceLW->SetValue( "0.0" );
+    m_textChanceLDP->SetValue( "0.0" );
+    m_textChanceR1B->SetValue( "0.0" );
+    m_textChanceR2B->SetValue( "0.0" );
+    m_textChanceR3B->SetValue( "0.0" );
+    m_textChanceRHR->SetValue( "0.0" );
+    m_textChanceRW->SetValue( "0.0" );
+    m_textChanceRDP->SetValue( "0.0" );
     // End Chance Notebook Page
 
     // Initialize Info Notebook Page - 9 entries
@@ -3690,27 +3693,27 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     // End Stats Notebook Page
 
     // Initialize Chance Notebook Page - 21 entries
-    m_textChanceBasic->SetValue( "0     " );
-    m_textChanceLeft->SetValue( "0     " );
-    m_textChanceRight->SetValue( "0     " );
-    m_textChanceB1B->SetValue( "0     " );
-    m_textChanceB2B->SetValue( "0     " );
-    m_textChanceB3B->SetValue( "0     " );
-    m_textChanceBHR->SetValue( "0     " );
-    m_textChanceBW->SetValue( "0     " );
-    m_textChanceBDP->SetValue( "0     " );
-    m_textChanceL1B->SetValue( "0     " );
-    m_textChanceL2B->SetValue( "0     " );
-    m_textChanceL3B->SetValue( "0     " );
-    m_textChanceLHR->SetValue( "0     " );
-    m_textChanceLW->SetValue( "0     " );
-    m_textChanceLDP->SetValue( "0     " );
-    m_textChanceR1B->SetValue( "0     " );
-    m_textChanceR2B->SetValue( "0     " );
-    m_textChanceR3B->SetValue( "0     " );
-    m_textChanceRHR->SetValue( "0     " );
-    m_textChanceRW->SetValue( "0     " );
-    m_textChanceRDP->SetValue( "0     " );
+    m_textChanceBasic->SetValue( "0.0" );
+    m_textChanceLeft->SetValue( "0.0" );
+    m_textChanceRight->SetValue( "0.0" );
+    m_textChanceB1B->SetValue( "0.0" );
+    m_textChanceB2B->SetValue( "0.0" );
+    m_textChanceB3B->SetValue( "0.0" );
+    m_textChanceBHR->SetValue( "0.0" );
+    m_textChanceBW->SetValue( "0.0" );
+    m_textChanceBDP->SetValue( "0.0" );
+    m_textChanceL1B->SetValue( "0.0" );
+    m_textChanceL2B->SetValue( "0.0" );
+    m_textChanceL3B->SetValue( "0.0" );
+    m_textChanceLHR->SetValue( "0.0" );
+    m_textChanceLW->SetValue( "0.0" );
+    m_textChanceLDP->SetValue( "0.0" );
+    m_textChanceR1B->SetValue( "0.0" );
+    m_textChanceR2B->SetValue( "0.0" );
+    m_textChanceR3B->SetValue( "0.0" );
+    m_textChanceRHR->SetValue( "0.0" );
+    m_textChanceRW->SetValue( "0.0" );
+    m_textChanceRDP->SetValue( "0.0" );
     wxGetApp().pDBRoutines->structPitcherData.OBChanceBasic = 0;
     wxGetApp().pDBRoutines->structPitcherData.OBChanceLeft = 0;
     wxGetApp().pDBRoutines->structPitcherData.OBChanceRight = 0;
@@ -4691,6 +4694,7 @@ TeamDialogAdd::TeamDialogAdd (wxWindow* parent, long style)
 //                    wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+	// Need a way to check for a cancel
 	TeamDialogCreate();
 //
 //	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
@@ -5224,7 +5228,6 @@ TeamDialogCreate::TeamDialogCreate (wxWindow* parent, long style)
 //	m_pTextLeagueYear->SetValue( wxString::Format(wxT("%i"), wxGetApp().pDBRoutines->structLeagueData.LeagueYear) );
 
     int myRC = ShowModal();
-
 }
 
 TeamDialogCreate::~TeamDialogCreate( )
