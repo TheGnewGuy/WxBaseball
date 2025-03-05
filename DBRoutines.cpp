@@ -10,6 +10,8 @@
 // 03/04/25  Changed return values in DBGetLeague, DBGetConferenceID,      //
 //           and DBGetDivisionID to return wxID_CANCEL if cancel           //
 //           was selected                                                  //
+// 03/05/25  Changed return in DBSelectTeam to return wxID_CANCEL          //
+//           if cancle was selected                                        //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -190,7 +192,7 @@ int DBRoutines::DBGetATeamID()
 	int intPitcherStatsID;
 
     intLeagueID = DBGetLeague();
-    if ( intLeagueID == false )
+    if ( intLeagueID == wxID_CANCEL )
 		return false;
     intTeamID = DBGetTeamArray(intLeagueID);
     if ( intTeamID == false )
@@ -1146,8 +1148,12 @@ int DBRoutines::DBSelectTeam(int passedLeagueID, int passedConferenceID, int pas
 
 //        wxMessageDialog dialogTeam2(wxGetApp().GetTopWindow(), m_strTeamName, "Got Team");
 //        dialogTeam2.ShowModal();
+		return m_intTeamID;
     }
-    return m_intTeamID;
+    else
+    {
+		return wxID_CANCEL;
+    }
 }
 
 // Routine will populate arrays with teams in the league

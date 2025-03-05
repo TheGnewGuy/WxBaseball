@@ -1,11 +1,22 @@
-/***************************************************************
- * Name:      WxBaseballMain.cpp
- * Purpose:   Code for Application Frame
- * Author:    John Gnew (john.gnew@verizon.net)
- * Created:   2024-03-22
- * Copyright: John Gnew ()
- * License:
- **************************************************************/
+/////////////////////////////////////////////////////////////////////////////
+// Name:		WxBaseballMain.cpp                                         //
+// Purpose:		Baseball statistics tracking tool for Strat-O-Matic        //
+// Author:		John Gnew (john.gnew@verizon.net)                          //
+// Created:		2024-03-22                                                 //
+// Copyright:	(c) John Gnew                                              //
+/////////////////////////////////////////////////////////////////////////////
+// Modifications:                                                          //
+//   Date       Description                                                //
+// 03/04/25  Changed return test in OnTeamsAddTeam to check for			   //
+//           wxID_CANCEL                                                   //
+// 03/05/25  Changed return test in OnTeamsEditTeam,                       //
+//           OnStatisticsHTMLLeagueStats, OnFileExportLeagueTeamsAll       //
+//           to check for wxID_CANCEL                                      //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
+// Todo:                                                                   //
+//                                                                         //
+/////////////////////////////////////////////////////////////////////////////
 
 #ifdef WX_PRECOMP
 #include "wx_pch.h"
@@ -406,7 +417,7 @@ void WxBaseballFrame::OnFileExportLeagueTeamsAll ( wxCommandEvent& event )
 
 	// Use a dialog to select a league then create the array of the teams in the league
 	leagueID = wxGetApp().pDBRoutines->DBGetLeague();
-	if ( leagueID != false )
+	if ( leagueID != wxID_CANCEL )
 	{
 		wxGetApp().pDBRoutines->DBGetLeagueTeams( leagueID );
 
@@ -503,13 +514,16 @@ void WxBaseballFrame::OnStatisticsHTMLLeagueStats ( wxCommandEvent& event )
 
 	// DBGetLeague will prompt for the league
 	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
-	// This will populate the structLeagueData
-	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
-	// The following will look at the League for Conferences and Divisions
-	// which in turn will involk pFileRoutines->BuildPlayerStats to
-	// create the stats report for each division
-	wxGetApp().pDBRoutines->DBGetLeagueConferenceDivision( LeagueID );
-//	wxGetApp().pFileRoutines->BuildPlayerStats( 1, 2, 3 );
+	if (LeagueID != wxID_CANCEL)
+	{
+		// This will populate the structLeagueData
+		wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+		// The following will look at the League for Conferences and Divisions
+		// which in turn will involk pFileRoutines->BuildPlayerStats to
+		// create the stats report for each division
+		wxGetApp().pDBRoutines->DBGetLeagueConferenceDivision( LeagueID );
+	//	wxGetApp().pFileRoutines->BuildPlayerStats( 1, 2, 3 );
+	}
 }
 
 void WxBaseballFrame::OnLeaguesAddLeague ( wxCommandEvent& event )
@@ -566,20 +580,30 @@ void WxBaseballFrame::OnTeamsEditTeam ( wxCommandEvent& event )
 
 	// DBGetLeague will prompt for the league
 	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
-	// This will populate the structLeagueData
-	wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+	if (LeagueID != wxID_CANCEL)
+	{
+		// This will populate the structLeagueData
+		wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
 
-	// Get Conference, check to see if valid, then
-	// get Division and check to see if its valid
-	ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+		// Get Conference, check to see if valid, then
+		// get Division and check to see if its valid
+		ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+		if (ConferenceID != wxID_CANCEL)
+		{
+			DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
+			if (DivisionID != wxID_CANCEL)
+			{
+				TeamID = wxGetApp().pDBRoutines->DBSelectTeam( LeagueID, ConferenceID, DivisionID );
+				// wxID_CANCEL is 5101 so if an actual teamID was 5101 there would be a problem
+				if (TeamID != wxID_CANCEL)
+				{
+					wxGetApp().pDBRoutines->DBGetTeam( TeamID );
 
-	DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
-
-	TeamID = wxGetApp().pDBRoutines->DBSelectTeam( LeagueID, ConferenceID, DivisionID );
-
-	wxGetApp().pDBRoutines->DBGetTeam( TeamID );
-
-	TeamDialogApply( this );
+					TeamDialogApply( this );
+				}
+			}
+		}
+	}
 }
 
 void WxBaseballFrame::OnTeamsCreateTeam ( wxCommandEvent& event )
