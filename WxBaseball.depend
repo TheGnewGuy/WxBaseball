@@ -4,7 +4,7 @@
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1741199015 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1741548788 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -22,7 +22,7 @@
 	"MyCanvas.h"
 	"sqlite3.h"
 
-1741127367 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
+1741548788 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
 	"wx_pch.h"
 	<wx/print.h>
 	<wx/printdlg.h>

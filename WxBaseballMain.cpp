@@ -12,6 +12,9 @@
 // 03/05/25  Changed return test in OnTeamsEditTeam,                       //
 //           OnStatisticsHTMLLeagueStats, OnFileExportLeagueTeamsAll       //
 //           to check for wxID_CANCEL                                      //
+// 03/09/25  Changed OnTeamsEditTeam to check for false instead of         //
+//           wxID_CANCEL. wxID_CANCEL is 5101 which might be a valid       //
+//           DB index but false which is '0' is not valid                  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -594,8 +597,9 @@ void WxBaseballFrame::OnTeamsEditTeam ( wxCommandEvent& event )
 			if (DivisionID != wxID_CANCEL)
 			{
 				TeamID = wxGetApp().pDBRoutines->DBSelectTeam( LeagueID, ConferenceID, DivisionID );
-				// wxID_CANCEL is 5101 so if an actual teamID was 5101 there would be a problem
-				if (TeamID != wxID_CANCEL)
+				// wxID_CANCEL is 5101 so if an actual teamID was 5101 there would be a problem.
+				// So, we are returning false '0'. All DB indexes start with 1 so zero is ok.
+				if (TeamID != false)
 				{
 					wxGetApp().pDBRoutines->DBGetTeam( TeamID );
 

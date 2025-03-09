@@ -11,7 +11,10 @@
 //           and DBGetDivisionID to return wxID_CANCEL if cancel           //
 //           was selected                                                  //
 // 03/05/25  Changed return in DBSelectTeam to return wxID_CANCEL          //
-//           if cancle was selected                                        //
+//           if cancel was selected                                        //
+// 03/09/25  Changed return in DBSelectTeam to return false instead of     //
+//           wxID_CANCEL. wxID_CANCEL returne 5101 which might be a valid  //
+//           DB index where false which is '0' is not a valid index        //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -178,7 +181,7 @@ int DBRoutines::DBClose()
 
 //        Foobar.Printf( wxT("Just Closed database"));
 //        wxMessageBox(Foobar);
-   }
+	}
 //    Destroy();
 
     return rc;
@@ -1152,7 +1155,8 @@ int DBRoutines::DBSelectTeam(int passedLeagueID, int passedConferenceID, int pas
     }
     else
     {
-		return wxID_CANCEL;
+		// Returning false which is '0'. All DB indexes start at 1
+		return false;
     }
 }
 
