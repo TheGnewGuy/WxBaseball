@@ -18,6 +18,8 @@
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
+// 03/12/25  League Stastics crashes when teams are not filled in          //
+//           Also, need to remove Apply message for Batters and Pitchers   //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 

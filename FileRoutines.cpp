@@ -7,6 +7,9 @@
 // Modifications:                                                          //
 //   Date       Description                                                //
 // 01/09/24    In BuildPlayerStats the RBI section was displaying hits     //
+// 03/13/25    In BuildPlayerStats corrected formatting, tested for float  //
+//             values of Nan (not a number) and corrected handeling for    //
+//             ERA and WHIP.                                               //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -595,6 +598,12 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		fBA = (float)sumHits / sumAB;
 		fSLG = (float)((sumHits - (sumDouble + sumTriple + sumHomeRun)) + (2 * sumDouble) + (3 * sumTriple) + (4 * sumHomeRun)) / (sumAB);
 		fOBP = (float)(sumHits + sumWalk + sumROE + sumSacrifice + sumStollen) / (sumAB + sumWalk + sumROE + sumSacrifice + sumStollen);
+		if ( isnan(fBA) )
+			fBA = 0;
+		if ( isnan(fSLG) )
+			fSLG = 0;
+		if ( isnan(fOBP) )
+			fOBP = 0;
 
 		wxGetApp().pDBRoutines->DBGetTeam(teamID);
 
@@ -613,8 +622,15 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	fBA = (float)totalHits / totalAB;
+// The float value "-nan(0x400000)" represents a "Not a Number"
+	if ( isnan(fBA) )
+		fBA = 0;
 	fSLG = (float)((totalHits - (totalDouble + totalTriple + totalHomeRun)) + (2 * totalDouble) + (3 * totalTriple) + (4 * totalHomeRun)) / (totalAB);
+	if ( isnan(fSLG) )
+		fSLG = 0;
 	fOBP = (float)(totalHits + totalWalk + totalROE + totalSacrifice + totalStollen) / (totalAB + totalWalk + totalROE + totalSacrifice + totalStollen);
+	if ( isnan(fOBP) )
+		fOBP = 0;
 	strexportData.Printf( _T("LEAGUE TOTALS       %1.3f %1.3f %1.3f %5i %4i %5i %4i %4i %4i %3i %4i %4i\n"),
 		fBA, fSLG, fOBP, totalAB, totalRuns, totalHits, totalRBI,
 		totalDouble, totalTriple, totalHomeRun, totalStollen, totalCS);
@@ -701,7 +717,12 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		totalStrikeouts += sumStrikeouts;
 
 		fERA = ((float)sumER * 9) / sumInningsPitched;
+// The float value "-nan(0x400000)" represents a "Not a Number"
+		if ( isnan(fERA) )
+			fERA = 0;
 		fWHIP = (float)(sumPHits + sumWalks) / sumInningsPitched;
+		if ( isnan(fWHIP) )
+			fWHIP = 0;
 
 		wxGetApp().pDBRoutines->DBGetTeam(teamID);
 
@@ -721,6 +742,10 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 
 	fERA = ((float)totalER * 9) / totalInningsPitched;
 	fWHIP = (float)(totalHits + totalWalks) / totalInningsPitched;
+	if ( isnan(fERA) )
+		fERA = 0;
+	if ( isnan(fWHIP) )
+		fWHIP = 0;
 	strexportData.Printf( _T("LEAGUE TOTALS       %5.2f  %5.3f   %3i   %3i  %6.1f %5i %4i %3i  %4i %4i\n\n"),
 		fERA, fWHIP, totalWins, totalLoss, totalInningsPitched, totalPHits, totalER, totalPHomeRun, totalWalks, totalStrikeouts);
 	TXTFile.Write( strexportData,strexportData.Length() );
@@ -844,7 +869,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		runs = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i  "),
+		strexportData.Printf( _T("%s %-16.16s  %4i  "),
 			teamNameShort, playerName, runs);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -917,7 +942,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 
-	strexportData.Printf( _T("At Bats                    Runs                       Hits\n"));
+	strexportData.Printf( _T("At Bats                    Runs                        Hits\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 
@@ -1247,7 +1272,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		doubles = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i  "),
+		strexportData.Printf( _T("%s %-16.16s  %4i  "),
 			teamNameShort, playerName, doubles);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -1320,7 +1345,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 
-	strexportData.Printf( _T("\nOn Base Percentage         Doubles                    Triples\n"));
+	strexportData.Printf( _T("\nOn Base Percentage         Doubles                     Triples\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	for (int i = 0; i < (int)strArrayHTMLData3.Count(); i++)
@@ -1449,7 +1474,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		stolenBase = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i  "),
+		strexportData.Printf( _T("%s %-16.16s  %4i  "),
 			teamNameShort, playerName, stolenBase);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -1522,7 +1547,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 
-	strexportData.Printf( _T("\nHome Runs                  Stolen Basses              Caught Stealing\n"));
+	strexportData.Printf( _T("\nHome Runs                  Stolen Basses               Caught Stealing\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	for (int i = 0; i < (int)strArrayHTMLData3.Count(); i++)
@@ -1651,7 +1676,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		walks = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i\n"),
+		strexportData.Printf( _T("%s %-16.16s  %4i\n"),
 			teamNameShort, playerName, walks);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -1800,8 +1825,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 	if (strArrayHTMLData2.IsEmpty())
-		for (int i = 0; i < 10; i++)
-			strArrayHTMLData2.Add("All Pitchers have 0 ERA");
+		strArrayHTMLData2.Add("All Pitchers have 0 ERA    ");
 
 	/* Create SQL statement */
 	sqlSelect = "SELECT "  \
@@ -1870,10 +1894,22 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	strexportData.Printf( _T("\nEarned Runs                Earned Run Average         Innings Pitched\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
+//	MsgBuffer.Printf( wxT("Array1: %i, Array2: %i, Array3: %i\n"), (int)strArrayHTMLData1.Count(), (int)strArrayHTMLData2.Count(), (int)strArrayHTMLData3.Count() );
+//	wxMessageBox(MsgBuffer);
+
 	for (int i = 0; i < (int)strArrayHTMLData1.Count(); i++)
 	{
-		strexportData = strArrayHTMLData1[i] + strArrayHTMLData2[i] + strArrayHTMLData3[i];
-		TXTFile.Write( strexportData,strexportData.Length() );
+		if ( i < strArrayHTMLData2.Count() )
+		{
+			strexportData = strArrayHTMLData1[i] + strArrayHTMLData2[i] + strArrayHTMLData3[i];
+			TXTFile.Write( strexportData,strexportData.Length() );
+		}
+		else
+		{
+//			strexportData = strArrayHTMLData1[i] + "    1234567890123456 123456" + strArrayHTMLData3[i];
+			strexportData = strArrayHTMLData1[i] + "                           " + strArrayHTMLData3[i];
+			TXTFile.Write( strexportData,strexportData.Length() );
+		}
 	}
 
 	/* Create SQL statement */
@@ -2004,8 +2040,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 	if (strArrayHTMLData2.IsEmpty())
-		for (int i = 0; i < 10; i++)
-			strArrayHTMLData2.Add("All Pitchers have 0 WHIP");
+		strArrayHTMLData2.Add("All Pitchers have 0 WHIP   ");
 
 	/* Create SQL statement */
 	sqlSelect = "SELECT "  \
@@ -2076,8 +2111,17 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 
 	for (int i = 0; i < (int)strArrayHTMLData1.Count(); i++)
 	{
-		strexportData = strArrayHTMLData1[i] + strArrayHTMLData2[i] + strArrayHTMLData3[i];
-		TXTFile.Write( strexportData,strexportData.Length() );
+		if ( i < strArrayHTMLData2.Count() )
+		{
+			strexportData = strArrayHTMLData1[i] + strArrayHTMLData2[i] + strArrayHTMLData3[i];
+			TXTFile.Write( strexportData,strexportData.Length() );
+		}
+		else
+		{
+//			strexportData = strArrayHTMLData1[i] + "    1234567890123456 123456" + strArrayHTMLData3[i];
+			strexportData = strArrayHTMLData1[i] + "                           " + strArrayHTMLData3[i];
+			TXTFile.Write( strexportData,strexportData.Length() );
+		}
 	}
 
 	/* Create SQL statement */
@@ -2199,7 +2243,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		wins = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i "),
+		strexportData.Printf( _T("%s %-16.16s  %4i "),
 			teamNameShort, playerName, wins);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -2272,7 +2316,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 
-	strexportData.Printf( _T("\nStrikeouts                 Wins                      Loss\n"));
+	strexportData.Printf( _T("\nStrikeouts                 Wins                       Loss\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	for (int i = 0; i < (int)strArrayHTMLData1.Count(); i++)
@@ -2400,7 +2444,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		saves = sqlite3_column_int(localStmtSelect, 3);
 
 		playerName = firstName + _T(" ") + lastName;
-		strexportData.Printf( _T("%s %-16.16s %4i "),
+		strexportData.Printf( _T("%s %-16.16s  %4i "),
 			teamNameShort, playerName, saves);
 		strArrayHTMLData2.Add(strexportData);
 
@@ -2473,7 +2517,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	}
 	sqlite3_finalize(localStmtSelect);
 
-	strexportData.Printf( _T("\nStarts                     Saves                     HomeRuns Allowed\n"));
+	strexportData.Printf( _T("\nStarts                     Saves                      HomeRuns Allowed\n"));
 	TXTFile.Write( strexportData,strexportData.Length() );
 
 	for (int i = 0; i < (int)strArrayHTMLData1.Count(); i++)
