@@ -10,6 +10,7 @@
 // 03/13/25    In BuildPlayerStats corrected formatting, tested for float  //
 //             values of Nan (not a number) and corrected handeling for    //
 //             ERA and WHIP.                                               //
+// 03/18/25    Changed calculation for OBP                                 //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -379,6 +380,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	int sumROE = 0;
 	int sumSacrifice = 0;
 	int sumStollen = 0;
+	int sumHBP = 0;
 	int sumCS = 0;
 	int sumWins = 0;
 	int sumLoss = 0;
@@ -406,6 +408,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	int totalROE = 0;
 	int totalSacrifice = 0;
 	int totalStollen = 0;
+	int totalHBP = 0;
 	int totalCS = 0;
 	wxString strAVG;
 	float fBA;
@@ -526,6 +529,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		"sum(B.ReachedOnError), " \
 		"sum(B.Sacrifice), " \
 		"sum(B.StolenBase), " \
+		"sum(B.HBP), " \
 		"sum(B.CS) " \
 		"FROM TEAM AS T " \
 		"JOIN BATTERSTATS as B " \
@@ -581,7 +585,8 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		sumROE = sqlite3_column_int(localStmtTeam, 9);
 		sumSacrifice = sqlite3_column_int(localStmtTeam, 10);
 		sumStollen = sqlite3_column_int(localStmtTeam, 11);
-		sumCS = sqlite3_column_int(localStmtTeam, 12);
+		sumHBP = sqlite3_column_int(localStmtTeam, 12);
+		sumCS = sqlite3_column_int(localStmtTeam, 13);
 		totalAB += sumAB;
 		totalRuns += sumRuns;
 		totalHits += sumHits;
@@ -593,11 +598,13 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 		totalROE += sumROE;
 		totalSacrifice += sumSacrifice;
 		totalStollen += sumStollen;
+		totalHBP += sumHBP;
 		totalCS += sumCS;
 
 		fBA = (float)sumHits / sumAB;
 		fSLG = (float)((sumHits - (sumDouble + sumTriple + sumHomeRun)) + (2 * sumDouble) + (3 * sumTriple) + (4 * sumHomeRun)) / (sumAB);
-		fOBP = (float)(sumHits + sumWalk + sumROE + sumSacrifice + sumStollen) / (sumAB + sumWalk + sumROE + sumSacrifice + sumStollen);
+//		fOBP = (float)(sumHits + sumWalk + sumROE + sumSacrifice + sumStollen) / (sumAB + sumWalk + sumROE + sumSacrifice + sumStollen);
+		fOBP = (float)(sumHits + sumWalk + sumHBP) / (sumAB + sumWalk + sumHBP + sumSacrifice);
 		if ( isnan(fBA) )
 			fBA = 0;
 		if ( isnan(fSLG) )
@@ -628,7 +635,7 @@ void FileRoutines::BuildPlayerStats(int leagueID, int conferenceID, int division
 	fSLG = (float)((totalHits - (totalDouble + totalTriple + totalHomeRun)) + (2 * totalDouble) + (3 * totalTriple) + (4 * totalHomeRun)) / (totalAB);
 	if ( isnan(fSLG) )
 		fSLG = 0;
-	fOBP = (float)(totalHits + totalWalk + totalROE + totalSacrifice + totalStollen) / (totalAB + totalWalk + totalROE + totalSacrifice + totalStollen);
+	fOBP = (float)(totalHits + totalWalk + totalHBP) / (totalAB + totalWalk + totalHBP + totalSacrifice);
 	if ( isnan(fOBP) )
 		fOBP = 0;
 	strexportData.Printf( _T("LEAGUE TOTALS       %1.3f %1.3f %1.3f %5i %4i %5i %4i %4i %4i %3i %4i %4i\n"),
