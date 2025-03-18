@@ -59,7 +59,6 @@ private:
 	void CreateNotebook(int x, int y, int w, int h);
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
-    bool GetTeamNamesArray();
     void UpdateBatterNames();
     void GetNotebookData();
 
@@ -209,6 +208,7 @@ public:
     BatterDialog( wxWindow* parent, long style = 0 );
 
 private:
+    bool GetTeamNamesArray();
 //    DECLARE_EVENT_TABLE()
 };
 
@@ -239,7 +239,7 @@ private:
     void DefaultPanelValues( );
 	// Used to create the Batter Notebook and its four panels
 	void CreateNotebook(int x, int y, int w, int h);
-    bool GetTeamNamesArray();
+//    bool GetTeamNamesArray();
     void UpdatePitcherNames();
     wxBoxSizer* BuildControlButtons( wxWindow* parent );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
@@ -347,9 +347,10 @@ class PitcherDialog: public wxDialog
 public:
     ~PitcherDialog ();
     PitcherDialog( wxWindow* parent, long style = 0 );
-    wxPanel *m_pPitcherNotebook;
+//    wxPanel *m_pPitcherNotebook;
 
 private:
+    bool GetTeamNamesArray();
 //    DECLARE_EVENT_TABLE()
 };
 

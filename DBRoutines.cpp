@@ -15,6 +15,8 @@
 // 03/09/25  Changed return in DBSelectTeam to return false instead of     //
 //           wxID_CANCEL. wxID_CANCEL returne 5101 which might be a valid  //
 //           DB index where false which is '0' is not a valid index        //
+// 03/18/25  Changed GetTeamNamesArray to return true or false based on    //
+//           if the cancel was pressed whie selecting leagues or teams     //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -214,12 +216,23 @@ int DBRoutines::DBGetTeamNamesArray()
 	int intPitcherStatsID;
 
     intLeagueID = DBGetLeague();
-    intTeamID = DBGetTeamArray(intLeagueID);
-    intBatterStatsID = DBGetBatterStatsID(intTeamID);
-    intPitcherStatsID = DBGetPitcherStatsID(intTeamID);
-//    DBGetPitcherData(intPitcherStatsID);
+    if ( intLeagueID != wxID_CANCEL )
+    {
+		intTeamID = DBGetTeamArray(intLeagueID);
+		if (intTeamID != false)
+		{
+			intBatterStatsID = DBGetBatterStatsID(intTeamID);
+			intPitcherStatsID = DBGetPitcherStatsID(intTeamID);
+		//    DBGetPitcherData(intPitcherStatsID);
 
-	return intPitcherStatsID;
+			return intPitcherStatsID;
+		}
+	}
+	else
+	{
+		return false;
+	}
+
 }
 
 // Routine will return the selected LeagueID
@@ -1339,7 +1352,7 @@ int DBRoutines::DBGetBatterStatsID(int passedTeamID)
 	wxString sqlBatterStats;
 	wxString strTemp;
 
-	// Create SQL statement for PitcherStats retrival
+	// Create SQL statement for BatterStats retrival
 	sqlBatterStats = "SELECT "  \
 		"S.BatterStatsID," \
 		"B.BatterID," \
@@ -1392,7 +1405,8 @@ int DBRoutines::DBGetBatterStatsID(int passedTeamID)
 
 	DBSortBatterNames();
 
-    return m_intBatterStatsID;
+//    return m_arrayBatterStatsIDs.Count();
+	return true;
 }
 
 // Routine will return the BatterStatsID in a given player on a team
@@ -2391,7 +2405,8 @@ int DBRoutines::DBGetPitcherStatsID(int passedTeamID)
 
 	DBSortPitcherNames();
 
-    return m_intPitcherStatsID;
+//    return m_intPitcherStatsID;
+    return true;
 }
 
 // Routine will sort the Pitcher names and ID in seperate arrays

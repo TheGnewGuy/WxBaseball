@@ -32,16 +32,19 @@
 // 01/09/25     Set defaults for OnNew pitcher starter and Relief to 0     //
 //              Instead of 1                                               //
 // 01/16/25     Changed default chance from "0     " to "0.0"              //
+// 03/18/25     Changed GetTeamNamesArray calls so that notebooks for      //
+//              batters and pitchers do not display when league and team   //
+//              selections are canceled                                    //
+//              In BatterNotebook::GetNotebookData changed the calculation //
+//              for OBP to (H+BB+HBP)/(AB+BB+HBP+SF). Previously it was    //
+//              including multiple other fields.                           //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
-//       Correct actions and messages when Cancel is pressed               //
 //       Correct messages when Apply is pressed                            //
 //       Force NEW to be pressed prior to allowing the activation of the   //
 //          Add button                                                     //
 //       In AddBatter, think about renumbering tabs since 4 became tab 1   //
-//                                                                         //
-//       OBP is (H+BB+HBP)/(AB+BB+HBP+SF) not whatever I have in the code  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -368,14 +371,13 @@ BatterNotebook::BatterNotebook( wxDialog* frame, int x, int y, int w, int h )
 {
     // Initialize all of the Notebook variables
     Initialization( );
+	// Create a Notebook which will have four pages
+	// x, y, w, and h are used to create the notebook the same
+	// size as the dialog.
+	CreateNotebook( x, y, w, h);
 
-    // Create a Notebook which will have four pages
-    // x, y, w, and h are used to create the notebook the same
-    // size as the dialog.
-    CreateNotebook( x, y, w, h);
-
-    // Set all of the defaults for spin, text and combos controls
-    DefaultPanelValues( );
+	// Set all of the defaults for spin, text and combos controls
+	DefaultPanelValues( );
 }
 
 BatterNotebook::~BatterNotebook( )
@@ -384,7 +386,7 @@ BatterNotebook::~BatterNotebook( )
 
 void BatterNotebook::Initialization( )
 {
-//    int i;
+    int rc;
 
     // Clear all change flags
     m_bSetValueFlagBatter = FALSE;
@@ -578,8 +580,6 @@ void BatterNotebook::Initialization( )
     m_arrayTRating.Add("18");
     m_arrayTRating.Add("19");
     m_arrayTRating.Add("20");
-
-    GetTeamNamesArray();
 }
 
 // Used to create the Batter Notebook and its four panels
@@ -1816,14 +1816,11 @@ void BatterNotebook::GetNotebookData()
 		wxGetApp().pDBRoutines->structBatterStats.OBP =
 			(float)(wxGetApp().pDBRoutines->structBatterStats.Hits +
 			wxGetApp().pDBRoutines->structBatterStats.Walk +
- 			wxGetApp().pDBRoutines->structBatterStats.ReachedOnError +
- 			wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
-			wxGetApp().pDBRoutines->structBatterStats.StollenBase) /
+ 			wxGetApp().pDBRoutines->structBatterStats.HBP) /
 			(wxGetApp().pDBRoutines->structBatterStats.AB +
 				wxGetApp().pDBRoutines->structBatterStats.Walk +
-				wxGetApp().pDBRoutines->structBatterStats.ReachedOnError +
-				wxGetApp().pDBRoutines->structBatterStats.Sacrifice +
-				wxGetApp().pDBRoutines->structBatterStats.StollenBase);
+				wxGetApp().pDBRoutines->structBatterStats.HBP +
+				wxGetApp().pDBRoutines->structBatterStats.Sacrifice);
 	}
     // End Stats Notebook Page
 
@@ -2247,24 +2244,6 @@ void BatterNotebook::CreateTeamComboBox( wxWindow* parent, int combobox )
     }
 }
 
-// Get an array of Team names and save it in a member variable
-// Display a selection of Leagues then create an array of teams
-bool BatterNotebook::GetTeamNamesArray()
-{
-    wxString Foobar;
-
-    if( wxGetApp().pDBRoutines->m_dbOpen )
-    {
-        Foobar.Printf( wxT("Database has not been opened"));
-        wxMessageBox(Foobar);
-        wxGetApp().pDBRoutines->DBOpen();
-    }
-
-    wxGetApp().pDBRoutines->DBGetTeamNamesArray();
-
-    return(TRUE);
-}
-
 void BatterNotebook::UpdateBatterNames()
 {
     // This is kind of working
@@ -2372,6 +2351,14 @@ BatterDialog::BatterDialog (wxWindow* parent, long style)
 {
     int dialogClientWidth, dialogClientHeight;
     int myBatterDialogReturnCode;
+    int rc;
+
+	rc = GetTeamNamesArray();
+    if (rc == false)
+    {
+		return;
+	}
+
     //  Create a dialog that will be used to edit batter data
     wxPanel *m_pBatterNotebook;
 
@@ -2406,6 +2393,26 @@ BatterDialog::BatterDialog (wxWindow* parent, long style)
 BatterDialog::~BatterDialog( )
 {
     Destroy();
+}
+
+// Get an array of Team names and save it in a member variable
+// Display a selection of Leagues then create an array of teams
+bool BatterDialog::GetTeamNamesArray()
+{
+	int rc;
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+    rc = wxGetApp().pDBRoutines->DBGetTeamNamesArray();
+
+    if (rc == false)
+    {
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 BEGIN_EVENT_TABLE(PitcherNotebook, wxPanel)
@@ -3239,13 +3246,6 @@ void PitcherNotebook::Initialization( )
     m_array_InfoHold.Add("7");
     m_array_InfoHold.Add("8");
     m_array_InfoHold.Add("9");
-
-    GetTeamNamesArray();
-//    for (i=0; i<(int)m_arrayTeamNamesAndFiles.GetCount(); i++)
-//    {
-//        m_arrayTeamNames.Add( m_arrayTeamNamesAndFiles[ i ].Mid(0,40) );
-//        m_arrayTeamFiles.Add( m_arrayTeamNamesAndFiles[ i ].Mid(40,12) );
-//    }
 }
 
 wxBoxSizer* PitcherNotebook::BuildControlButtons( wxWindow* panel )
@@ -3419,18 +3419,6 @@ void PitcherNotebook::CreateTeamComboBox( wxWindow* parent, int combobox )
         default:
             break;
     }
-}
-
-// Get an array of Team names and save it in a member variable
-// Display a selection of Leagues then create an array of teams
-bool PitcherNotebook::GetTeamNamesArray()
-{
-	// Check is DB is open, if not, open one
-	wxGetApp().pDBRoutines->DBIsDBOpen();
-
-    wxGetApp().pDBRoutines->DBGetTeamNamesArray();
-
-    return(TRUE);
 }
 
 void PitcherNotebook::OnComboChanceChange(wxCommandEvent& event)
@@ -4020,8 +4008,15 @@ PitcherDialog::PitcherDialog (wxWindow* parent, long style)
 {
     int dialogClientWidth, dialogClientHeight;
     int myPitcherDialogReturnCode;
+    int rc;
+
+	rc = GetTeamNamesArray();
+    if (rc == false)
+    {
+		return;
+	}
     //  Create a dialog that will be used to edit batter data
-//    wxPanel *m_pPitcherNotebook;
+    wxPanel *m_pPitcherNotebook;
 
     //  Now create a Notebook in the client area of the batter dialog
     GetClientSize(&dialogClientWidth, &dialogClientHeight);
@@ -4034,6 +4029,26 @@ PitcherDialog::PitcherDialog (wxWindow* parent, long style)
 PitcherDialog::~PitcherDialog( )
 {
     Destroy();
+}
+
+// Get an array of Team names and save it in a member variable
+// Display a selection of Leagues then create an array of teams
+bool PitcherDialog::GetTeamNamesArray()
+{
+	int rc;
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+    rc = wxGetApp().pDBRoutines->DBGetTeamNamesArray();
+
+    if (rc == false)
+    {
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 // ---------------------------------------------------------------------------
