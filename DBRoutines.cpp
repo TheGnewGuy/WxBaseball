@@ -227,6 +227,10 @@ int DBRoutines::DBGetTeamNamesArray()
 
 			return intPitcherStatsID;
 		}
+		else
+		{
+			return false;
+		}
 	}
 	else
 	{

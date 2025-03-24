@@ -38,6 +38,11 @@
 //              In BatterNotebook::GetNotebookData changed the calculation //
 //              for OBP to (H+BB+HBP)/(AB+BB+HBP+SF). Previously it was    //
 //              including multiple other fields.                           //
+// 03/24/25     Set fields on the batter and pitcher stat pages to display //
+//              RED when changed and them bake to BLACK when done          //
+//              Changes were to select B/P, ON Apply, On New.              //
+//              Special consideratoin were for Pitcher IP as it is a text  //
+//              field and not a spin.                                      //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -1485,6 +1490,24 @@ void BatterNotebook::OnApply(wxCommandEvent& event)
     m_bChangeStatsFlag = FALSE;
     m_bChangeChanceFlag = FALSE;
     m_bChangePositionFlag = FALSE;
+
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStats2B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStats3B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsAB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHITS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRBI->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRUNS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSACRICIFE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsCS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHBP->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+
 }
 
 void BatterNotebook::OnAdd(wxCommandEvent& event)
@@ -1516,6 +1539,24 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
         wxMessageBox(_T("Attempt to insert non-Base team!"),
                  _T("Insert Failed"), wxOK|wxICON_INFORMATION );
     }
+
+    //Set text to BLACK
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStats2B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStats3B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsAB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHITS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRBI->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRUNS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSACRICIFE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsCS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHBP->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
 }
 
 void BatterNotebook::OnNew(wxCommandEvent& event)
@@ -1960,6 +2001,24 @@ void BatterNotebook::OnComboBatterSelect(wxCommandEvent& event)
     // End Chance Notebook Page
 
     // Populate Stats Notebook Page - 16 entries
+    //Set text to BLACK
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStats2B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStats3B->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsAB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHITS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRBI->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsRUNS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSACRICIFE->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsSB->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsCS->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsHBP->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+	m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+
     m_spinStatsHITS->SetValue( wxGetApp().pDBRoutines->structBatterStats.Hits );
     m_spinStatsAB->SetValue( wxGetApp().pDBRoutines->structBatterStats.AB );
     m_spinStats2B->SetValue( wxGetApp().pDBRoutines->structBatterStats.Doubles );
@@ -2098,6 +2157,56 @@ void BatterNotebook::OnComboStatsChangeText(wxCommandEvent& event)
     if ( !m_bSetValueFlagBatter )
     {
         m_bChangeStatsFlag = TRUE;
+    }
+
+	switch (event.GetId()) {
+		case ID_STATS_BATTER_2B:
+			m_spinStats2B->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_3B:
+			m_spinStats3B->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_HR:
+			m_spinStatsHR->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_AB:
+			m_spinStatsAB->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_HITS:
+			m_spinStatsHITS->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_RBI:
+			m_spinStatsRBI->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_RE:
+			m_spinStatsRE->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_RUNS:
+			m_spinStatsRUNS->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_SACRICIFE:
+			m_spinStatsSACRICIFE->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_SB:
+			m_spinStatsSB->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_CS:
+			m_spinStatsCS->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_K:
+			m_spinStatsK->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_W:
+			m_spinStatsW->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_HBP:
+			m_spinStatsHBP->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_BATTER_GAMES:
+			m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		default:
+			break;
     }
 }
 
@@ -2988,6 +3097,7 @@ void PitcherNotebook::DefaultPanelValues( )
     m_spinStatsHR->SetValue(0);
     m_spinStatsER->SetValue(0);
     m_textStatsIP->SetValue( "0" );
+   	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
     m_textStatsERA->SetValue( "0" );
     m_textStatsWHIP->SetValue( "0" );
     // End Stats Notebook Page
@@ -3448,6 +3558,47 @@ void PitcherNotebook::OnComboStatsChangeText(wxCommandEvent& event)
     {
         m_bChangeStatsFlag = TRUE;
     }
+
+	switch (event.GetId()) {
+		case ID_STATS_PITCHER_WINS:
+			m_spinStatsWins->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_LOSS:
+			m_spinStatsLoss->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_STARTS:
+			m_spinStatsStarts->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_SAVE:
+			m_spinStatsSave->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_IP:
+			m_textStatsIP->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_HITS:
+			m_spinStatsHits->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_GAMES:
+			m_spinStatsGames->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_CGAMES:
+			m_spinStatsCGames->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_W:
+			m_spinStatsW->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_K:
+			m_spinStatsK->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_HR:
+			m_spinStatsHR->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		case ID_STATS_PITCHER_ER:
+			m_spinStatsER->SetForegroundColour(wxColour(wxT("RED"))); // Red
+			break;
+		default:
+			break;
+    }
 }
 
 void PitcherNotebook::OnComboInfoChange(wxCommandEvent& event)
@@ -3518,6 +3669,19 @@ void PitcherNotebook::OnApply(wxCommandEvent& event)
     m_bChangeInfoFlag = FALSE;
     m_bChangeStatsFlag = FALSE;
     m_bChangeChanceFlag = FALSE;
+
+	m_spinStatsWins->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsLoss->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsStarts->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsSave->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHits->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsCGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsER->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 }
 
 void PitcherNotebook::OnOK(wxCommandEvent& event)
@@ -3583,6 +3747,19 @@ void PitcherNotebook::OnAdd(wxCommandEvent& event)
         wxMessageBox(_T("Attempt to insert non-Base team!"),
                  _T("Insert Failed"), wxOK|wxICON_INFORMATION );
     }
+
+	m_spinStatsWins->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsLoss->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsStarts->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsSave->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHits->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsCGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsER->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 }
 
 void PitcherNotebook::UpdatePitcherNames()
@@ -3666,6 +3843,7 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structPitcherStats.Starts = 0;
     wxGetApp().pDBRoutines->structPitcherStats.Saves = 0;
     wxGetApp().pDBRoutines->structPitcherStats.InningsPitched = 0;
+   	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
     wxGetApp().pDBRoutines->structPitcherStats.ER = 0;
     wxGetApp().pDBRoutines->structPitcherStats.Hits = 0;
     wxGetApp().pDBRoutines->structPitcherStats.Walks = 0;
@@ -3921,12 +4099,27 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
     // End Chance Notebook Page
 
     // Populate Stats Notebook Page - 14 entries
+
+	m_spinStatsWins->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsLoss->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsStarts->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsSave->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHits->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsCGames->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+	m_spinStatsER->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+
     m_spinStatsCGames->SetValue( wxGetApp().pDBRoutines->structPitcherStats.CompleteGames );
     m_spinStatsER->SetValue( wxGetApp().pDBRoutines->structPitcherStats.ER );
     m_spinStatsGames->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Games );
     m_spinStatsHits->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Hits );
     m_spinStatsHR->SetValue( wxGetApp().pDBRoutines->structPitcherStats.HomeRuns );
     m_textStatsIP->SetValue( wxString::Format(wxT("%2.2f"), (wxGetApp().pDBRoutines->structPitcherStats.InningsPitched )));;
+	m_textStatsIP->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
     m_spinStatsK->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Strikeouts );
     m_spinStatsLoss->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Loss );
     m_spinStatsSave->SetValue( wxGetApp().pDBRoutines->structPitcherStats.Saves );
