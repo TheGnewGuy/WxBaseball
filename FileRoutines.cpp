@@ -11,6 +11,7 @@
 //             values of Nan (not a number) and corrected handeling for    //
 //             ERA and WHIP.                                               //
 // 03/18/25    Changed calculation for OBP                                 //
+// 04/01/25    Firstname and Lastname were backwards in export title       //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -86,7 +87,7 @@ void FileRoutines::ExportTeam( int passedTeamID )
 	// Process Batter file
 	exportBatter.Create( exportFileNameBatter, true, wxS_DEFAULT);
 	exportBatter.Open(exportFileNameBatter, wxFile::read_write);
-    strexportData.Printf( _T("Team Name,LastName,FirstName,AB,Runs,Hits,RBI,2B,3B,HR,W,K,RE,") );
+    strexportData.Printf( _T("Team Name,FirstName,LastName,AB,Runs,Hits,RBI,2B,3B,HR,W,K,RE,") );
 	exportBatter.Write( strexportData,strexportData.Length() );
     strexportData.Printf( _T("SF,SB,CS,Bunting,Stealing,Running,Hit Run,LRS,P,C,") );
 	exportBatter.Write( strexportData,strexportData.Length() );
@@ -223,7 +224,7 @@ void FileRoutines::ExportTeam( int passedTeamID )
 	exportPitcher.Create( exportFileNamePitcher, true, wxS_DEFAULT);
 	exportPitcher.Open(exportFileNamePitcher, wxFile::read_write);
 
-    strexportData.Printf( _T("Team Name,LastName,FirstName,IP,ER,Hits,Walks,Strikeouts,") );
+    strexportData.Printf( _T("Team Name,FirstName,LastName,IP,ER,Hits,Walks,Strikeouts,") );
 	exportPitcher.Write( strexportData,strexportData.Length() );
     strexportData.Printf( _T("Homeruns,Hold,Wins,Loss,Saves,Starter,Relief,Throws,") );
 	exportPitcher.Write( strexportData,strexportData.Length() );
