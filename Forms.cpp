@@ -4,9 +4,11 @@
 // Author:      John Gnew                                                  //
 // Created:     09/15/04                                                   //
 // Copyright:   (c) John Gnew                                              //
+//                                                                         //
 // Modifications:                                                          //
 //   Date       Description                                                //
-// xx/xx/xx     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                           //
+// 04/19/25     Changed FormA::Common to start the diammond in inning 1    //
+//              instead of column FLDG                                     //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -163,7 +165,7 @@ void FormA::Common(wxDC& dc)
 
 	// Draw diamond graphics for innings starting with FLDG box
     dc.SetPen( *wxLIGHT_GREY_PEN );
-	for (ix=xStartFLDG; ix<=xStopInning; ix+=xIncInning)
+	for (ix=xStartFLDG+xIncInning; ix<=xStopInning; ix+=xIncInning)
 	{
     	for (iy=yTopScoreSheet+25; iy<yBottomScoreSheet; iy+=yIncInning)
 	    {
