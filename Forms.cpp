@@ -9,6 +9,8 @@
 //   Date       Description                                                //
 // 04/19/25     Changed FormA::Common to start the diammond in inning 1    //
 //              instead of column FLDG                                     //
+// 04/20/25     Changed top of print from 50 to 75 to allow for            //
+//              3 hole punch                                               //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -18,14 +20,14 @@
 // declarations
 // ===========================================================================
 
-
 #define xLeftScoreSheet       55    // Left margin of sheet
 #define xStartFLDG		      xLeftScoreSheet+156
 #define xLeftInningScoreSheet 144
 #define xBoxSize              37
 #define xRightSumScoreSheet   xLeftInningScoreSheet+(15*xBoxSize)
-#define yTopScoreSheet	      50
-#define yStartNames		      75
+// Positioned to allow for three hole punch
+#define yTopScoreSheet	      75
+#define yStartNames		      yTopScoreSheet+25
 #define xIncInning	          44
 #define yIncInning	          44
 #define xIncStats	          25
@@ -212,6 +214,7 @@ void FormA::Common(wxDC& dc)
 		dc.DrawLine(xLeftScoreSheet, iy, xStopStats, iy);
 	}
 
+	// Draw box around scoresheet
 	dc.DrawLine(xLeftScoreSheet, yTopScoreSheet, xLeftScoreSheet, yBottomScoreSheet);
 	dc.DrawLine(xLeftScoreSheet, yBottomScoreSheet, xStopStats, yBottomScoreSheet);
 	dc.DrawLine(xStopStats, yBottomScoreSheet, xStopStats, yTopScoreSheet);
