@@ -34,6 +34,7 @@ public:
     BatterNotebook( wxDialog* frame, int x, int y, int w, int h );
     void CreateBatterComboBox( wxWindow* parent, int combobox );
     void CreateTeamComboBox( wxWindow* parent, int combobox );
+    void MyAddEvent();
     void OnApply( wxCommandEvent& event );
     void OnAdd( wxCommandEvent& event );
     void OnNew( wxCommandEvent& event );
@@ -57,7 +58,7 @@ private:
     void DefaultPanelValues( );
 	// Used to create the Batter Notebook and its four panels
 	void CreateNotebook(int x, int y, int w, int h);
-    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxBoxSizer* BuildControlButtons( wxWindow* parent, int page );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
     void UpdateBatterNames();
     void GetNotebookData();
@@ -198,6 +199,15 @@ private:
     bool m_bChangeStatsFlag;
     bool m_bChangeInfoFlag;
 
+    wxButton *m_addButton1;
+    wxButton *m_addButton2;
+    wxButton *m_addButton3;
+    wxButton *m_addButton4;
+    wxButton *m_applyButton1;
+    wxButton *m_applyButton2;
+    wxButton *m_applyButton3;
+    wxButton *m_applyButton4;
+
     DECLARE_EVENT_TABLE()
 };
 
@@ -220,6 +230,7 @@ public:
     void CreatePitcherComboBox( wxWindow* parent, int combobox );
     void CreateTeamComboBox( wxWindow* parent, int combobox );
     wxComboBox* m_combo_team;
+    void MyAddEvent();
     void OnPageChanged( wxNotebookEvent& event );
     void OnApply( wxCommandEvent& event );
     void OnAdd( wxCommandEvent& event );
@@ -241,7 +252,7 @@ private:
 	void CreateNotebook(int x, int y, int w, int h);
 //    bool GetTeamNamesArray();
     void UpdatePitcherNames();
-    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+    wxBoxSizer* BuildControlButtons( wxWindow* parent, int page );
     wxBoxSizer* BuildTopCombos( wxWindow* parent, int combobox );
     void GetNotebookData();
 
@@ -338,6 +349,13 @@ private:
     bool m_bChangeChanceFlag;
     bool m_bChangeStatsFlag;
     bool m_bChangeInfoFlag;
+
+    wxButton *m_addButton1;
+    wxButton *m_addButton2;
+    wxButton *m_addButton3;
+    wxButton *m_applyButton1;
+    wxButton *m_applyButton2;
+    wxButton *m_applyButton3;
 
     DECLARE_EVENT_TABLE()
 };

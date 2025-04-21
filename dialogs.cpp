@@ -43,6 +43,9 @@
 //              Changes were to select B/P, ON Apply, On New.              //
 //              Special consideratoin were for Pitcher IP as it is a text  //
 //              field and not a spin.                                      //
+// 04/21/25     Set code to disable the ADD button until NEW is pressed    //
+//              adding batters and pitchers. This involved changing        //
+//              BuildControlButtons for unique variables for each page     //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -741,7 +744,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
     sizer_01->Add (m_hGridSizer01, 1 );
 //    sizer_01->Add (m_hGridSizer01, 1, wxEXPAND);
 
-    sizer_01->Add ( BuildControlButtons(m_panel_01),
+    sizer_01->Add ( BuildControlButtons(m_panel_01, 1),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -932,7 +935,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
     // Add a space to expand the panel
     sizer_02->Add ( 1, 10, wxEXPAND );
 
-    sizer_02->Add ( BuildControlButtons(m_panel_02),
+    sizer_02->Add ( BuildControlButtons(m_panel_02, 2),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -1082,7 +1085,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
 
     sizer_03->Add (m_hGridSizer03, 1, wxEXPAND);
 
-    sizer_03->Add (BuildControlButtons(m_panel_03),
+    sizer_03->Add (BuildControlButtons(m_panel_03, 3),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -1229,7 +1232,7 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
 
     sizer_04->Add ( m_hGridSizer04, 1, wxEXPAND );
 
-    sizer_04->Add ( BuildControlButtons(m_panel_04),
+    sizer_04->Add ( BuildControlButtons(m_panel_04, 4),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -1363,24 +1366,73 @@ void BatterNotebook::DefaultPanelValues( )
 
 }
 
-wxBoxSizer* BatterNotebook::BuildControlButtons( wxWindow* panel )
+wxBoxSizer* BatterNotebook::BuildControlButtons( wxWindow* panel, int page )
 {
     // Create the control buttons (Apply, New, Add, OK, and Cancel)
 
     wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
 
     wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
-    wxButton *applyButton = new wxButton (panel, wxID_APPLY);
-    //  By adding a space with wxExpand (non zero),
-    //    the buttons will be positioned correctly
-    buttonPane->Add( 1, 1, wxEXPAND );
-    buttonPane->Add (applyButton, 0, wxALIGN_CENTER);
+    switch ( page)
+    {
+		case 1:
+			m_applyButton1 = new wxButton (panel, wxID_APPLY);
+			//  By adding a space with wxExpand (non zero),
+			//    the buttons will be positioned correctly
+			buttonPane->Add( 1, 1, wxEXPAND );
+			buttonPane->Add (m_applyButton1, 0, wxALIGN_CENTER);
+			break;
+		case 2:
+			m_applyButton2 = new wxButton (panel, wxID_APPLY);
+			buttonPane->Add( 1, 1, wxEXPAND );
+			buttonPane->Add (m_applyButton2, 0, wxALIGN_CENTER);
+			break;
+		case 3:
+			m_applyButton3 = new wxButton (panel, wxID_APPLY);
+			buttonPane->Add( 1, 1, wxEXPAND );
+			buttonPane->Add (m_applyButton3, 0, wxALIGN_CENTER);
+			break;
+		case 4:
+			m_applyButton4 = new wxButton (panel, wxID_APPLY);
+			buttonPane->Add( 1, 1, wxEXPAND );
+			buttonPane->Add (m_applyButton4, 0, wxALIGN_CENTER);
+			break;
+   }
+//    m_applyButton = new wxButton (panel, wxID_APPLY);
+//    //  By adding a space with wxExpand (non zero),
+//    //    the buttons will be positioned correctly
+//    buttonPane->Add( 1, 1, wxEXPAND );
+//    buttonPane->Add (m_applyButton, 0, wxALIGN_CENTER);
     buttonPane->Add( 1, 1, wxEXPAND );
     wxButton *newButton = new wxButton (panel, wxID_NEW);
     buttonPane->Add (newButton, 0, wxALIGN_CENTER);
     buttonPane->Add( 1, 1, wxEXPAND );
-    wxButton *addButton = new wxButton (panel, wxID_ADD);
-    buttonPane->Add (addButton, 0, wxALIGN_CENTER);
+    switch ( page)
+    {
+		case 1:
+			m_addButton1 = new wxButton (panel, wxID_ADD);
+			buttonPane->Add (m_addButton1, 0, wxALIGN_CENTER);
+			m_addButton1->Enable(false);
+			break;
+		case 2:
+			m_addButton2 = new wxButton (panel, wxID_ADD);
+			buttonPane->Add (m_addButton2, 0, wxALIGN_CENTER);
+			m_addButton2->Enable(false);
+			break;
+		case 3:
+			m_addButton3 = new wxButton (panel, wxID_ADD);
+			buttonPane->Add (m_addButton3, 0, wxALIGN_CENTER);
+			m_addButton3->Enable(false);
+			break;
+		case 4:
+			m_addButton4 = new wxButton (panel, wxID_ADD);
+			buttonPane->Add (m_addButton4, 0, wxALIGN_CENTER);
+			m_addButton4->Enable(false);
+			break;
+   }
+//    m_addButton = new wxButton (panel, wxID_ADD);
+//    buttonPane->Add (m_addButton, 0, wxALIGN_CENTER);
+//    m_addButton->Enable(false);
     buttonPane->Add( 1, 1, wxEXPAND );
     wxButton *okButton = new wxButton (panel, wxID_OK);
     okButton->SetDefault();
@@ -1512,11 +1564,11 @@ void BatterNotebook::OnApply(wxCommandEvent& event)
 
 void BatterNotebook::OnAdd(wxCommandEvent& event)
 {
-//    wxMessageBox(_T("Add Button Pressed"),
-//                 _T("Add"), wxOK|wxICON_INFORMATION );
-//     wxWindow::Validate();
-//     wxWindow::TransferDataFromWindow();
+	MyAddEvent();
+}
 
+void BatterNotebook::MyAddEvent()
+{
     // Need to check for base team. Only allow inserts in base teams
     if ( wxGetApp().pDBRoutines->structTeamData.BaseTeam == TRUE )
     {
@@ -1557,12 +1609,31 @@ void BatterNotebook::OnAdd(wxCommandEvent& event)
 	m_spinStatsW->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
 	m_spinStatsHBP->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
 	m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
+
+	m_addButton1->Enable(false);
+	m_addButton2->Enable(false);
+	m_addButton3->Enable(false);
+	m_addButton4->Enable(false);
+	m_applyButton1->Enable(true);
+	m_applyButton2->Enable(true);
+	m_applyButton3->Enable(true);
+	m_applyButton4->Enable(true);
+
 }
 
 void BatterNotebook::OnNew(wxCommandEvent& event)
 {
 //    wxMessageBox(_T("New Button Pressed"),
 //                 _T("New"), wxOK|wxICON_INFORMATION );
+
+	m_addButton1->Enable(true);
+	m_addButton2->Enable(true);
+	m_addButton3->Enable(true);
+	m_addButton4->Enable(true);
+	m_applyButton1->Enable(false);
+	m_applyButton2->Enable(false);
+	m_applyButton3->Enable(false);
+	m_applyButton4->Enable(false);
 
 	m_textFirstName->SetValue("");
 	m_textLastName->SetValue("");
@@ -1722,23 +1793,46 @@ void BatterNotebook::OnNew(wxCommandEvent& event)
 
 void BatterNotebook::OnOK(wxCommandEvent& event)
 {
-//    wxMessageBox(_T("OK Button Pressed"),
-//                 _T("OK"), wxOK|wxICON_INFORMATION );
+	int answer;
+
     // If one of the change flags is TRUE, Ask if updates should be dropped.
     if ( m_bChangeInfoFlag || m_bChangeStatsFlag ||
          m_bChangeChanceFlag || m_bChangePositionFlag )
     {
-        int answer = wxMessageBox(
-                (_T("       A field has changed.\n")
-                 _T("Press Yes to save or No to discard")
-                ),
-                _T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+        answer = wxMessageBox(
+			(_T("       A field has changed.\n")
+			 _T("Press Yes to save or No to discard")
+			),
+			_T("Field Changed"), wxYES_NO|wxICON_QUESTION );
         if ( answer == wxYES)
         {
-             //Save the data
-             GetNotebookData();
-
-             MakeBatterUpdate();
+			if ( m_addButton1->IsEnabled() )
+			{
+				answer = wxMessageBox(
+					(_T("You were Adding a player!\n")
+					 _T("Press Yes to add or No to discard")
+					),
+					_T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+				if ( answer == wxYES)
+				{
+					// Then still Add player
+					MyAddEvent();
+				}
+				// Disable Add button
+				m_addButton1->Enable(false);
+				m_addButton2->Enable(false);
+				m_addButton3->Enable(false);
+				m_addButton4->Enable(false);
+				m_applyButton1->Enable(true);
+				m_applyButton2->Enable(true);
+				m_applyButton3->Enable(true);
+				m_applyButton4->Enable(true);
+			}
+			else{
+				//Save the data
+				GetNotebookData();
+				MakeBatterUpdate();
+			}
         }
     }
 
@@ -2759,7 +2853,7 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
     sizer_01->AddSpacer(20);
     sizer_01->Add ( m_hGridSizer01, 1, wxEXPAND );
 
-    sizer_01->Add ( BuildControlButtons(m_panel_01),
+    sizer_01->Add ( BuildControlButtons(m_panel_01, 1),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -2936,7 +3030,7 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
     // Add a space to expand the panel
     sizer_02->Add ( 1, 10, wxEXPAND );
 
-    sizer_02->Add ( BuildControlButtons(m_panel_02),
+    sizer_02->Add ( BuildControlButtons(m_panel_02, 2),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -3057,7 +3151,7 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
 
     sizer_03->Add (m_hGridSizer03, 1, wxEXPAND);
 
-    sizer_03->Add (BuildControlButtons(m_panel_03),
+    sizer_03->Add (BuildControlButtons(m_panel_03, 3),
                     0, wxALIGN_CENTER );
 //                    0, wxALIGN_CENTER | wxEXPAND);
 
@@ -3358,24 +3452,63 @@ void PitcherNotebook::Initialization( )
     m_array_InfoHold.Add("9");
 }
 
-wxBoxSizer* PitcherNotebook::BuildControlButtons( wxWindow* panel )
+wxBoxSizer* PitcherNotebook::BuildControlButtons( wxWindow* panel, int page )
 {
     // Create the control buttons (Apply, New, Add, OK, and Cancel)
 
     wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
 
     wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
-    wxButton *applyButton = new wxButton (panel, wxID_APPLY);
-    //  By adding a space with wxExpand (non zero),
-    //    the butons will be positioned correctly
-    buttonPane->Add( 1, 1, wxEXPAND );
-    buttonPane->Add (applyButton, 0, wxALIGN_CENTER);
+    switch (page)
+    {
+            case 1:
+				m_applyButton1 = new wxButton (panel, wxID_APPLY);
+				//  By adding a space with wxExpand (non zero),
+				//    the butons will be positioned correctly
+				buttonPane->Add( 1, 1, wxEXPAND );
+				buttonPane->Add (m_applyButton1, 0, wxALIGN_CENTER);
+                break;
+           case 2:
+				m_applyButton2 = new wxButton (panel, wxID_APPLY);
+				buttonPane->Add( 1, 1, wxEXPAND );
+				buttonPane->Add (m_applyButton2, 0, wxALIGN_CENTER);
+                break;
+           case 3:
+				m_applyButton3 = new wxButton (panel, wxID_APPLY);
+				buttonPane->Add( 1, 1, wxEXPAND );
+				buttonPane->Add (m_applyButton3, 0, wxALIGN_CENTER);
+                break;
+   }
+//    m_applyButton = new wxButton (panel, wxID_APPLY);
+//    //  By adding a space with wxExpand (non zero),
+//    //    the butons will be positioned correctly
+//    buttonPane->Add( 1, 1, wxEXPAND );
+//    buttonPane->Add (m_applyButton, 0, wxALIGN_CENTER);
     buttonPane->Add( 1, 1, wxEXPAND );
     wxButton *newButton = new wxButton (panel, wxID_NEW);
     buttonPane->Add (newButton, 0, wxALIGN_CENTER);
     buttonPane->Add( 1, 1, wxEXPAND );
-    wxButton *addButton = new wxButton (panel, wxID_ADD);
-    buttonPane->Add (addButton, 0, wxALIGN_CENTER);
+    switch (page)
+    {
+		case 1:
+				m_addButton1 = new wxButton (panel, wxID_ADD);
+				buttonPane->Add (m_addButton1, 0, wxALIGN_CENTER);
+				m_addButton1->Enable(false);
+                break;
+		case 2:
+				m_addButton2 = new wxButton (panel, wxID_ADD);
+				buttonPane->Add (m_addButton2, 0, wxALIGN_CENTER);
+				m_addButton2->Enable(false);
+                break;
+		case 3:
+				m_addButton3 = new wxButton (panel, wxID_ADD);
+				buttonPane->Add (m_addButton3, 0, wxALIGN_CENTER);
+				m_addButton3->Enable(false);
+                break;
+   }
+//    m_addButton = new wxButton (panel, wxID_ADD);
+//    buttonPane->Add (m_addButton, 0, wxALIGN_CENTER);
+//    m_addButton->Enable(false);
     buttonPane->Add( 1, 1, wxEXPAND );
     wxButton *okButton = new wxButton (panel, wxID_OK);
     okButton->SetDefault();
@@ -3686,22 +3819,44 @@ void PitcherNotebook::OnApply(wxCommandEvent& event)
 
 void PitcherNotebook::OnOK(wxCommandEvent& event)
 {
-//    wxMessageBox(_T("OK Button Pressed"),
-//                 _T("OK"), wxOK|wxICON_INFORMATION );
+	int answer;
+
     // If one of the change flags is TRUE, Ask if updates should be dropped.
     if ( m_bChangeInfoFlag || m_bChangeStatsFlag || m_bChangeChanceFlag )
     {
-        int answer = wxMessageBox(
+        answer = wxMessageBox(
                 (_T("       A field has changed.\n")
                  _T("Press Yes to save or No to discard")
                 ),
                 _T("Field Changed"), wxYES_NO|wxICON_QUESTION );
         if ( answer == wxYES)
         {
-            //Save the data
-            GetNotebookData();
-
-            MakePitcherUpdate();
+			if ( m_addButton1->IsEnabled() )
+			{
+				answer = wxMessageBox(
+					(_T("You were Adding a player!\n")
+					 _T("Press Yes to add or No to discard")
+					),
+					_T("Field Changed"), wxYES_NO|wxICON_QUESTION );
+				if ( answer == wxYES)
+				{
+					// Then still Add player
+					MyAddEvent();
+				}
+				// Disable Add button
+				m_addButton1->Enable(false);
+				m_addButton2->Enable(false);
+				m_addButton3->Enable(false);
+				m_applyButton1->Enable(true);
+				m_applyButton2->Enable(true);
+				m_applyButton3->Enable(true);
+			}
+			else
+			{
+				//Save the data
+				GetNotebookData();
+				MakePitcherUpdate();
+			}
         }
     }
 
@@ -3723,6 +3878,12 @@ void PitcherNotebook::OnCancel(wxCommandEvent& event)
 
 // OnAdd means to clear all fields
 void PitcherNotebook::OnAdd(wxCommandEvent& event)
+{
+	MyAddEvent();
+}
+
+// OnAdd means to clear all fields
+void PitcherNotebook::MyAddEvent()
 {
 //    wxMessageBox(_T("Add Button Pressed"),
 //                 _T("Add"), wxOK|wxICON_INFORMATION );
@@ -3760,6 +3921,13 @@ void PitcherNotebook::OnAdd(wxCommandEvent& event)
 	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 	m_spinStatsER->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+
+	m_addButton1->Enable(false);
+	m_addButton2->Enable(false);
+	m_addButton3->Enable(false);
+	m_applyButton1->Enable(true);
+	m_applyButton2->Enable(true);
+	m_applyButton3->Enable(true);
 }
 
 void PitcherNotebook::UpdatePitcherNames()
@@ -3816,6 +3984,14 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
 {
 //    wxMessageBox(_T("New Button Pressed"),
 //                 _T("New"), wxOK|wxICON_INFORMATION );
+
+	m_addButton1->Enable(true);
+	m_addButton2->Enable(true);
+	m_addButton3->Enable(true);
+	m_applyButton1->Enable(false);
+	m_applyButton2->Enable(false);
+	m_applyButton3->Enable(false);
+
     // Initialize Name
     m_textFirstName->SetValue("");
     m_textLastName->SetValue("");
