@@ -1640,6 +1640,9 @@ void BatterNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structBatterData.FirstName = "";
     wxGetApp().pDBRoutines->structBatterData.LastName = "";
 
+    wxGetApp().pDBRoutines->m_arrayBatterFullNames.Clear();
+    UpdateBatterNames();
+
     // Initialize Position Notebook Page to 0
     m_spinPosition1->SetValue(0);
     m_spinPosition2->SetValue(0);
@@ -3998,6 +4001,9 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structPitcherData.FirstName = "";
     wxGetApp().pDBRoutines->structPitcherData.LastName = "";
     wxGetApp().pDBRoutines->structPitcherData.PitcherID = 0;
+
+    wxGetApp().pDBRoutines->m_arrayPitcherFullNames.Clear();
+    UpdatePitcherNames();
 
     // Initialize Stats Notebook Page - 14 entries
     m_spinStatsWins->SetValue(0);
