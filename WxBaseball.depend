@@ -4,7 +4,7 @@
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1745345962 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1745962957 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -22,7 +22,7 @@
 	"MyCanvas.h"
 	"sqlite3.h"
 
-1745086120 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
+1745617739 source:/home/john/Documents/Source/WxBaseball/WxBaseballMain.cpp
 	"wx_pch.h"
 	<wx/print.h>
 	<wx/printdlg.h>
@@ -67,7 +67,7 @@
 	<wx/wx.h>
 	<wx/cmndata.h>
 
-1745167187 source:/home/john/Documents/Source/WxBaseball/Forms.cpp
+1745959942 source:/home/john/Documents/Source/WxBaseball/Forms.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	"WxBaseballMain.h"
@@ -78,12 +78,14 @@
 	<wx/toolbar.h>
 	<wx/cmndata.h>
 
-1710798189 /home/john/Documents/Source/WxBaseball/Forms.h
+1745530001 /home/john/Documents/Source/WxBaseball/Forms.h
 	<wx/dc.h>
 
-1711401197 source:/home/john/Documents/Source/WxBaseball/MyCanvas.cpp
+1745618194 source:/home/john/Documents/Source/WxBaseball/MyCanvas.cpp
 	"MyCanvas.h"
 	"Forms.h"
+	"WxBaseballMain.h"
+	"WxBaseballApp.h"
 
 1711571576 /home/john/Documents/Source/WxBaseball/Print.h
 
@@ -101,7 +103,7 @@
 1710242594 /home/john/Documents/Source/WxBaseball/sqlite3.h
 	<stdarg.h>
 
-1742852264 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
+1745345962 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/dialog.h>

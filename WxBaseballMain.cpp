@@ -451,14 +451,15 @@ void WxBaseballFrame::OnScoreSheetCheck ( wxCommandEvent& event )
 {
 	if ( pMenuBar->IsChecked ( myID_SCORESHEET ) )
 	{
-		pMenuBar->Check ( myID_SCORESHEETXTRA, FALSE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
-		pCanvas->Refresh();
-	}
-	else
-	{
-		pMenuBar->Check ( myID_SCORESHEETXTRA, TRUE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
+//		pMenuBar->Check ( myID_SCORESHEETXTRA, FALSE );
+//		pMenuBar->Check ( myID_STATISTICS, FALSE );
+//		pCanvas->Refresh();
+//	}
+//	else
+//	{
+		pMenuBar->Check ( myID_SCORESHEETXTRA, false );
+		pMenuBar->Check ( myID_STATISTICS, false );
+		pMenuBar->Check ( myID_SCORESHEET, true );
 		pCanvas->Refresh();
 	}
 }
@@ -469,14 +470,18 @@ void WxBaseballFrame::OnScoreSheetCheckExtra ( wxCommandEvent& event )
 {
 	if ( pMenuBar->IsChecked ( myID_SCORESHEETXTRA ) )
 	{
-		pMenuBar->Check ( myID_SCORESHEET, FALSE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
-		pCanvas->Refresh();
-	}
-	else
-	{
-		pMenuBar->Check ( myID_SCORESHEET, TRUE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
+//		pMenuBar->Check ( myID_SCORESHEET, FALSE );
+//		pMenuBar->Check ( myID_STATISTICS, FALSE );
+//		pCanvas->Refresh();
+//	}
+//	else
+//	{
+//		pMenuBar->Check ( myID_SCORESHEET, TRUE );
+//		pMenuBar->Check ( myID_STATISTICS, FALSE );
+//		pCanvas->Refresh();
+		pMenuBar->Check ( myID_SCORESHEETXTRA, true );
+		pMenuBar->Check ( myID_STATISTICS, false );
+		pMenuBar->Check ( myID_SCORESHEET, false );
 		pCanvas->Refresh();
 	}
 }
@@ -485,20 +490,11 @@ void WxBaseballFrame::OnScoreSheetCheckExtra ( wxCommandEvent& event )
 //  this code get control.
 void WxBaseballFrame::OnStatistics ( wxCommandEvent& event )
 {
-	if ( pMenuBar->IsChecked ( myID_SCORESHEET ) )
+	if ( pMenuBar->IsChecked ( myID_STATISTICS ) )
 	{
-		// until Statistics score sheet is created, leave default to normal scoresheet
-		pMenuBar->Check ( myID_SCORESHEET, TRUE );
-		pMenuBar->Check ( myID_SCORESHEETXTRA, FALSE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
-		pCanvas->Refresh();
-	}
-	else
-	{
-		// until Statistics score sheet is created, leave default to normal scoresheet
-		pMenuBar->Check ( myID_SCORESHEET, TRUE );
-		pMenuBar->Check ( myID_SCORESHEETXTRA, FALSE );
-		pMenuBar->Check ( myID_STATISTICS, FALSE );
+		pMenuBar->Check ( myID_SCORESHEETXTRA, false );
+		pMenuBar->Check ( myID_STATISTICS, true );
+		pMenuBar->Check ( myID_SCORESHEET, false );
 		pCanvas->Refresh();
 	}
 }

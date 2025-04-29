@@ -11,6 +11,8 @@
 //              instead of column FLDG                                     //
 // 04/20/25     Changed top of print from 50 to 75 to allow for            //
 //              3 hole punch                                               //
+// 04/29/25     Created FormB which for Strat-o-matic should have been     //
+//              FormA. So I mixed them up.                                 //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -63,6 +65,8 @@ FormA::FormA()
     myTimesNewRomanFont = wxFont(8, wxFONTFAMILY_SWISS,
         wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
         FALSE, "Times New Roman", wxFONTENCODING_SYSTEM);
+
+	wxGetApp().g_printData->SetOrientation ( wxLANDSCAPE );
 }
 
 FormA::~FormA()
@@ -336,5 +340,263 @@ void FormA::Common(wxDC& dc)
     myBuffer.Clear();
     myBuffer.Printf("GAME NUMBER");
     dc.DrawText(myBuffer,xStopStats-100+10,+yGameNumberTop+5);
+}
+
+FormB::FormB()
+{
+	// SetUp font to Times New Roman
+//    myOrigFontName = myTimesNewRomanFont.GetFaceName();
+//    myTimesNewRomanFont.SetFamily(wxSWISS);
+//    myTimesNewRomanFont.SetFaceName("Times New Roman");
+//    myTimesNewRomanFont.SetStyle(wxNORMAL);
+//    myTimesNewRomanFont.SetWeight(wxNORMAL);
+//    myTimesNewRomanFont.SetPointSize(8);
+    myTimesNewRomanFont = wxFont(8, wxFONTFAMILY_SWISS,
+        wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
+        FALSE, "Times New Roman", wxFONTENCODING_SYSTEM);
+
+	wxGetApp().g_printData->SetOrientation ( wxPORTRAIT );
+}
+
+FormB::~FormB()
+{
+}
+
+void FormB::OnDraw(wxDC& dc)
+{
+	wxFont myOldFont;
+
+    //  Each logical unit is 1 pixel - wxMM_TEXT is the default MapMode
+	dc.SetMapMode(wxMM_TEXT);
+
+	// Save original Font so that we can restore it latter
+    myOldFont = dc.GetFont();
+	// Set font to Times New Roman
+    dc.SetFont(myTimesNewRomanFont);
+
+    Common(dc);
+
+    // Insert inning numbers
+//    if ( wxGetApp().pWxBaseballFrame->pMenuBar->IsChecked(myID_SCORESHEET) )
+//    {
+//        Normal(dc);
+//    }
+//    else
+//    {
+//        Extended(dc);
+//    }
+
+    // Reset Font back to original font
+    dc.SetFont(myOldFont);
+}
+
+void FormB::Common(wxDC& dc)
+{
+	// Batter section ends at Y 445 when it starts at 25 for a length or 420
+	#define xStart		100
+	#define yStart		50
+	#define pxStart     550
+	// Pitcher section Y starts at 460 ends at 640 so a length of 180
+	int pyStart = yStart + 420 + 15;	// the 15 is seperator
+	int bsyStart = pyStart + 180 + 15;
+	#define bsyInc	40
+	// Size of box sscore is 105, 25 for header and 2 times bsyInc
+	int gameyStart = bsyStart + 105 + 15;
+	int gamexEnd = xStart + 140;
+	#define gameyInc	65
+	#define bsSize		43
+	#define xEnd		1050
+	#define xInc		48
+	#define yInc		20
+	#define cols		16
+	#define brows		21
+	#define prows       9
+	#define pcols		5
+	#define name        182
+	#define teamsize	176
+
+	int i,j,jcol;
+	int BoxScoreXInc;
+
+	// Draw horizontal lines in batter part of form
+	i = yStart;
+	for (j=0; j<=brows; j++)
+	{
+//		dc.DrawLine(xStart,i,(xInc*cols)+(xStart+name),i);
+		dc.DrawLine( xStart, i, xEnd, i);
+		i+=yInc;
+	}
+	// Draw vertical lines in batter part of form
+	// cols = 15, xEnd = 1050, name = 175
+	dc.DrawLine( xStart, yStart, xStart, (yInc*brows)+yStart);
+	jcol=xStart+name;
+	for (j=0; j<=cols; j++)
+	{
+		dc.DrawLine( jcol, yStart, jcol, (yInc*brows)+yStart );
+		jcol=jcol+xInc;
+	}
+    myBuffer.Clear();
+    myBuffer.Printf("BATTER");
+    dc.DrawText( myBuffer, xStart+60, yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("FLDG");
+    dc.DrawText( myBuffer, xStart+name+5, yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("AB");
+    dc.DrawText( myBuffer, xStart+name+15+(xInc*1), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("R");
+    dc.DrawText( myBuffer, xStart+name+20+(xInc*2), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("H");
+    dc.DrawText( myBuffer, xStart+name+20+(xInc*3), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("RBI");
+    dc.DrawText( myBuffer, xStart+name+10+(xInc*4), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("2B");
+    dc.DrawText( myBuffer, xStart+name+15+(xInc*5), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("3B");
+    dc.DrawText( myBuffer, xStart+name+5+(xInc*6), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("HR");
+    dc.DrawText( myBuffer, xStart+name+15+(xInc*7), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("W");
+    dc.DrawText( myBuffer, xStart+name+20+(xInc*8), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("K");
+    dc.DrawText( myBuffer, xStart+name+20+(xInc*9), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("E");
+    dc.DrawText( myBuffer, xStart+name+20+(xInc*10), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("SB");
+    dc.DrawText( myBuffer, xStart+name+15+(xInc*11), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("SF");
+    dc.DrawText( myBuffer, xStart+name+15+(xInc*12), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("AVG");
+    dc.DrawText( myBuffer, xStart+name+10+(xInc*13), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("SLG");
+    dc.DrawText( myBuffer, xStart+name+10+(xInc*14), yStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("OB%%");
+    dc.DrawText( myBuffer, xStart+name+9+(xInc*15), yStart+5 );
+
+	// Pitcher section
+	// Draw horizontal lines in pitcher part of form
+	i = pyStart;
+	int ipStart = xEnd - name - ( pcols * xInc );
+	for (j=0; j<=prows; j++)
+	{
+		dc.DrawLine( ipStart, i, (xInc*pcols)+ipStart+name ,i );
+		i+=yInc;
+	}
+	// Draw vertical lines in pitcher part of form
+	dc.DrawLine( ipStart, pyStart, ipStart, (yInc*prows)+pyStart);
+	jcol=ipStart+name;
+	for (j=0; j<=pcols; j++)
+	{
+		dc.DrawLine(jcol,pyStart,jcol,(yInc*prows)+pyStart);
+		jcol=jcol+xInc;
+	}
+    myBuffer.Clear();
+    myBuffer.Printf("PITCHER");
+    dc.DrawText( myBuffer, ipStart+60, pyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("IP");
+    dc.DrawText( myBuffer, ipStart+name+15, pyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("H");
+    dc.DrawText( myBuffer, ipStart+name+20+(xInc*1), pyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("W");
+    dc.DrawText( myBuffer, ipStart+name+20+(xInc*2), pyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("K");
+    dc.DrawText( myBuffer, ipStart+name+20+(xInc*3), pyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("ER");
+    dc.DrawText( myBuffer, ipStart+name+15+(xInc*4), pyStart+5 );
+
+	myBuffer.Clear();
+    myBuffer.Printf("OTHER DATA:");
+    dc.DrawText( myBuffer, xStart+5, pyStart+5 );
+	myBuffer.Clear();
+    myBuffer.Printf("COMMENTS:");
+    dc.DrawText( myBuffer, xStart+5, pyStart+5+(yInc*4) );
+
+	// Box Score section
+	// Summary Boxes for Inning Scores
+	// xRightBS = ( 50 * 15 ) + ( 50 + 175 ) = 975
+//	int xRightBS = (xInc*cols)+(xStart+name);
+	dc.DrawLine( xStart, bsyStart, xEnd, bsyStart );
+	dc.DrawLine( xStart, bsyStart+25, xEnd, bsyStart+25 );
+	dc.DrawLine( xStart, bsyStart+bsyInc+25, xEnd, bsyStart+bsyInc+25 );
+	dc.DrawLine( xStart, bsyStart+(bsyInc*2)+25, xEnd, bsyStart+(bsyInc*2)+25 );
+	// Draw Right Vertical line
+	dc.DrawLine( xEnd, bsyStart, xEnd, bsyStart+(bsyInc*2)+25 );
+	// Draw Left Vertical line
+	dc.DrawLine( xStart, bsyStart, xStart, bsyStart+(bsyInc*2)+25 );
+	// xEnd = 1050, BoxScoreXInc = 43, teamsize = 176
+	BoxScoreXInc = ( xEnd - teamsize - xStart ) / 18;
+	for (i=0; i<=18; i++)
+	{
+		dc.DrawLine( xStart+teamsize+(i*BoxScoreXInc), bsyStart, xStart+teamsize+(i*BoxScoreXInc), bsyStart+(bsyInc*2)+25 );
+	}
+    myBuffer.Clear();
+    myBuffer.Printf("TEAMS");
+    dc.DrawText(myBuffer,xStart+50,bsyStart+5);
+    myBuffer.Clear();
+    myBuffer.Printf("1");
+    dc.DrawText(myBuffer,( xStart+teamsize+20 ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("2");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(1*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("3");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(2*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("4");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(3*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("5");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(4*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("6");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(5*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("7");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(6*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("8");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(7*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("9");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(8*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("R");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(15*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("H");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(16*BoxScoreXInc) ), bsyStart+5 );
+    myBuffer.Clear();
+    myBuffer.Printf("E");
+    dc.DrawText(myBuffer,( xStart+teamsize+20+(17*BoxScoreXInc) ), bsyStart+5 );
+
+   	dc.DrawLine( xStart, gameyStart, gamexEnd, gameyStart );
+	dc.DrawLine( xStart, gameyStart+25, gamexEnd, gameyStart+25 );
+	dc.DrawLine( xStart, gameyStart+gameyInc, gamexEnd, gameyStart+gameyInc );
+
+	dc.DrawLine( xStart, gameyStart, xStart, gameyStart+gameyInc );
+	dc.DrawLine( gamexEnd, gameyStart, gamexEnd, gameyStart+gameyInc );
+
+	myBuffer.Clear();
+    myBuffer.Printf("GAME NUMBER");
+    dc.DrawText( myBuffer, xStart+7, gameyStart+5 );
 }
 

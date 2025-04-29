@@ -92,7 +92,7 @@
 //29  029 060 089 120 150 181 211 242 273 303 334 364 29
 //30  030     090 121 151 182 212 243 274 304 335 365 30
 //31  031     091     152     213 244     305     366 31
-#define    APP_VERSION_STR  _T("112.25")
+#define    APP_VERSION_STR  _T("119.25")
 //#define    APP_VERSION_STR  _T("1.1.357.24")
 //wxDateTime::GetJulianDayNumber();
 //myVersion.Printf( wxT("1.1.%d.24"), wxDateTime::GetJulianDayNumber());

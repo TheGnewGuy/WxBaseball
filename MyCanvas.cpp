@@ -9,6 +9,8 @@
 
 #include "MyCanvas.h"
 #include "Forms.h"
+#include "WxBaseballMain.h"
+#include "WxBaseballApp.h"
 
 
 BEGIN_EVENT_TABLE ( MyCanvas, wxWindow )
@@ -31,7 +33,19 @@ MyCanvas::~MyCanvas()
 // OnDraw
 void MyCanvas::OnDraw ( wxDC& dc )
 {
-	FormA* pMyForm = new FormA();
-	pMyForm->OnDraw ( dc );
-	delete pMyForm;
+//	FormA* pMyForm = new FormA();
+	if (wxGetApp().pWxBaseballFrame->pMenuBar->IsChecked ( myID_STATISTICS ))
+	{
+		FormB* pMyForm = new FormB();
+		pMyForm->OnDraw ( dc );
+		delete pMyForm;
+	}
+	else
+	{
+		FormA* pMyForm = new FormA();
+		pMyForm->OnDraw ( dc );
+		delete pMyForm;
+	}
+//	pMyForm->OnDraw ( dc );
+//	delete pMyForm;
 }

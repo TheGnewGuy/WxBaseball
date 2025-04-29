@@ -43,3 +43,28 @@ private:
 
 };
 
+class FormB
+{
+protected:
+
+public:
+	FormB();
+	void OnDraw(wxDC& dc);
+	void Common(wxDC& dc);
+	void Normal(wxDC& dc);
+//	void Extended(wxDC& dc);
+	~FormB();
+
+private:
+   	int xStopInning, xStopStats, yBottomScoreSheet;
+	int yGameNumberTop;
+	int ySummaryTop;
+	int ix, iy;
+	int i;
+	wxString myBuffer;
+
+    wxFont myTimesNewRomanFont;
+    wxString myOrigFontName;
+
+};
+
