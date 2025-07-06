@@ -46,6 +46,8 @@
 // 04/21/25     Set code to disable the ADD button until NEW is pressed    //
 //              adding batters and pitchers. This involved changing        //
 //              BuildControlButtons for unique variables for each page     //
+// 07/06/25     Set default notebooks page to Stat for Batters and         //
+//              Pitchers. Then for New, set default to Info.               //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -1239,6 +1241,8 @@ void BatterNotebook::CreateNotebook(int x, int y, int w, int h)
     m_panel_04->SetSizer( sizer_04 );
 //    m_pNotebook->AddPage(m_panel_04, _T("Info"), false, -1);
     m_pNotebook->InsertPage(0, m_panel_04, _T("Info"), true, -1);
+    // Set page to be displayed to Stats which is tab 3 on a 0 to 3 basis
+    m_pNotebook->SetSelection(3);
 }
 
 void BatterNotebook::DefaultPanelValues( )
@@ -1791,6 +1795,8 @@ void BatterNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structBatterData.Running = 0;
     wxGetApp().pDBRoutines->structBatterData.TRate = 0;
     wxGetApp().pDBRoutines->structBatterData.BatterID = 0;
+    // Set page to be displayed to Info which is tab 0 on a 0 to 4 basis
+    m_pNotebook->SetSelection(0);
     // End Info Notebook Page
 }
 
@@ -3161,6 +3167,8 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
     m_panel_03->SetSizer( sizer_03 );
 
     m_pNotebook->AddPage(m_panel_03, _T("Stats"), false, -1);
+    // Set page to be displayed to Stats which is tab 2 on a 0 to 2 basis
+    m_pNotebook->SetSelection(2);
 
 }
 void PitcherNotebook::DefaultPanelValues( )
@@ -4106,6 +4114,9 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structPitcherData.Bunting = 1;
     wxGetApp().pDBRoutines->structPitcherData.Hold = 0;
     wxGetApp().pDBRoutines->structPitcherData.Throws = 1;
+    // Set page to be displayed to Info which is tab 0 on a 0 to 3 basis
+    m_pNotebook->SetSelection(0);
+
     // End Info Notebook Page
 }
 
