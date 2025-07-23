@@ -13,6 +13,8 @@
 //              3 hole punch                                               //
 // 04/29/25     Created FormB which for Strat-o-matic should have been     //
 //              FormA. So I mixed them up.                                 //
+// 07/23/25     Made Team field larger in summery area                     //
+//              Added Rest and Hold fields to FormA                        //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -24,7 +26,8 @@
 
 #define xLeftScoreSheet       55    // Left margin of sheet
 #define xStartFLDG		      xLeftScoreSheet+156
-#define xLeftInningScoreSheet 144
+//#define xLeftInningScoreSheet 144
+#define xLeftInningScoreSheet 169
 #define xBoxSize              37
 #define xRightSumScoreSheet   xLeftInningScoreSheet+(15*xBoxSize)
 // Positioned to allow for three hole punch
@@ -279,7 +282,7 @@ void FormA::Common(wxDC& dc)
 	}
     myBuffer.Clear();
     myBuffer.Printf("TEAMS");
-    dc.DrawText(myBuffer,xLeftScoreSheet+15,ySummaryTop+5);
+    dc.DrawText(myBuffer,xLeftScoreSheet+40,ySummaryTop+5);
     myBuffer.Clear();
     myBuffer.Printf("R");
     dc.DrawText(myBuffer,(xLeftInningScoreSheet-xBoxSize+15)+(13*xBoxSize),ySummaryTop+5);
@@ -340,6 +343,32 @@ void FormA::Common(wxDC& dc)
     myBuffer.Clear();
     myBuffer.Printf("GAME NUMBER");
     dc.DrawText(myBuffer,xStopStats-100+10,+yGameNumberTop+5);
+
+	// Batter Rest Box
+	#define RestBoxLX 100-(6*xBoxSize)
+	#define RestBoxRX RestBoxLX + 90
+	dc.DrawLine(xStopStats-RestBoxRX,yGameNumberTop+75,xStopStats-RestBoxRX,yGameNumberTop);
+	dc.DrawLine(xStopStats-RestBoxRX,yGameNumberTop,xStopStats-RestBoxLX,yGameNumberTop);
+	dc.DrawLine(xStopStats-RestBoxLX,yGameNumberTop,xStopStats-RestBoxLX,yGameNumberTop+75);
+	dc.DrawLine(xStopStats-RestBoxLX,yGameNumberTop+75,xStopStats-RestBoxRX,yGameNumberTop+75);
+	dc.DrawLine(xStopStats-RestBoxLX,yGameNumberTop+25,xStopStats-RestBoxRX,yGameNumberTop+25);
+
+    myBuffer.Clear();
+    myBuffer.Printf("REST");
+    dc.DrawText(myBuffer,xStopStats-RestBoxLX+30,+yGameNumberTop+5);
+
+	// Hold Box
+	#define HoldBoxLX RestBoxLX + 115
+	#define HoldBoxRX RestBoxRX + 115
+	dc.DrawLine(xStopStats-HoldBoxRX,yGameNumberTop+75,xStopStats-HoldBoxRX,yGameNumberTop);
+	dc.DrawLine(xStopStats-HoldBoxRX,yGameNumberTop,xStopStats-HoldBoxLX,yGameNumberTop);
+	dc.DrawLine(xStopStats-HoldBoxLX,yGameNumberTop,xStopStats-HoldBoxLX,yGameNumberTop+75);
+	dc.DrawLine(xStopStats-HoldBoxLX,yGameNumberTop+75,xStopStats-HoldBoxRX,yGameNumberTop+75);
+	dc.DrawLine(xStopStats-HoldBoxLX,yGameNumberTop+25,xStopStats-HoldBoxRX,yGameNumberTop+25);
+
+    myBuffer.Clear();
+    myBuffer.Printf("HOLD");
+    dc.DrawText(myBuffer,xStopStats-HoldBoxLX+30,+yGameNumberTop+5);
 }
 
 FormB::FormB()
