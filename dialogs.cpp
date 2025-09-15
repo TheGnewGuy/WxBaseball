@@ -48,6 +48,9 @@
 //              BuildControlButtons for unique variables for each page     //
 // 07/06/25     Set default notebooks page to Stat for Batters and         //
 //              Pitchers. Then for New, set default to Info.               //
+// 10/15/25     Centered various dialogs using CenterOnParent();           //
+//              This became a problem after rebuilding Linux and using     //
+//              WxWidgets 3.2.8 which upgraded from 3.2.6                  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -2565,6 +2568,8 @@ BatterDialog::BatterDialog (wxWindow* parent, long style)
     int myBatterDialogReturnCode;
     int rc;
 
+    CenterOnParent(); // Centers on the parent window
+
 	rc = GetTeamNamesArray();
     if (rc == false)
     {
@@ -4396,6 +4401,8 @@ PitcherDialog::PitcherDialog (wxWindow* parent, long style)
     int myPitcherDialogReturnCode;
     int rc;
 
+    CenterOnParent(); // Centers on the parent window
+
 	rc = GetTeamNamesArray();
     if (rc == false)
     {
@@ -4455,6 +4462,8 @@ LeagueDialogAdd::LeagueDialogAdd (wxWindow* parent, long style)
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
 	int myRC;
+
+    CenterOnParent(); // Centers on the parent window
 
 	LeagueDialogAddCreate();
 
@@ -4629,6 +4638,8 @@ ConferenceDialog::ConferenceDialog (wxWindow* parent, long style)
 //                    wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    CenterOnParent(); // Centers on the parent window
+
 	ConferenceDialogCreate();
 
 	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
@@ -4862,6 +4873,8 @@ DivisionDialog::DivisionDialog (wxWindow* parent, long style)
 //                    wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    CenterOnParent(); // Centers on the parent window
+
 	DivisionDialogCreate();
 
 	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
@@ -5095,6 +5108,8 @@ TeamDialogAdd::TeamDialogAdd (wxWindow* parent, long style)
 //                    wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    CenterOnParent(); // Centers on the parent window
+
 	// Need a way to check for a cancel
 	TeamDialogCreate();
 //
@@ -5355,6 +5370,8 @@ TeamDialogApply::TeamDialogApply (wxWindow* parent, long style)
 //                    wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    CenterOnParent(); // Centers on the parent window
+
 	TeamDialogCreate();
 //
 //	m_pTextLeagueName->SetValue( wxGetApp().pDBRoutines->structLeagueData.LeagueName );
@@ -5620,6 +5637,8 @@ TeamDialogCreate::TeamDialogCreate (wxWindow* parent, long style)
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
 	int DBRC;
+
+    CenterOnParent(); // Centers on the parent window
 
 	DBRC = wxGetApp().pDBRoutines->DBIsDBOpen();
 
@@ -6143,6 +6162,8 @@ OptionsDialog::OptionsDialog (wxWindow* parent, long style)
                     wxPoint(10,10), wxSize(500,550),
                     wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
 {
+    CenterOnParent(); // Centers on the parent window
+
     OptionsDialogCreate();
     OptionsDialogInitialize();
 }
