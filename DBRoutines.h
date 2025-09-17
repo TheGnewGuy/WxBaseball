@@ -259,6 +259,7 @@ class DBRoutines
             int WP;
             int Balk;
             int Pitcher;
+            int HittingCard;
             int ER1;
             int TeamID;
             bool ActiveRec;

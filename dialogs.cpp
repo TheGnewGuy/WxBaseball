@@ -51,6 +51,7 @@
 // 10/15/25     Centered various dialogs using CenterOnParent();           //
 //              This became a problem after rebuilding Linux and using     //
 //              WxWidgets 3.2.8 which upgraded from 3.2.6                  //
+// 10/17/25     Added field HittingCard to Pitcher data and Dialogs        //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -223,6 +224,7 @@ enum
     ID_INFO_PITCHER_RELIEF,
     ID_INFO_PITCHER_BALK,
     ID_INFO_PITCHER_P,
+    ID_INFO_PITCHER_HITTINGCARD,
     ID_INFO_PITCHER_ERP,
     ID_INFO_PITCHER_WP,
     ID_INFO_PITCHER_THROWS,
@@ -2650,6 +2652,7 @@ BEGIN_EVENT_TABLE(PitcherNotebook, wxPanel)
     EVT_COMBOBOX(ID_INFO_PITCHER_RELIEF, PitcherNotebook::OnComboInfoChange)
     EVT_COMBOBOX(ID_INFO_PITCHER_BALK, PitcherNotebook::OnComboInfoChange)
     EVT_COMBOBOX(ID_INFO_PITCHER_P, PitcherNotebook::OnComboInfoChange)
+    EVT_COMBOBOX(ID_INFO_PITCHER_HITTINGCARD, PitcherNotebook::OnComboInfoChange)
     EVT_COMBOBOX(ID_INFO_PITCHER_ERP, PitcherNotebook::OnComboInfoChange)
     EVT_COMBOBOX(ID_INFO_PITCHER_WP, PitcherNotebook::OnComboInfoChange)
     EVT_COMBOBOX(ID_INFO_PITCHER_THROWS, PitcherNotebook::OnComboInfoChange)
@@ -2753,7 +2756,7 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
 
     wxGridSizer* m_hGridSizer00 = new wxGridSizer( 1, 4, 0, 0 );
 
-    wxGridSizer* m_hGridSizer01 = new wxGridSizer( 3, 6, 0, 0 );
+    wxGridSizer* m_hGridSizer01 = new wxGridSizer( 4, 6, 0, 0 );
 
     m_hGridSizer00->Add( new wxStaticText(m_panel_01, wxID_ANY,
                     _T("First Name"), wxDefaultPosition, wxSize(80,-1), 0), 0,
@@ -2859,6 +2862,16 @@ void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
 //                    wxDefaultPosition, wxSize(50,-1), m_array_InfoHold,
                     wxCB_READONLY | wxTE_PROCESS_ENTER);
     m_hGridSizer01->Add( m_combo_InfoHold,
+                    0, wxALIGN_LEFT|wxLEFT, 0 );
+
+    m_hGridSizer01->Add( new wxStaticText(m_panel_01, wxID_ANY,
+                    _T("Card"), wxDefaultPosition, wxSize(35,-1), 0),
+                    0, wxALIGN_RIGHT|wxRIGHT, 0 );
+    m_combo_InfoHittingCard = new wxComboBox(m_panel_01, ID_INFO_PITCHER_HITTINGCARD,
+                    _T("0"), wxDefaultPosition, wxDefaultSize,
+//                    _T("0"), wxDefaultPosition, wxSize(50,-1),
+                    m_array_InfoHittingCard, wxCB_READONLY | wxTE_PROCESS_ENTER);
+    m_hGridSizer01->Add( m_combo_InfoHittingCard,
                     0, wxALIGN_LEFT|wxLEFT, 0 );
 
     sizer_01->Add ( m_hGridSizer00 );
@@ -3241,6 +3254,7 @@ void PitcherNotebook::DefaultPanelValues( )
     m_combo_InfoRelief->SetValue( "0" );
     m_combo_InfoBalk->SetValue( "0" );
     m_combo_InfoP->SetValue( "0" );
+    m_combo_InfoHittingCard->SetValue( "0" );
     m_combo_InfoERP->SetValue( "0" );
     m_combo_InfoWP->SetValue( "0" );
     m_combo_InfoThrows->SetValue( "R" );
@@ -3282,6 +3296,7 @@ void PitcherNotebook::Initialization( )
     m_combo_InfoRelief = NULL;
     m_combo_InfoBalk = NULL;
     m_combo_InfoP = NULL;
+    m_combo_InfoHittingCard = NULL;
     m_combo_InfoERP = NULL;
     m_combo_InfoWP = NULL;
     m_combo_InfoThrows = NULL;
@@ -3372,6 +3387,15 @@ void PitcherNotebook::Initialization( )
     m_array_InfoP.Add("3");
     m_array_InfoP.Add("4");
     m_array_InfoP.Add("5");
+    m_array_InfoHittingCard.Add("0");
+    m_array_InfoHittingCard.Add("1");
+    m_array_InfoHittingCard.Add("2");
+    m_array_InfoHittingCard.Add("3");
+    m_array_InfoHittingCard.Add("4");
+    m_array_InfoHittingCard.Add("5");
+    m_array_InfoHittingCard.Add("6");
+    m_array_InfoHittingCard.Add("7");
+    m_array_InfoHittingCard.Add("8");
     m_array_InfoERP.Add("0");
     m_array_InfoERP.Add("1");
     m_array_InfoERP.Add("2");
@@ -4113,6 +4137,7 @@ void PitcherNotebook::OnNew(wxCommandEvent& event)
     wxGetApp().pDBRoutines->structPitcherData.Balk = 0;
     wxGetApp().pDBRoutines->structPitcherData.ER1 = 0;
     wxGetApp().pDBRoutines->structPitcherData.Pitcher = 0;
+    wxGetApp().pDBRoutines->structPitcherData.HittingCard = 0;
     wxGetApp().pDBRoutines->structPitcherData.Relief = 1;
     wxGetApp().pDBRoutines->structPitcherData.Starter = 1;
     wxGetApp().pDBRoutines->structPitcherData.WP = 0;
@@ -4129,12 +4154,13 @@ void PitcherNotebook::GetNotebookData()
 {
 	double fIP;
 
-    // Retrieve Info Notebook Page - 9 entries
+    // Retrieve Info Notebook Page - 10 entries
     wxGetApp().pDBRoutines->structPitcherData.FirstName = m_textFirstName->GetValue();
     wxGetApp().pDBRoutines->structPitcherData.LastName = m_textLastName->GetValue();
     wxGetApp().pDBRoutines->structPitcherData.Balk = atoi(m_combo_InfoBalk->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.ER1 = atoi(m_combo_InfoERP->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.Pitcher = atoi(m_combo_InfoP->GetValue());
+    wxGetApp().pDBRoutines->structPitcherData.HittingCard = atoi(m_combo_InfoHittingCard->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.Relief = atoi(m_combo_InfoRelief->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.Starter = atoi(m_combo_InfoStarter->GetValue());
     wxGetApp().pDBRoutines->structPitcherData.WP = atoi(m_combo_InfoWP->GetValue());
@@ -4266,6 +4292,7 @@ void PitcherNotebook::OnComboPitcherSelect(wxCommandEvent& event)
     m_combo_InfoERP->SetSelection( wxGetApp().pDBRoutines->structPitcherData.ER1 );
     m_combo_InfoHold->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Hold + 6 );
     m_combo_InfoP->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Pitcher );
+    m_combo_InfoHittingCard->SetSelection( wxGetApp().pDBRoutines->structPitcherData.HittingCard );
     m_combo_InfoRelief->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Relief );
     m_combo_InfoStarter->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Starter );
     m_combo_InfoThrows->SetSelection( wxGetApp().pDBRoutines->structPitcherData.Throws);

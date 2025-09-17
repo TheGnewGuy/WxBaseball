@@ -17,6 +17,7 @@
 //           DB index where false which is '0' is not a valid index        //
 // 03/18/25  Changed GetTeamNamesArray to return true or false based on    //
 //           if the cancel was pressed whie selecting leagues or teams     //
+// 10/17/25  Added field HittingCard to Pitcher data                       //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -2511,6 +2512,7 @@ int DBRoutines::DBGetPitcherData(int passedPitcherStatsID)
 		"P.WP, " \
 		"P.Balk, " \
 		"P.Pitcher, " \
+		"P.HittingCard, " \
 		"P.ER1, " \
 		"P.TeamID" \
 		" FROM PITCHERSTATS AS S " \
@@ -2601,8 +2603,9 @@ int DBRoutines::DBGetPitcherData(int passedPitcherStatsID)
         structPitcherData.WP = sqlite3_column_int(m_stmtPitcher, 46);
         structPitcherData.Balk = sqlite3_column_int(m_stmtPitcher, 47);
         structPitcherData.Pitcher = sqlite3_column_int(m_stmtPitcher, 48);
-        structPitcherData.ER1 = sqlite3_column_int(m_stmtPitcher, 49);
-        structPitcherData.TeamID = sqlite3_column_int(m_stmtPitcher, 50);
+        structPitcherData.HittingCard = sqlite3_column_int(m_stmtPitcher, 49);
+        structPitcherData.ER1 = sqlite3_column_int(m_stmtPitcher, 50);
+        structPitcherData.TeamID = sqlite3_column_int(m_stmtPitcher, 51);
 //
 //        Foobar.Printf( wxT("Pitcher Name: %s"), strTemp);
 //        wxMessageBox(Foobar);
@@ -3419,6 +3422,7 @@ int DBRoutines::DBInsertPitcherData(int passedTeamID)
 		"WP," \
 		"Balk," \
 		"Pitcher," \
+		"HittingCard," \
 		"ER1," \
 		"TeamID" \
 		")" \
@@ -3455,7 +3459,8 @@ int DBRoutines::DBInsertPitcherData(int passedTeamID)
 		"?30," \
 		"?31," \
 		"?32," \
-		"?33"  \
+		"?33," \
+		"?34"  \
 		");";
 
 	rc = sqlite3_prepare_v2(m_db, sqlPitcherData, strlen(sqlPitcherData), &m_stmtPitcherInsertData, 0);
@@ -3653,13 +3658,19 @@ int DBRoutines::DBInsertPitcherData(int passedTeamID)
 		MsgBuffer.Printf( wxT("Could not bind Pitcher: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_int(m_stmtPitcherInsertData, 32, structPitcherData.ER1);
+	rc = sqlite3_bind_int(m_stmtPitcherInsertData, 32, structPitcherData.HittingCard);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HittingCard: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtPitcherInsertData, 33, structPitcherData.ER1);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind ER1: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_int(m_stmtPitcherInsertData, 33, passedTeamID);
+	rc = sqlite3_bind_int(m_stmtPitcherInsertData, 34, passedTeamID);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind TeamID: %s\n"), sqlite3_errmsg(m_db));
@@ -4736,10 +4747,11 @@ int DBRoutines::DBUpdatePitcherData(int passedPitcherID)
 		"WP = ?29," \
 		"Balk = ?30," \
 		"Pitcher = ?31," \
-		"ER1 = ?32," \
-		"TeamID = ?33," \
+		"HittingCard = ?32," \
+		"ER1 = ?33," \
+		"TeamID = ?34," \
 		"LastUpdateTime = datetime('NOW','localtime')" \
-		" WHERE PitcherID = ?34 ";
+		" WHERE PitcherID = ?35 ";
 
     ////////////////////////////////////////////////////////////////
     // This routine needs to be verified and tested
@@ -4946,19 +4958,25 @@ int DBRoutines::DBUpdatePitcherData(int passedPitcherID)
 		MsgBuffer.Printf( wxT("Could not bind Pitcher: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 32, structPitcherData.ER1);
+	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 32, structPitcherData.HittingCard);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind HittingCard: %s\n"), sqlite3_errmsg(m_db));
+        wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 33, structPitcherData.ER1);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind ER1: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 33, structPitcherData.TeamID);
+	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 34, structPitcherData.TeamID);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind TeamID: %s\n"), sqlite3_errmsg(m_db));
         wxMessageBox(MsgBuffer);
 	}
-	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 34, passedPitcherID);
+	rc = sqlite3_bind_int(m_stmtPitcherUpdateData, 35, passedPitcherID);
 	if (rc != SQLITE_OK)
 	{
 		MsgBuffer.Printf( wxT("Could not bind passedPitcherID: %s\n"), sqlite3_errmsg(m_db));

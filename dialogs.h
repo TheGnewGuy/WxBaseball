@@ -286,6 +286,7 @@ private:
     wxComboBox* m_combo_InfoRelief;
     wxComboBox* m_combo_InfoBalk;
     wxComboBox* m_combo_InfoP;
+    wxComboBox* m_combo_InfoHittingCard;
     wxComboBox* m_combo_InfoERP;
     wxComboBox* m_combo_InfoWP;
     wxComboBox* m_combo_InfoThrows;
@@ -335,6 +336,7 @@ private:
     wxArrayString m_array_InfoRelief;
     wxArrayString m_array_InfoBalk;
     wxArrayString m_array_InfoP;
+    wxArrayString m_array_InfoHittingCard;
     wxArrayString m_array_InfoERP;
     wxArrayString m_array_InfoWP;
     wxArrayString m_array_InfoThrows;
