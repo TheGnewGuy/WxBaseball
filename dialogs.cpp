@@ -48,10 +48,14 @@
 //              BuildControlButtons for unique variables for each page     //
 // 07/06/25     Set default notebooks page to Stat for Batters and         //
 //              Pitchers. Then for New, set default to Info.               //
-// 10/15/25     Centered various dialogs using CenterOnParent();           //
+// 09/15/25     Centered various dialogs using CenterOnParent();           //
 //              This became a problem after rebuilding Linux and using     //
 //              WxWidgets 3.2.8 which upgraded from 3.2.6                  //
-// 10/17/25     Added field HittingCard to Pitcher data and Dialogs        //
+// 09/17/25     Added field HittingCard to Pitcher data and Dialogs        //
+// 10/06/25     Created a post event in batter and pitcher notebooks       //
+//              OnApply routines to update and display the new stat        //
+//              information. Before we needed to select a different        //
+//              player and then go back to the updated player.             //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -1569,6 +1573,36 @@ void BatterNotebook::OnApply(wxCommandEvent& event)
 	m_spinStatsHBP->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
 	m_spinStatsGAMES->SetForegroundColour(wxColour(wxT("BLACK"))); // BLACK
 
+    // Now update the current Stat panel in the notebook
+    // Create a wxCommandEvent
+	wxCommandEvent comboEvent(wxEVT_COMBOBOX, ID_COMBO_BATTER);
+
+	// Set the selected item
+    int mySel = m_pNotebook->GetSelection();
+    switch( mySel )
+    {
+        case -1:
+            break;
+        case 0:   // Info Notebook Page
+            comboEvent.SetInt( m_combo_batter_04->GetSelection() );
+            break;
+        case 1:   // Position Notebook Page
+            comboEvent.SetInt( m_combo_batter_01->GetSelection() );
+            break;
+        case 2:   // Chance Notebook Page
+            comboEvent.SetInt( m_combo_batter_02->GetSelection() );
+            break;
+        case 3:   // Stats Notebook Page
+            comboEvent.SetInt( m_combo_batter_03->GetSelection() );
+            break;
+        default:  // Should never get here
+            wxMessageBox(_T("Something is wrong with the Batter Notebook"),
+                _T("Error"), wxOK|wxICON_INFORMATION );
+            break;
+    }
+
+    // Post the event to the combobox
+    wxPostEvent(m_combo_batter_03, comboEvent);
 }
 
 void BatterNotebook::OnAdd(wxCommandEvent& event)
@@ -2578,9 +2612,6 @@ BatterDialog::BatterDialog (wxWindow* parent, long style)
 		return;
 	}
 
-    //  Create a dialog that will be used to edit batter data
-    wxPanel *m_pBatterNotebook;
-
     //  Now create a Notebook in the client area of the batter dialog
     GetClientSize(&dialogClientWidth, &dialogClientHeight);
     m_pBatterNotebook = new BatterNotebook( this, 0, 0,
@@ -2736,7 +2767,7 @@ PitcherNotebook::~PitcherNotebook( )
 // Used to create the Batter Notebook and its three panels
 void PitcherNotebook::CreateNotebook(int x, int y, int w, int h)
 {
-    // Create a Notebook which will have four pages
+    // Create a Notebook which will have three pages
     m_pNotebook = new wxNotebook(this, ID_NOTEBOOK_PITCHER, wxPoint(x, y),
                        wxSize(w, h));
 
@@ -3855,6 +3886,34 @@ void PitcherNotebook::OnApply(wxCommandEvent& event)
 	m_spinStatsK->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 	m_spinStatsHR->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
 	m_spinStatsER->SetForegroundColour(wxColour(wxT("BLACK"))); // Black
+
+    // Now update the current Stat panel in the notebook
+    // Create a wxCommandEvent
+	wxCommandEvent comboEvent(wxEVT_COMBOBOX, ID_COMBO_PITCHER);
+
+	// Set the selected item
+    int mySel = m_pNotebook->GetSelection();
+    switch( mySel )
+    {
+        case -1:
+            break;
+        case 0:   // Info Notebook Page
+            comboEvent.SetInt( m_combo_pitcher_01->GetSelection() );
+            break;
+        case 1:   // Chance Notebook Page
+            comboEvent.SetInt( m_combo_pitcher_02->GetSelection() );
+            break;
+        case 2:   // Stats Notebook Page
+            comboEvent.SetInt( m_combo_pitcher_03->GetSelection() );
+            break;
+        default:  // Should never get here
+            wxMessageBox(_T("Something is wrong with the Batter Notebook"),
+                _T("Error"), wxOK|wxICON_INFORMATION );
+            break;
+    }
+
+    // Post the event to the combobox
+    wxPostEvent(m_combo_pitcher_03, comboEvent);
 }
 
 void PitcherNotebook::OnOK(wxCommandEvent& event)

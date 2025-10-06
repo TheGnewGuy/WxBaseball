@@ -217,6 +217,9 @@ public:
     ~BatterDialog ();
     BatterDialog( wxWindow* parent, long style = 0 );
 
+    //  Create a dialog that will be used to edit batter data
+    wxPanel *m_pBatterNotebook;
+
 private:
     bool GetTeamNamesArray();
 //    DECLARE_EVENT_TABLE()
