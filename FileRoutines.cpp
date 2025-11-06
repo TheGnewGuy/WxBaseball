@@ -12,6 +12,7 @@
 //             ERA and WHIP.                                               //
 // 03/18/25    Changed calculation for OBP                                 //
 // 04/01/25    Firstname and Lastname were backwards in export title       //
+// 11/06/25    Add HittingCard to ExportTeam                               //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -242,7 +243,7 @@ void FileRoutines::ExportTeam( int passedTeamID )
 	exportPitcher.Write( strexportData,strexportData.Length() );
     strexportData.Printf( _T("Ch1BR,Ch2BR,Ch3BR,ChHRR,ChWR,ChDPR,") );
 	exportPitcher.Write( strexportData,strexportData.Length() );
-    strexportData.Printf( _T("Wild Pitch,Balk,Fielding,ErrorRating,Bunting\n") );
+    strexportData.Printf( _T("Wild Pitch,Balk,Fielding,ErrorRating,Bunting,HittingCard\n") );
 	exportPitcher.Write( strexportData,strexportData.Length() );
 
 	// Retrieve Team Batters into the arrays m_arrayPitcherStatsIDs
@@ -324,12 +325,13 @@ void FileRoutines::ExportTeam( int passedTeamID )
 			wxGetApp().pDBRoutines->structPitcherData.ChanceDoublePlayRight);
 		exportPitcher.Write( strexportData,strexportData.Length() );
 
-		strexportData.Printf( _T("%i,%i,%i,%i,%c\n"),
+		strexportData.Printf( _T("%i,%i,%i,%i,%c,%i\n"),
 			wxGetApp().pDBRoutines->structPitcherData.WP,
 			wxGetApp().pDBRoutines->structPitcherData.Balk,
 			wxGetApp().pDBRoutines->structPitcherData.Pitcher,
 			wxGetApp().pDBRoutines->structPitcherData.ER1,
-			Bunting[wxGetApp().pDBRoutines->structPitcherData.Bunting]);
+			Bunting[wxGetApp().pDBRoutines->structPitcherData.Bunting],
+			wxGetApp().pDBRoutines->structPitcherData.HittingCard);
 		exportPitcher.Write( strexportData,strexportData.Length() );
 	}
 
