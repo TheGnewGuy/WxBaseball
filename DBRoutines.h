@@ -33,6 +33,7 @@ class DBRoutines
         int DBSetForeginKeys(bool OnOffToggle);
         int DBOpen();
         int DBClose();
+        void DBCheckEntries(int passedLeagueID, int passedConferenceID, int passedDivisionID);
         void DBClearBatterStats();
         void DBClearPitcherStats();
         int DBGetBatterStatsID(int TeamID);
@@ -138,6 +139,17 @@ class DBRoutines
         wxArrayString m_arrayBatterFullNames;
         wxArrayString m_arrayBatterLastFirst;
         wxArrayInt m_arrayBatterStatsIDs;
+
+        // Check Entries fields
+        int m_totalBHits = 0;
+        int m_totalBHomeRuns = 0;
+        int m_totalBWalks = 0;
+        int m_totalBStrikeouts = 0;
+        int m_totalPHits = 0;
+        int m_totalPHomeRuns = 0;
+        int m_totalPWalks = 0;
+        int m_totalPStrikeouts = 0;
+
 
         struct{
             int BatterID;

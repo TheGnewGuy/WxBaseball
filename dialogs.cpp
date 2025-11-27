@@ -56,6 +56,10 @@
 //              OnApply routines to update and display the new stat        //
 //              information. Before we needed to select a different        //
 //              player and then go back to the updated player.             //
+// 11/27/25     Created CheckEntriesDialog dialog to allow for the         //
+//              checking of data entered for Hits, Walks, Strikeouts       //
+//              and HRs. This displays the batter and pitcher values       //
+//              which should be the same.                                  //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -6221,6 +6225,198 @@ const char* TeamDialogCreate::CheckedStateString(wxCheckBoxState state)
     }
 
     return "invalid";
+}
+
+// ---------------------------------------------------------------------------
+// event tables
+// ---------------------------------------------------------------------------
+
+BEGIN_EVENT_TABLE(CheckEntriesDialog, wxDialog)
+    // Controls
+//    EVT_BUTTON(wxID_APPLY, CheckEntriesDialog::OnApply)
+//    EVT_BUTTON(wxID_OK, CheckEntriesDialog::OnOK)
+//    EVT_BUTTON(wxID_CANCEL, CheckEntriesDialog::OnCancel)
+//
+//    EVT_TEXT(ID_CHECKENTRIES_DATADIR, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIES_HTMLINDEX, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIES_HTMLBG, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIES_HTMLLINKCOLOR, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIESS_HTMLVLINKCOLOR, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIES_HTMLBGCOLOR, CheckEntriesDialog::OnCheckEntriesChangeText)
+//    EVT_TEXT(ID_CHECKENTRIES_HTMLTEXTCOLOR, CheckEntriesDialog::OnCheckEntriesChangeText)
+
+END_EVENT_TABLE()
+
+CheckEntriesDialog::CheckEntriesDialog (wxWindow* parent, long style)
+    : wxDialog(parent, -1, "Options",
+                    wxPoint(10,10), wxSize(500,550),
+                    wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
+{
+    CenterOnParent(); // Centers on the parent window
+
+    CheckEntriesDialogCreate();
+    CheckEntriesDialogInitialize();
+    ShowModal();
+}
+
+CheckEntriesDialog::~CheckEntriesDialog( )
+{
+    Destroy();
+}
+
+void CheckEntriesDialog::CheckEntriesDialogCreate ()
+{
+//  Create a dialog that will be used to display and edit the options
+
+    m_pCheckEntriesPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition,
+        wxDefaultSize, wxTAB_TRAVERSAL, "Check Entries Panel");
+
+    wxBoxSizer *pTopSizer = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *pItem01 = new wxBoxSizer( wxVERTICAL );
+//    wxBoxSizer *pItem02 = new wxBoxSizer( wxVERTICAL );
+
+// Heading section
+    wxBoxSizer *pItemSizer01 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer01->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Check Entries:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+// Data section
+    // Hits
+    wxBoxSizer *pItemSizer02 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer02->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Batter Hits:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strBattersHits = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer02->Add(m_strBattersHits, 0, wxALL, 5);
+//    m_intBattersHits->SetValue("100");
+    pItemSizer02->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Pitcher Hits:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strPitchersHits = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer02->Add(m_strPitchersHits, 0, wxALL, 5);
+
+    // Walks
+    wxBoxSizer *pItemSizer03 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer03->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Batter Walks:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strBattersWalks = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer03->Add(m_strBattersWalks, 0, wxALL, 5);
+//    m_intBattersHits->SetValue("100");
+    pItemSizer03->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Pitcher Walks:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strPitchersWalks = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer03->Add(m_strPitchersWalks, 0, wxALL, 5);
+
+    // StrikeOuts
+    wxBoxSizer *pItemSizer04 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer04->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Batter StrikeOuts:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strBattersStrikeOuts = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer04->Add(m_strBattersStrikeOuts, 0, wxALL, 5);
+//    m_intBattersHits->SetValue("100");
+    pItemSizer04->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Pitcher StrikeOuts:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strPitchersStrikeOuts = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer04->Add(m_strPitchersStrikeOuts, 0, wxALL, 5);
+
+    // HomeRuns
+    wxBoxSizer *pItemSizer05 = new wxBoxSizer( wxHORIZONTAL );
+
+    pItemSizer05->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Batter HomeRuns:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strBattersHRs = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer05->Add(m_strBattersHRs, 0, wxALL, 5);
+//    m_intBattersHits->SetValue("100");
+    pItemSizer05->Add(new wxStaticText(m_pCheckEntriesPanel, wxID_ANY,
+        _("Pitcher HomeRuns:")), 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+    m_strPitchersHRs = new wxTextCtrl(m_pCheckEntriesPanel, wxID_ANY, wxEmptyString);
+    pItemSizer05->Add(m_strPitchersHRs, 0, wxALL, 5);
+
+
+// Add each line item to the panel
+    pItem01->Add( pItemSizer01, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer02, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer03, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer04, 0, wxALIGN_LEFT|wxLEFT, 0 );
+    pItem01->Add( pItemSizer05, 0, wxALIGN_LEFT|wxLEFT, 0 );
+
+// Create and place Control buttons
+    pItem01->Add ( BuildControlButtons(m_pCheckEntriesPanel),
+                    0, wxALIGN_CENTER);
+
+    pTopSizer->Add( pItem01, 1, wxGROW|wxALL, 5 );
+    pTopSizer->AddSpacer(5);
+
+    m_pCheckEntriesPanel->SetSizer(pTopSizer);
+    pTopSizer->Fit(m_pCheckEntriesPanel);
+}
+
+void CheckEntriesDialog::CheckEntriesDialogInitialize ()
+{
+//    wxGetApp().pDBRoutines->DBCheckEntries( LeagueID, ConferenceID, DivisionID );
+	int LeagueID;
+	int ConferenceID;
+	int DivisionID;
+//	int TeamID;
+
+	// Check is DB is open, if not, open one
+	wxGetApp().pDBRoutines->DBIsDBOpen();
+
+	// DBGetLeague will prompt for the league
+	LeagueID = wxGetApp().pDBRoutines->DBGetLeague();
+	if (LeagueID != wxID_CANCEL)
+	{
+		// This will populate the structLeagueData
+		wxGetApp().pDBRoutines->DBGetLeague( LeagueID );
+
+		// Get Conference, check to see if valid, then
+		// get Division and check to see if its valid
+		ConferenceID = wxGetApp().pDBRoutines->DBGetConferenceID( LeagueID );
+		if (ConferenceID != wxID_CANCEL)
+		{
+			DivisionID = wxGetApp().pDBRoutines->DBGetDivisionID( ConferenceID );
+			if (DivisionID != wxID_CANCEL)
+			{
+			// Get Teams based on LeagueID, ConferenceID and Division ID.
+			// Then sum hits, HRs, Walks, Strikeouts for all playersStats in selections.
+
+			// Process League data
+				wxGetApp().pDBRoutines->DBCheckEntries( LeagueID, ConferenceID, DivisionID );
+
+			}
+		}
+		m_strBattersHits->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalBHits )));
+		m_strPitchersHits->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalPHits )));
+		m_strBattersWalks->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalBWalks )));
+		m_strPitchersWalks->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalPWalks )));
+		m_strBattersStrikeOuts->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalBStrikeouts )));
+		m_strPitchersStrikeOuts->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalPStrikeouts )));
+		m_strBattersHRs->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalBHomeRuns )));
+		m_strPitchersHRs->SetValue( wxString::Format(wxT("%3i"), (wxGetApp().pDBRoutines->m_totalPHomeRuns )));
+	}
+}
+
+wxBoxSizer* CheckEntriesDialog::BuildControlButtons( wxWindow* panel )
+{
+    // Create the control buttons ( OK )
+
+    wxBoxSizer *sizer = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *buttonPane = new wxBoxSizer (wxHORIZONTAL);
+    //  By adding a space with wxExpand (non zero),
+    //    the butons will be positioned correctly
+
+    wxButton *okButton = new wxButton (panel, wxID_OK);
+    okButton->SetDefault();
+    buttonPane->Add (okButton, 0, wxALIGN_CENTER);
+//    buttonPane->Add( 1, 1, wxEXPAND );
+
+    sizer->Add (new wxStaticLine(panel, -1, wxDefaultPosition, wxSize(350,-1)), 0, wxEXPAND | wxALL, 10);
+    sizer->Add (buttonPane, 0, wxALIGN_CENTER );
+
+    return (sizer);
 }
 
 // ---------------------------------------------------------------------------

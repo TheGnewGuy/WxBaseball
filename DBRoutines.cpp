@@ -5154,3 +5154,158 @@ void DBRoutines::DBClearPitcherStats()
 	structPitcherStats.PitcherID = 0;
 	structPitcherStats.TeamID = 0;
 }
+
+void DBRoutines::DBCheckEntries(int leagueID, int conferenceID, int divisionID)
+{
+    int rc = 0;
+	int rcSqlStepTeam = 0;
+   	wxString MsgBuffer;
+	wxString sqlTeam;
+	wxString sqlSelect;
+	sqlite3_stmt *localStmtTeam;
+	sqlite3_stmt *localStmtSelect;
+	int teamID = 0;
+	int sumBHits = 0;
+	int sumBHomeRuns = 0;
+	int sumBWalks = 0;
+	int sumBStrikeouts = 0;
+
+	int sumPHits = 0;
+	int sumPHomeRuns = 0;
+	int sumPWalks = 0;
+	int sumPStrikeouts = 0;
+
+
+	/* Create SQL statement */
+	sqlTeam = "SELECT "  \
+		"T.TeamID, " \
+		"sum(B.Hits) as sumBHits, " \
+		"sum(B.HomeRuns) as sumBHomeRuns, " \
+		"sum(B.Walk) as sumBWalks, " \
+		"sum(B.Stirkeout) as sumBStrikeouts " \
+		"FROM TEAM AS T " \
+		"JOIN BATTERSTATS as B " \
+		"ON T.TeamID = B.TeamID " \
+		"WHERE T.LeagueID = ?1 AND T.ConferenceID = ?2 AND T.DivisionID = ?3 " \
+		"GROUP BY T.TeamID ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &localStmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	else
+	{
+//		MsgBuffer.Printf( wxT("Prepare for BATTERSTATS Select OK:\n"), sqlite3_errmsg(m_db));
+//		wxMessageBox(MsgBuffer);
+	}
+	// Bind the data to field '1' which is the first '?' in the INSERT statement
+	rc = sqlite3_bind_int(localStmtTeam, 1, leagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind leagueID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(localStmtTeam, 2, conferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind conferenceID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(localStmtTeam, 3, divisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind divisionID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+
+	rcSqlStepTeam = sqlite3_step(localStmtTeam);
+	while (rcSqlStepTeam == SQLITE_ROW)
+	{
+		// Get ID of team
+		teamID = sqlite3_column_int(localStmtTeam, 0);
+		sumBHits = sqlite3_column_int(localStmtTeam, 1);
+		sumBHomeRuns = sqlite3_column_int(localStmtTeam, 2);
+		sumBWalks = sqlite3_column_int(localStmtTeam, 3);
+		sumBStrikeouts = sqlite3_column_int(localStmtTeam, 4);
+		m_totalBHits += sumBHits;
+		m_totalBHomeRuns += sumBHomeRuns;
+		m_totalBWalks += sumBWalks;
+		m_totalBStrikeouts += sumBStrikeouts;
+
+		// Get next team
+		rcSqlStepTeam = sqlite3_step(localStmtTeam);
+	}
+	sqlite3_finalize(localStmtTeam);
+
+
+    // Start of Pitching section
+
+	/* Create SQL statement */
+	sqlTeam = "SELECT "  \
+		"T.TeamID, " \
+		"sum(P.Hits), " \
+		"sum(P.HomeRuns), " \
+		"sum(P.Walks), " \
+		"sum(P.Strikeouts) " \
+		"FROM TEAM AS T " \
+		"JOIN PITCHERSTATS as P " \
+		"ON T.TeamID = P.TeamID " \
+		"WHERE T.LeagueID = ?1 AND T.ConferenceID = ?2 AND T.DivisionID = ?3 " \
+		"GROUP BY T.TeamID ";
+
+	rc = sqlite3_prepare_v2(m_db, sqlTeam, strlen(sqlTeam), &localStmtTeam, 0);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Failed to fetch data: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	else
+	{
+//		MsgBuffer.Printf( wxT("Prepare for PitcherStats Select OK:\n"), sqlite3_errmsg(m_db));
+//		wxMessageBox(MsgBuffer);
+	}
+	// Bind the data to field '1' which is the first '?' in the INSERT statement
+	rc = sqlite3_bind_int(localStmtTeam, 1, leagueID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind leagueID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(localStmtTeam, 2, conferenceID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind conferenceID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+	rc = sqlite3_bind_int(localStmtTeam, 3, divisionID);
+	if (rc != SQLITE_OK)
+	{
+		MsgBuffer.Printf( wxT("Could not bind divisionID int: %s\n"), sqlite3_errmsg(m_db));
+		wxMessageBox(MsgBuffer);
+	}
+
+	rcSqlStepTeam = sqlite3_step(localStmtTeam);
+	while (rcSqlStepTeam == SQLITE_ROW)
+	{
+		// Get ID of team
+		teamID = sqlite3_column_int(localStmtTeam, 0);
+		sumPHits = sqlite3_column_int(localStmtTeam, 1);
+		sumPHomeRuns = sqlite3_column_int(localStmtTeam, 2);
+		sumPWalks = sqlite3_column_int(localStmtTeam, 3);
+		sumPStrikeouts = sqlite3_column_int(localStmtTeam, 4);
+		m_totalPHits += sumPHits;
+		m_totalPHomeRuns += sumPHomeRuns;
+		m_totalPWalks += sumPWalks;
+		m_totalPStrikeouts += sumPStrikeouts;
+
+		// Get next team
+		rcSqlStepTeam = sqlite3_step(localStmtTeam);
+	}
+	sqlite3_finalize(localStmtTeam);
+
+	// Now we need a way to display the results
+
+}
+

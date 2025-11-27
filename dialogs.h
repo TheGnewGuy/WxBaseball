@@ -587,6 +587,43 @@ enum
     DECLARE_EVENT_TABLE()
 };
 
+class CheckEntriesDialog: public wxDialog
+{
+public:
+    ~CheckEntriesDialog ();
+    CheckEntriesDialog( wxWindow* parent, long style = 0 );
+    void CheckEntriesDialogCreate(  );
+    void CheckEntriesDialogInitialize(  );
+//    void OnApply( wxCommandEvent& event );
+//    void OnOK( wxCommandEvent& event );
+//    void OnCancel( wxCommandEvent& event );
+//    void OnCheckEntriesChangeText( wxCommandEvent& event );
+    wxTextCtrl* m_strBattersHits;
+    wxTextCtrl* m_strPitchersHits;
+    wxTextCtrl* m_strBattersWalks;
+    wxTextCtrl* m_strPitchersWalks;
+    wxTextCtrl* m_strBattersHRs;
+    wxTextCtrl* m_strPitchersHRs;
+    wxTextCtrl* m_strBattersStrikeOuts;
+    wxTextCtrl* m_strPitchersStrikeOuts;
+
+private:
+    wxBoxSizer* BuildControlButtons( wxWindow* parent );
+//
+//    bool m_bSetValueFlagOptions;
+//    bool m_bChangeOptionsFlag;
+    wxPanel *m_pCheckEntriesPanel;
+//    wxTextCtrl *m_pTextDataDir;
+//    wxTextCtrl *m_pTextHTMLIndex;
+//    wxTextCtrl *m_pTextHTMLBG;
+//    wxTextCtrl *m_pTextHTMLLinkColor;
+//    wxTextCtrl *m_pTextHTMLVLinkColor;
+//    wxTextCtrl *m_pTextHTMLBGColor;
+//    wxTextCtrl *m_pTextHTMLTextColor;
+
+    DECLARE_EVENT_TABLE()
+};
+
 class OptionsDialog: public wxDialog
 {
 public:

@@ -15,6 +15,7 @@
 // 03/09/25  Changed OnTeamsEditTeam to check for false instead of         //
 //           wxID_CANCEL. wxID_CANCEL is 5101 which might be a valid       //
 //           DB index but false which is '0' is not valid                  //
+// 11/26/25  Setup menu entries for Check Entries                          //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 // Todo:                                                                   //
@@ -121,6 +122,7 @@ BEGIN_EVENT_TABLE(WxBaseballFrame, wxFrame)
 	// Players Menu
 	EVT_MENU ( myID_ADDBATTERS, WxBaseballFrame::OnPlayersAddEditBatter )
 	EVT_MENU ( myID_ADDPITCHERS, WxBaseballFrame::OnPlayersAddEditPitcher )
+	EVT_MENU ( myID_CHECKENTRIES, WxBaseballFrame::OnPlayersCheckEntries )
 	// Statistics Menu
 	//    EVT_MENU(myID_CREATESTATS, WxBaseballFrame::OnCreateStats)
 	//    EVT_MENU(myID_UPDATESTATS, WxBaseballFrame::OnUpdateStats)
@@ -245,6 +247,8 @@ WxBaseballFrame::WxBaseballFrame(wxFrame *frame, const wxString& title)
 	pPlayersMenu->Append ( myID_DELPITCHERS, _T ( "&Delete Pitchers" ), _T ( "Delete Pitchers" ) );
 	pPlayersMenu->Enable ( myID_DELBATTERS, FALSE );
 	pPlayersMenu->Enable ( myID_DELPITCHERS, FALSE );
+	pPlayersMenu->AppendSeparator();
+	pPlayersMenu->Append ( myID_CHECKENTRIES, _T ( "&Check Entries" ), _T ( "Check Entries" ) );
 
 	wxMenu* pStatisticsMenu = new wxMenu;
 	pStatisticsMenu->Append ( myID_CREATESTATS, _T ( "&Create Statistics" ), _T ( "Create Statistics" ) );
@@ -625,6 +629,11 @@ void WxBaseballFrame::OnPlayersAddEditBatter ( wxCommandEvent& event )
 void WxBaseballFrame::OnPlayersAddEditPitcher ( wxCommandEvent& event )
 {
 	PitcherDialog ( this );
+}
+
+void WxBaseballFrame::OnPlayersCheckEntries ( wxCommandEvent& event )
+{
+    CheckEntriesDialog ( this );
 }
 
 //#if wxUSE_TOOLBAR

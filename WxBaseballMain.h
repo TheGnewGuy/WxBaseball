@@ -70,6 +70,7 @@ class WxBaseballFrame: public wxFrame
         // Players menu
         void OnPlayersAddEditBatter(wxCommandEvent& event);
         void OnPlayersAddEditPitcher(wxCommandEvent& event);
+        void OnPlayersCheckEntries(wxCommandEvent& event);
 
         // Print
         void OnPrint(wxCommandEvent& event);
@@ -106,6 +107,7 @@ enum
     myID_ADDPITCHERS,
     myID_DELBATTERS,
     myID_DELPITCHERS,
+    myID_CHECKENTRIES,
     myID_CREATESTATS,
     myID_UPDATESTATS,
     myID_HTMLSTATS,
