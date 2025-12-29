@@ -5175,6 +5175,15 @@ void DBRoutines::DBCheckEntries(int leagueID, int conferenceID, int divisionID)
 	int sumPWalks = 0;
 	int sumPStrikeouts = 0;
 
+    m_totalBHits = 0;
+    m_totalBHomeRuns = 0;
+    m_totalBWalks = 0;
+    m_totalBStrikeouts = 0;
+    m_totalPHits = 0;
+    m_totalPHomeRuns = 0;
+    m_totalPWalks = 0;
+    m_totalPStrikeouts = 0;
+
 
 	/* Create SQL statement */
 	sqlTeam = "SELECT "  \

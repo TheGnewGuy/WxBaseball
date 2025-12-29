@@ -4,7 +4,7 @@
 	"WxBaseballApp.h"
 	"WxBaseballMain.h"
 
-1764259959 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
+1767032015 /home/john/Documents/Source/WxBaseball/WxBaseballApp.h
 	<wx/wx.h>
 	<wx/frame.h>
 	<wx/app.h>
@@ -103,7 +103,7 @@
 1756590086 /home/john/Documents/Source/WxBaseball/sqlite3.h
 	<stdarg.h>
 
-1764263212 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
+1764267062 source:/home/john/Documents/Source/WxBaseball/dialogs.cpp
 	<wx/wxprec.h>
 	<wx/wx.h>
 	<wx/dialog.h>
@@ -1949,7 +1949,7 @@
 	"sqlite3.h"
 	"dialogs.h"
 
-1764264052 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
+1767031919 source:/home/john/Documents/Source/WxBaseball/DBRoutines.cpp
 	<wx/choicdlg.h>
 	<wx/msgdlg.h>
 	"WxBaseballApp.h"
